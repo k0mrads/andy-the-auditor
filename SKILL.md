@@ -67,9 +67,11 @@ Andy needs to call Orbit's API endpoints non-interactively, but Orbit's auth is 
    vercel env add AUDIT_TOKEN production
    vercel env add AUDIT_TOKEN preview
    ```
-4. **Verify Orbit code change is deployed** — Andy's first run will fail with `401` if [api/_db.ts `requireSession()`](api/_db.ts) hasn't been updated to accept `Authorization: Bearer ${AUDIT_TOKEN}`. See the andy-the-auditor implementation PR for the one-file change.
+4. **Verify Orbit code change is deployed** — Andy's first run will fail with `401` if [api/_db.ts `requireSession()`](api/_db.ts) hasn't been updated to accept `Authorization: Bearer ${AUDIT_TOKEN}`. The bearer-token bypass was added in the same PR that introduced this skill.
 
 If `AUDIT_TOKEN` is missing locally, Andy degrades gracefully: Sections E1–E5 (API ↔ Neon) are SKIPPED with a bootstrap note. Sections A–D, F, G, H still run against Neon + Meta + GHL/Hyros directly.
+
+For the morning Slack routine: the same `AUDIT_TOKEN` value must also be available to the routine. Either set it via the routine's environment (claude.ai routine settings) or pass it in the routine's prompt body.
 
 ---
 
@@ -290,13 +292,28 @@ Status rules:
 
 ## Scheduling
 
-Andy already has a daily scheduled run. The existing remote routine `trig_01K8mpqa8e9F2DmBRHivNNPV` ("Attribution Audit 7am ET", fires `0 11 * * *` UTC) invokes `/andy-the-auditor --slack ADS_AUDITS_SLACK_WEBHOOK` and posts to `#ads-audits`. **Do NOT create a separate `/schedule` entry** — the routine is already wired.
+Andy already has a daily scheduled run. The remote routine `trig_01K8mpqa8e9F2DmBRHivNNPV` ("Attribution Audit 7am ET", fires `0 11 * * *` UTC) clones this skill's git repo at every firing, reads `SKILL.md`, and follows the `--slack` execution flow to post to `#ads-audits`. **Do NOT create a separate `/schedule` entry** — the routine is already wired.
 
-When Zander updates the local skill (this directory), `cco` syncs the change to the Anthropic cloud, and the next morning's routine firing picks it up automatically. Single source of truth: edit here, both vault (manual local runs) and Slack (daily routine) outputs reflect the change.
+**Single source of truth via git.** The skill lives at TWO places that stay in sync:
+
+- **Local**: `~/.claude/skills/andy-the-auditor/` — what you edit and what Andy reads in vault mode.
+- **Remote**: `https://github.com/k0mrads/andy-the-auditor` (private repo) — what the morning routine clones.
+
+Workflow for any change (rule, tolerance, new section, fix):
+
+```
+cd ~/.claude/skills/andy-the-auditor/
+# edit SKILL.md or invariants/orbit.md or templates/report-template.md
+git add -A
+git commit -m "describe the change"
+git push
+```
+
+The next morning's routine firing picks up the change automatically. No cco. No cloud sync. Just git.
 
 For VAULT reports specifically (the deep audit, including ORBIT-F and ORBIT-H): run `/andy-the-auditor` manually whenever you want them, or wire a separate local-scheduler entry that doesn't conflict with the remote routine.
 
-Force a cloud re-sync if the Slack message looks stale: invoke `/cco` and promote/refresh the skill scope.
+If the morning Slack message looks stale: confirm `git log -1 --format=%h` matches the SHA the routine prints in its threaded reply. If they differ, you forgot to `git push`.
 
 ---
 
