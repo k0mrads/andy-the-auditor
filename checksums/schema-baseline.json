@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-20T12:29:12Z",
+  "source": "drizzle/schema.ts",
+  "tables": {
+    "ads_clients_config": {
+      "line_start": 223,
+      "line_end": 242,
+      "hash": "sha256:b0a0510dd97c495508c9fc27d0c3f9db1e315920bc4a861aa67bfdfd8a7bdfc7",
+      "columns": "createdAt,currency,currencyToUsd,enabled,ghlApiSecretName,ghlLocationId,ghlPaidCalendarIds,hyrosSecretName,id,label,metaAccountId,metaSecretName,timezone,tokenExpiresAt,updatedAt"
+    },
+    "ads_meta_structure": {
+      "line_start": 244,
+      "line_end": 276,
+      "hash": "sha256:383170bc9367bb63a1837a68eed85b391221d79008ec3ebae03ced547ed98d32",
+      "columns": "campaignId,clientId,creativeBody,creativeThumbnailUrl,creativeTitle,currency,dailyBudgetCents,effectiveStatus,id,level,lifetimeBudgetCents,name,objective,optimizationGoal,parentId,raw,status,syncedAt"
+    },
+    "ads_meta_insights": {
+      "line_start": 278,
+      "line_end": 307,
+      "hash": "sha256:42708fd423da3990f621d28c010abaa4e8efb806f8e61dc809d1c523596d358d",
+      "columns": "adId,adName,adsetId,adsetName,campaignId,campaignName,clicks,clientId,cpc,cpm,createdAt,ctr,dateStart,frequency,impressions,level,objectId,objectName,reach,spend"
+    },
+    "ads_sync_log": {
+      "line_start": 309,
+      "line_end": 325,
+      "hash": "sha256:43749a97c1df540ba922fbf8643bf9aba66cb3e12b020af77293cff89f674082",
+      "columns": "clientId,errorMessage,finishedAt,id,ok,rowsSynced,source,startedAt"
+    },
+    "ads_paid_leads": {
+      "line_start": 339,
+      "line_end": 381,
+      "hash": "sha256:7e5f243138c68e48fd8c43b3d560d41bed4c29282aba6197b44937a5f4bb9d52",
+      "columns": "adName,campaignName,clientId,contactId,fbclid,lastPaidOptInAt,metaAdId,metaAdsetId,metaCampaignId,raw,syncedAt,utmCampaign,utmContent,utmMedium,utmSignature,utmSource"
+    },
+    "ads_paid_bookings": {
+      "line_start": 386,
+      "line_end": 419,
+      "hash": "sha256:8d6d861a204a61456c785a534bb4568375e5e6b4a650a0c2cdf50c3768c02caa",
+      "columns": "adName,appointmentDate,appointmentId,bookedAt,calendarId,campaignName,clientId,contactId,metaAdId,metaAdsetId,metaCampaignId,raw,status,syncedAt"
+    },
+    "ads_command_center_audit": {
+      "line_start": 428,
+      "line_end": 449,
+      "hash": "sha256:00d253d00ee9bf295e17e84c213891e4da1b8a5d3e4e5ec438dda7a011908e21",
+      "columns": "action,clientId,errorMessage,id,metaResponse,objectId,objectType,payloadAfter,payloadBefore,ranAt,status,userIdentity"
+    }
+  }
+}

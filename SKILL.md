@@ -194,7 +194,7 @@ For each adset with non-zero activity in the window (spend > 0 OR leads > 0 OR b
 - **F2 (BLOCKER)** — Sum of per-adset `paid_leads` == client total `paid_leads` from `/api/ads/overview`. No orphan ads (where `meta_ad_id` is populated but `meta_adset_id` is null).
 - **F3 (BLOCKER)** — Same for per-adset `paid_booked_calls`.
 
-#### ORBIT-G — Sync freshness
+#### ORBIT-G — Sync freshness and endpoint latency
 
 Read `ads_sync_log` per `(client_id, source)`.
 
@@ -202,13 +202,40 @@ Read `ads_sync_log` per `(client_id, source)`.
 - **G2 (WARN)** — Latest `ads_paid_leads.last_paid_opt_in_at` per CG/BP client within last 48h when window spend > 0 (detects silent GHL-walk regression).
 - **G3 (WARN)** — `ads_clients_config.token_expires_at` per client > 14 days out. For BuilderPro, current expiry is 2026-06-18 per memory — flag when within window.
 
-#### ORBIT-H — Code-static checks (read-only grep)
+**Latency sub-checks (added Tier 2 #8).** Time every Orbit endpoint call andy makes. Surface in a "Latency" sub-table in the report.
 
-Read-only grep against the Orbit repo. Each is INFO unless it directly violates the north star.
+- **G4 (WARN, >5s)** — `/api/ads/overview` response time.
+- **G5 (WARN, >10s)** — Each `/api/ads/drilldown/*` response time.
+- **G6 (WARN, >30s)** — `/api/ads/audit` response time.
+- **G7 (BLOCKER, >60s timeout)** — Any endpoint times out. A 60s+ latency means the function hit Vercel's hard ceiling and probably returned a partial / errored response.
+
+Failure-mode hint: latency drift → check Vercel function configuration (`maxDuration` in `vercel.json`), Neon connection pool exhaustion, or a slow Meta/GHL upstream call inside the endpoint.
+
+#### ORBIT-H — Code-static and drift checks (vault mode only)
+
+Read-only grep + hash comparisons against the Orbit repo. Each is INFO unless it directly violates the north star.
 
 - **H1 (BLOCKER)** — No `created_at` / `dateAdded` / `first_paid_opt_in_at` inside any query touching `ads_paid_leads`. Same as B2 but broader — covers any callsite, not just the audit's own.
 - **H2 (WARN)** — No bare `YYYY-MM-DD` strings passed to Meta Graph or to drill-down SQL without `clientWindow(timezone, ...)`. Bare strings get parsed as UTC midnight and shift the window 4-5 hours.
 - **H3 (WARN)** — `isLastTouchPaid()` defined exactly once in the repo (drift detector: a re-implementation in a second file is a regression class).
+- **H4 (WARN)** — Code-anchor drift detection. Reads `~/.claude/skills/andy-the-auditor/checksums/code-anchors.json`, re-hashes each cited code range, and compares. Any drift means the invariants doc may reference code that has changed, so a human review is needed. If a hash drifts intentionally (you just fixed a bug), regenerate the baseline with `~/.claude/skills/andy-the-auditor/scripts/regen-baselines.sh` and commit.
+- **H5 (WARN/BLOCKER)** — Schema drift detection. Reads `~/.claude/skills/andy-the-auditor/checksums/schema-baseline.json`, re-hashes each tracked ads_* table block in `drizzle/schema.ts`, and compares. **BLOCKER** if a column andy references (`last_paid_opt_in_at`, `meta_campaign_id`, `meta_adset_id`, `meta_ad_id`, `booked_at`, `client_id`, `enabled`) is removed or renamed. **WARN** if a tracked table block hashes differently but the referenced columns are still present (suggests an additive change worth reviewing).
+- **H6 (WARN)** — Uncatalogued endpoint detection. Lists `api/ads/*.ts` files (recursive, excluding `_*.ts` helpers), compares to the `known_endpoints` list in `invariants/orbit.md`. Any uncatalogued endpoint = WARN with the file path. Forces a conscious decision to either include the new endpoint in andy's coverage or explicitly mark it skipped in invariants.
+
+These run in vault mode only (require local Orbit repo + skill checksums dir). In `--slack` mode they're skipped — the morning Slack post is a smoke check, the deep code-level audit is local.
+
+### Step 2.5 — Optional: `--gap-scan` mode
+
+If invoked with `--gap-scan` (typically: `claude -p "/andy-the-auditor --gap-scan"` from a weekly launchd job), andy switches from the rolling 3-day deep audit to a **90-day rolling historical-gap detection** pass.
+
+What it does:
+
+1. Queries `ads_meta_insights` directly for the last 90 days per client (requires `DATABASE_URL` in env; halts with a bootstrap message otherwise).
+2. For each (client, calendar date), checks whether spend exists in Neon.
+3. For dates with zero spend in Neon, hits Meta Graph API directly for that single day. If Meta reports non-zero spend but Neon has nothing, that's a sync gap.
+4. Writes a single combined vault report at `~/Obsidian/Vault/20-Clients/_Moreway-Agency/attribution-audits/gap-scan-YYYY-MM-DD.md` listing every detected gap with date, client, missing spend amount, and a backfill command.
+
+Skipped automatically when `DATABASE_URL` isn't reachable. The remote routine doesn't run gap-scan (only `--slack` mode). Scheduled locally as a separate launchd job: `com.zander.andy-gap-scan` firing Sunday 7am NY.
 
 ### Step 3 — Aggregate and emit
 

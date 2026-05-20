@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-20T12:29:12Z",
+  "anchors": [
+    {
+      "id": "isLastTouchPaid-predicate",
+      "file": "api/ads/_ghl-direct.ts",
+      "line_start": 69,
+      "line_end": 75,
+      "hash": "sha256:8cf1fbd741138070ddfbbff1b70ae7e6d666d8e27529ecea05f0528587dffe37",
+      "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
+      "purpose": "canonical isLastTouchPaid paid predicate"
+    },
+    {
+      "id": "paidConversionsByObject-union",
+      "file": "api/ads/_drilldown-sql.ts",
+      "line_start": 98,
+      "line_end": 156,
+      "hash": "sha256:4879d3ffefe4c4893ed75c7e163ed8dfe148b04e3d6db9deb647d2675abd5cb6",
+      "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
+      "purpose": "UNION semantics for paid_leads"
+    },
+    {
+      "id": "clientWindow-tz-builder",
+      "file": "api/ads/_drilldown-sql.ts",
+      "line_start": 54,
+      "line_end": 60,
+      "hash": "sha256:b476db6eea5ea013831761948f138a3222a68177b6d09fd90d4130a4cff9224f",
+      "invariants_ref": "invariants/orbit.md#window",
+      "purpose": "DST-aware tz window builder"
+    },
+    {
+      "id": "cpl-cpbc-formulas",
+      "file": "api/ads/overview.ts",
+      "line_start": 208,
+      "line_end": 209,
+      "hash": "sha256:4b9aa062b7b7ba0980cb43cfb6bb334c4aa93b8fa608210efdc51be48ed782fa",
+      "invariants_ref": "invariants/orbit.md#orbit-e3",
+      "purpose": "CPL and CPBC formulas"
+    },
+    {
+      "id": "overview-aggregation",
+      "file": "api/ads/overview.ts",
+      "line_start": 212,
+      "line_end": 233,
+      "hash": "sha256:cd3493590b241f9907d597faa441f7d1bded06a22e66db5fa68cd1f9de6a4fc2",
+      "invariants_ref": "invariants/orbit.md#orbit-e4",
+      "purpose": "cross-client SUM aggregation"
+    },
+    {
+      "id": "fetchHyrosCallsCount-predicate",
+      "file": "api/ads/_sources.ts",
+      "line_start": 123,
+      "line_end": 150,
+      "hash": "sha256:e4189404ffca5442aae78d4917d1188a7fe67988ceec3b677300e6ffb61b1af4",
+      "invariants_ref": "invariants/orbit.md#orbit-d",
+      "purpose": "Hyros paid Facebook predicate"
+    },
+    {
+      "id": "requireSession-audit-bypass",
+      "file": "api/_db.ts",
+      "line_start": 76,
+      "line_end": 86,
+      "hash": "sha256:2f5007c58a360e55b6c799cbcc17dc6de1a10be6ea7ded01c7e67a445fb49ce6",
+      "invariants_ref": "invariants/orbit.md#account-credentials",
+      "purpose": "AUDIT_TOKEN bearer bypass"
+    },
+    {
+      "id": "audit-endpoint-conversion-shortcut",
+      "file": "api/ads/audit.ts",
+      "line_start": 240,
+      "line_end": 258,
+      "hash": "sha256:4356639ef5bb465a8697a5163ad376394dd6cec47a36844ee7897724b9be4d74",
+      "invariants_ref": "invariants/orbit.md#orbit-b-coverage",
+      "purpose": "ground_truth=dashboard caveat"
+    }
+  ]
+}

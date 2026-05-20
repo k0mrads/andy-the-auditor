@@ -257,11 +257,47 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-G1 | BLOCKER | Sync freshness | Each (client, source) has row in `ads_sync_log` within 24h with `ok = true` |
 | ORBIT-G2 | WARN    | Sync freshness | Latest `last_paid_opt_in_at` per CG/BP client within 48h when window spend > 0 |
 | ORBIT-G3 | WARN    | Sync freshness | `ads_clients_config.token_expires_at` > 14 days out per client |
+| ORBIT-G4 | WARN    | Latency | `/api/ads/overview` response time < 5s |
+| ORBIT-G5 | WARN    | Latency | `/api/ads/drilldown/*` per-call response time < 10s |
+| ORBIT-G6 | WARN    | Latency | `/api/ads/audit` response time < 30s |
+| ORBIT-G7 | BLOCKER | Latency | No endpoint times out (>60s = Vercel function ceiling hit) |
 | ORBIT-H1 | BLOCKER | Code-static | Broader sweep of B2: no banned column references anywhere `ads_paid_leads` is queried |
 | ORBIT-H2 | WARN    | Code-static | No bare `YYYY-MM-DD` strings into Meta Graph or drill-down SQL without `clientWindow(timezone, ...)` |
 | ORBIT-H3 | WARN    | Code-static | `isLastTouchPaid()` defined exactly once in the repo (drift detector) |
+| ORBIT-H4 | WARN    | Code drift | Cited code lines (checksums/code-anchors.json) hash unchanged. Regen via scripts/regen-baselines.sh after intentional changes. |
+| ORBIT-H5 | WARN/BLOCKER | Schema drift | Tracked `ads_*` table blocks (checksums/schema-baseline.json) hash unchanged. BLOCKER if referenced column removed/renamed. |
+| ORBIT-H6 | WARN    | Endpoint coverage | All `api/ads/*.ts` route files (excluding `_*.ts` helpers) appear in `known_endpoints` below or are explicitly skipped |
 
 Sections marked **CG+BP only** are skipped for OBB. ORBIT-D is OBB-only.
+
+---
+
+## Known endpoints (ORBIT-H6 catalog)
+
+This list is the contract for ORBIT-H6. When a new file appears in `api/ads/*.ts` and isn't listed here, andy WARNs. Either add the new route to this list AND determine whether it warrants an explicit audit check, or mark it as `skipped: <reason>`.
+
+Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so they're not subject to ORBIT-H6.
+
+| Route | Audited by | Notes |
+|---|---|---|
+| `api/ads/overview.ts` | ORBIT-A, E | per-client + cross-client KPI cards |
+| `api/ads/audit.ts` | cross-validation only (not ground truth, per audit.ts:240-258 caveat) | in-app drift report |
+| `api/ads/sync-meta-structure.ts` | ORBIT-G1 (freshness) + Slack alert on fail | Meta object metadata sync |
+| `api/ads/sync-meta-insights.ts` | ORBIT-A, G1 + Slack alert on fail | Meta insights sync |
+| `api/ads/sync-conversions.ts` | ORBIT-B, C, G1 + Slack alert on fail | GHL contacts + bookings walker |
+| `api/ads/cron-orchestrator.ts` | ORBIT-G1 + Slack alert on fail | structure + insights fan-out |
+| `api/ads/drilldown/campaigns.ts` | ORBIT-F | per-campaign breakdown |
+| `api/ads/drilldown/adsets.ts` | ORBIT-F | per-adset breakdown |
+| `api/ads/drilldown/ad.ts` | ORBIT-F | single-ad detail |
+| `api/ads/contacts/list.ts` | skipped (read-only convenience listing) | contacts paginator |
+| `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
+| `api/ads/best-ads.ts` | skipped (informational ranking, no attribution write path) | cross-client best ads |
+| `api/ads/actions/meta.ts` | out of scope (write path, separate audit concern) | pause / resume / budget |
+| `api/ads/actions/log.ts` | out of scope (audit log write) | write audit trail |
+| `api/ads/slack-obb-update.ts` | skipped (Slack-only output, no Neon writes) | OBB-specific Slack |
+
+Underscore-prefixed helpers (not routes; NEVER counted by ORBIT-H6):
+`_db.ts`, `_drilldown-sql.ts`, `_ghl-direct.ts`, `_meta.ts`, `_slack-alert.ts`, `_sources.ts`
 
 ---
 
@@ -282,6 +318,10 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-F orphan ads | [api/ads/sync-meta-structure.ts](api/ads/sync-meta-structure.ts), missing `parent_id` / `campaign_id` on ad rows |
 | ORBIT-G stale | [api/ads/cron-orchestrator.ts](api/ads/cron-orchestrator.ts) + cron schedule in `vercel.json` |
 | ORBIT-H1 code-static fail | the grep hit's file:line |
+| ORBIT-H4 code-anchor drift | the cited anchor's invariants_ref + the file:line in code-anchors.json |
+| ORBIT-H5 schema drift | [drizzle/schema.ts](drizzle/schema.ts) at the cited line range |
+| ORBIT-H6 uncatalogued endpoint | the `api/ads/*.ts` file path returned by the grep |
+| ORBIT-G4-G7 latency | endpoint config in `vercel.json` (`maxDuration`), Neon pool exhaustion, or upstream Meta/GHL slowness inside the endpoint |
 
 ---
 
