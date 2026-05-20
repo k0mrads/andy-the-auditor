@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-05-20T12:29:12Z",
+  "generated_at": "2026-05-20T16:38:26Z",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
@@ -48,13 +48,13 @@
       "purpose": "cross-client SUM aggregation"
     },
     {
-      "id": "fetchHyrosCallsCount-predicate",
+      "id": "fetchGhlCountsFromNeon-union",
       "file": "api/ads/_sources.ts",
-      "line_start": 123,
-      "line_end": 150,
-      "hash": "sha256:e4189404ffca5442aae78d4917d1188a7fe67988ceec3b677300e6ffb61b1af4",
-      "invariants_ref": "invariants/orbit.md#orbit-d",
-      "purpose": "Hyros paid Facebook predicate"
+      "line_start": 54,
+      "line_end": 106,
+      "hash": "sha256:05effc890042e4d2e7c18514d047a43b8641be24d3ff0cc4d884572f149d0676",
+      "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
+      "purpose": "GHL UNION semantics for paid_leads (all 3 clients post-Part-11)"
     },
     {
       "id": "requireSession-audit-bypass",

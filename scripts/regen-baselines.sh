@@ -49,7 +49,7 @@ ANCHORS=(
   "clientWindow-tz-builder|api/ads/_drilldown-sql.ts|54|60|invariants/orbit.md#window|DST-aware tz window builder"
   "cpl-cpbc-formulas|api/ads/overview.ts|208|209|invariants/orbit.md#orbit-e3|CPL and CPBC formulas"
   "overview-aggregation|api/ads/overview.ts|212|233|invariants/orbit.md#orbit-e4|cross-client SUM aggregation"
-  "fetchHyrosCallsCount-predicate|api/ads/_sources.ts|123|150|invariants/orbit.md#orbit-d|Hyros paid Facebook predicate"
+  "fetchGhlCountsFromNeon-union|api/ads/_sources.ts|54|106|invariants/orbit.md#paid-attribution-rule|GHL UNION semantics for paid_leads (all 3 clients post-Part-11)"
   "requireSession-audit-bypass|api/_db.ts|76|86|invariants/orbit.md#account-credentials|AUDIT_TOKEN bearer bypass"
   "audit-endpoint-conversion-shortcut|api/ads/audit.ts|240|258|invariants/orbit.md#orbit-b-coverage|ground_truth=dashboard caveat"
 )

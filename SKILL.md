@@ -1,6 +1,6 @@
 ---
 name: andy-the-auditor
-description: End-to-end correctness audit for the Moreway Orbit Ads Command Center. Triangulates Meta Graph API ↔ Neon ↔ GHL/Hyros (upstream truth) ↔ Orbit's own API endpoints (display layer) across CG B2B + BuilderPro + OBB. Anchored on Zander's lead-attribution north star (`last_paid_opt_in_at` in window, contact age irrelevant). Writes per-client vault reports with machine-parseable frontmatter for Slack-bot consumption.
+description: End-to-end correctness audit for the Moreway Orbit Ads Command Center. Triangulates Meta Graph API ↔ Neon ↔ GHL (upstream truth) ↔ Orbit's own API endpoints (display layer) across CG B2B + BuilderPro + OBB. Anchored on Zander's lead-attribution north star (`last_paid_opt_in_at` in window, contact age irrelevant). Writes per-client vault reports with machine-parseable frontmatter for Slack-bot consumption.
 ---
 
 # andy-the-auditor
@@ -34,7 +34,7 @@ Andy is a **developer-style auditor for the Moreway Orbit app**, not a marketing
 ### What Andy IS
 
 - An expert developer reviewing the Moreway Orbit Ads Command Center for correctness on every run.
-- Verifies that **Meta = Neon = Orbit API = GHL / Hyros** within tolerance for every metric, every client, every window.
+- Verifies that **Meta = Neon = Orbit API = GHL** within tolerance for every metric, every client, every window. (As of Part 11 / 2026-05-20, all three clients route through GHL for conversion counts. Hyros is retired from the dashboard data path and ORBIT-D below is deprecated.)
 - Defends the north star: `last_paid_opt_in_at` window filter, UNION semantics, paid predicate, no orphan ads, no double counting.
 - Guarantees CPL and CPBC are mathematically correct *given the inputs Orbit holds*. The numbers themselves are not Andy's concern, only that the math producing them is honest.
 - Catches sync drift, schema regressions, golden-rule violations in code, attribution gaps in the writer pipeline.
@@ -84,7 +84,7 @@ The test: if the sentence would fit in a marketing-performance Slack channel, it
 Andy auto-loads:
 
 - `~/.claude/skills/andy-the-auditor/invariants/orbit.md` — single canonical config (replaces the three sister-app invariants files).
-- `~/Claude Code/Moreway/Moreway | Tasks/.env` — Orbit's local env: `DATABASE_URL`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB`, `HYROS_KEY_OBB`, `GHL_*` (one set per client), `AUDIT_TOKEN`.
+- `~/Claude Code/Moreway/Moreway | Tasks/.env` — Orbit's local env: `DATABASE_URL`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB`, `GHL_KEY_CAREGENIUS`, `GHL_KEY_BUILDERPRO`, `GHL_KEY_OBB` (all three clients on GHL as of Part 11), `AUDIT_TOKEN`. `HYROS_KEY_OBB` is unused since Part 11 (kept as dead env for cleanup follow-up).
 - `ads_clients_config` table in Neon — per-client config read at run time so Andy never goes stale on currency / timezone / calendar IDs.
 
 If any required env var is missing, Andy halts with a bootstrap message rather than emitting a misleading green report.
@@ -110,7 +110,7 @@ Andy needs to call Orbit's API endpoints non-interactively, but Orbit's auth is 
    ```
 4. **Verify Orbit code change is deployed** — Andy's first run will fail with `401` if [api/_db.ts `requireSession()`](api/_db.ts) hasn't been updated to accept `Authorization: Bearer ${AUDIT_TOKEN}`. The bearer-token bypass was added in the same PR that introduced this skill.
 
-If `AUDIT_TOKEN` is missing locally, Andy degrades gracefully: Sections E1–E5 (API ↔ Neon) are SKIPPED with a bootstrap note. Sections A–D, F, G, H still run against Neon + Meta + GHL/Hyros directly.
+If `AUDIT_TOKEN` is missing locally, Andy degrades gracefully: Sections E1–E5 (API ↔ Neon) are SKIPPED with a bootstrap note. Sections A, B, C, F, G, H still run against Neon + Meta + GHL directly. (Section D is DEPRECATED as of Part 11.)
 
 For the morning Slack routine: the same `AUDIT_TOKEN` value must also be available to the routine. Either set it via the routine's environment (claude.ai routine settings) or pass it in the routine's prompt body.
 
@@ -138,7 +138,7 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 ### Step 2 — Per target client
 
-For each target client, run sections ORBIT-A through ORBIT-H below. Sections marked **(CG + BP only)** are skipped for OBB; sections marked **(OBB only)** are skipped for CG/BP.
+For each target client, run sections ORBIT-A through ORBIT-H below. **As of Part 11 (PR #51, 2026-05-20)**, OBB joins CG B2B and BuilderPro on the GHL-backed conversion path; ORBIT-B and ORBIT-C apply to all three clients. ORBIT-D (Hyros) is **deprecated** as of Part 11 and is logged as INFO only — there is no longer anything to audit on the Hyros path because the dashboard no longer reads from it.
 
 #### ORBIT-A — Meta Graph API ↔ Neon `ads_meta_insights`
 
@@ -153,7 +153,7 @@ Most-recent day tolerance loosens to ±10% (Meta still aggregating).
 
 Failure-mode hint: spend drift → [api/ads/sync-meta-insights.ts](api/ads/sync-meta-insights.ts) (date alignment / level filtering).
 
-#### ORBIT-B — GHL (live) ↔ Neon `ads_paid_leads` (CG + BP only)
+#### ORBIT-B — GHL (live) ↔ Neon `ads_paid_leads` (all 3 clients post-Part-11)
 
 The north-star check. Use the canonical walker from [api/ads/_ghl-direct.ts `fetchGhlGroundTruthCounts()`](api/ads/_ghl-direct.ts) — same predicate Orbit's own sync uses, applied independently for the audit. Build the ground-truth set of (contact_id) tuples.
 
@@ -161,20 +161,22 @@ The north-star check. Use the canonical walker from [api/ads/_ghl-direct.ts `fet
 - **B2 (BLOCKER, GOLDEN RULE)** — Code-static check: no `created_at` / `dateAdded` / `first_paid_opt_in_at` references inside window filters of any `api/ads/*.ts` or `src/**/*.ts`. Grep for these tokens; failure = automatic FAIL with file:line.
 - **B3 (BLOCKER)** — Re-opt-in survives: pick a contact in the GHL-walked set whose `dateAdded < window_start` but whose `last_paid_opt_in_at` is in window. Confirm they're in Neon. If no such contact exists in this window, log INFO ("no re-opt-ins available to test this window").
 
-#### ORBIT-C — GHL bookings ↔ Neon `ads_paid_bookings` (CG + BP only)
+#### ORBIT-C — GHL bookings ↔ Neon `ads_paid_bookings` (all 3 clients post-Part-11)
 
 Use [`fetchGhlBookedCallsGroundTruth()` in _ghl-direct.ts](api/ads/_ghl-direct.ts) to walk `/calendars/events` for each `ghl_paid_calendar_ids` value in `ads_clients_config`, apply `isLastTouchPaid()` to each event's parent contact.
 
 - **C1 (BLOCKER)** — Count equality: GHL-walked paid booked count == Neon `ads_paid_bookings` rows where `booked_at` in window. Sample missing/extra `appointment_id` on delta.
 - **C2 (BLOCKER, ±5%)** — `cost_per_booked = SUM(spend) / |paid_booked_set|` within ±5% of what `/api/ads/overview` returns for `clients.<id>.cpbc` (or computed from response if Andy runs in direct-only mode).
 
-#### ORBIT-D — Hyros ↔ Orbit API for OBB (OBB only)
+#### ORBIT-D — DEPRECATED (Hyros retired as of Part 11)
 
-Hit Hyros `/v1/api/v1.0/calls` directly (key in `HYROS_KEY_OBB`). The API reads Hyros directly via [_sources.ts:155-179 `fetchHyrosCallsCount()`](api/ads/_sources.ts#L155), so this is API ↔ Hyros (not Neon ↔ Hyros).
+**As of Part 11 (PR #51, 2026-05-20) the entire ORBIT-D section is DEPRECATED.** OBB no longer reads from Hyros for any conversion count surfaced by the dashboard. `api/ads/_sources.ts:165` `case 'obb'` now dispatches to `fetchGhlCountsFromNeon` — identical path to CG B2B and BuilderPro.
 
-- **D1 (SKIP)** — OBB paid leads. Hyros `/leads` has no server-side date filter; Orbit returns `null`. Logged as SKIPPED, not FAIL. Promote to BLOCKER when Phase 3 (paginate + cache Hyros leads in Neon) ships.
-- **D2 (BLOCKER)** — Hyros paid booked count == `clients.obb.paid_booked_calls` from `/api/ads/overview`. Predicate: `firstSource.organic !== true && firstSource.adSource.platform === 'FACEBOOK'` (matches [_sources.ts:141-143](api/ads/_sources.ts#L141)).
-- **D3 (WARN)** — `HYROS_KEY_OBB` not nearing expiry (advisory; Hyros keys don't have a documented introspection endpoint, so this is a stub for now).
+- **D1 (DEPRECATED)** — Was SKIP for Hyros `/leads` no-date-filter. No longer applicable; OBB paid_leads now come from GHL via Neon and are audited under ORBIT-B.
+- **D2 (DEPRECATED)** — Was the Hyros `/calls` count comparison. No longer applicable; OBB paid_booked_calls now come from GHL via Neon and are audited under ORBIT-C.
+- **D3 (DEPRECATED)** — `HYROS_KEY_OBB` env var is still present but unused by Orbit. No advisory needed.
+
+`fetchHyrosCallsCount` remains in `_sources.ts` as dead code pending a follow-up cleanup PR. Andy should log this section as `DEPRECATED` (INFO-level) and move on. If a future change re-wires Hyros as a source, un-deprecate by reverting this block.
 
 #### ORBIT-E — Orbit API ↔ Neon (display-layer verification)
 
@@ -198,8 +200,8 @@ For each adset with non-zero activity in the window (spend > 0 OR leads > 0 OR b
 
 Read `ads_sync_log` per `(client_id, source)`.
 
-- **G1 (BLOCKER)** — Each enabled client has rows for `meta_insights`, `meta_structure`, and `ghl` (CG/BP) or `hyros` (OBB) with latest `started_at` within last 24h AND latest row's `ok = true`.
-- **G2 (WARN)** — Latest `ads_paid_leads.last_paid_opt_in_at` per CG/BP client within last 48h when window spend > 0 (detects silent GHL-walk regression).
+- **G1 (BLOCKER)** — Each enabled client has rows for `meta_insights`, `meta_structure`, and `ghl_conversions` (all 3 clients as of Part 11) with latest `started_at` within last 24h AND latest row's `ok = true`. The check is "latest row" not "any row in last 24h" — an aggregate `bool_and(ok)` over 48h is a different question (transient retry history) and does not count as G1 failure.
+- **G2 (WARN)** — Latest `ads_paid_leads.last_paid_opt_in_at` per client within last 48h when window spend > 0 (detects silent GHL-walk regression). Applies to all 3 clients now (OBB inclusive).
 - **G3 (WARN)** — `ads_clients_config.token_expires_at` per client > 14 days out. For BuilderPro, current expiry is 2026-06-18 per memory — flag when within window.
 
 **Latency sub-checks (added Tier 2 #8).** Time every Orbit endpoint call andy makes. Surface in a "Latency" sub-table in the report.
@@ -251,7 +253,7 @@ Write to:
 ```
 ~/Obsidian/Vault/20-Clients/CareGenius/attribution-audits/YYYY-MM-DD.md      # CG B2B
 ~/Obsidian/Vault/20-Clients/BuilderPro/attribution-audits/YYYY-MM-DD.md      # BP
-~/Obsidian/Vault/20-Clients/_Moreway-Agency/attribution-audits/YYYY-MM-DD.md # OBB + cross-client totals + Hyros notes
+~/Obsidian/Vault/20-Clients/_Moreway-Agency/attribution-audits/YYYY-MM-DD.md # OBB + cross-client totals (Hyros references retired post-Part-11)
 ```
 
 If the per-client folder doesn't exist, create it.
@@ -318,7 +320,7 @@ When a check fails, Andy includes a likely-owner hint in the report. The mapping
 | ORBIT-B count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) — paid-attribution logic in walker, 14-day stale cutoff |
 | ORBIT-B golden rule violation | grep target file:line; the violator query lives at the cited line |
 | ORBIT-C booked count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) — calendar filter, booking_source filter |
-| ORBIT-D Hyros count off | [api/ads/_sources.ts:123-150](api/ads/_sources.ts#L123) — Hyros pagination, organic filter |
+| ORBIT-D (DEPRECATED post-Part-11) | n/a — Hyros no longer in dashboard data path |
 | ORBIT-E aggregation off | [api/ads/overview.ts:212-233](api/ads/overview.ts#L212) — cross-client SUM logic |
 | ORBIT-E CPL/CPBC off | [api/ads/overview.ts:208-209](api/ads/overview.ts#L208) — null-safe formulas |
 | ORBIT-F orphan ads | structure walker in [api/ads/sync-meta-structure.ts](api/ads/sync-meta-structure.ts) — missing `parent_id`/`campaign_id` on ad rows |
@@ -390,10 +392,10 @@ If the morning Slack message looks stale: confirm `git log -1 --format=%h` match
 
 ## Known limitations & future work
 
-- **Hyros leads (ORBIT-D1)** — Hyros `/leads` has no server-side date filter; counts stay null until Phase 3 (paginate + cache in Neon like the GHL path). Until then, OBB paid leads are SKIPPED, not audited.
+- **Hyros retired (Part 11, 2026-05-20)** — OBB now flows through GHL like CG/BP. Hyros code (`fetchHyrosCallsCount`) and env (`HYROS_KEY_OBB`) remain in the repo as dead code pending a follow-up cleanup PR. ORBIT-D is deprecated; no Hyros checks today.
+- **OBB attribution rate** — at the time Part 11 shipped, ~62% of OBB leads/bookings carry a Meta `meta_campaign_id`. Lower than CG (~72%) and far below BP (~99%) because OBB Meta ads were explicitly skipped from the Part 3 Track 2 URL-tag rewrite when OBB was Hyros-only. Recommended follow-up: `scripts/rewrite-meta-url-tags.ts --client obb --apply` to lift the rate above ~95%.
 - **GHL walker timezone** — [_ghl-direct.ts:165-166](api/ads/_ghl-direct.ts#L165) builds the window as UTC (`T00:00:00Z` / `T23:59:59.999Z`), while Neon's union semantics use client-tz-aware boundaries via [_drilldown-sql.ts `clientWindow()`](api/ads/_drilldown-sql.ts#L54). A contact whose lastTouch is e.g. 23:00 EST can fall in different windows depending on path. Treat as a known low-magnitude drift class until the walker also uses `clientWindow()`.
 - **Pre-commit / post-edit hooks** — out of scope; Andy is the post-hoc audit.
-- **OBB Hyros key introspection** — not available; D3 is a stub.
 
 ---
 

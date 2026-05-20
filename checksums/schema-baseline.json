@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-05-20T12:29:12Z",
+  "generated_at": "2026-05-20T16:38:26Z",
   "source": "drizzle/schema.ts",
   "tables": {
     "ads_clients_config": {

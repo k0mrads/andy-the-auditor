@@ -53,11 +53,13 @@ The audit reads `ads_clients_config` from Neon **at run time**. Do not hard-code
 |---|---|---|---|---|---|---|
 | `caregenius-b2b` | CareGenius B2B | `act_27449078924707675` | CAD | `America/New_York` | Neon (`ads_paid_leads`, `ads_paid_bookings`, fed by GHL walker) | true |
 | `builderpro` | BuilderPro | `act_1586857008888840` | USD | `America/Los_Angeles` | Neon (same shape as CG, fed by GHL walker) | true |
-| `obb` | OBB Home Care | `act_425612416873215` | USD | `America/New_York` | Hyros (read live by [api/ads/_sources.ts:62-105 `fetchConversionCounts()`](api/ads/_sources.ts#L62), no Neon mirror yet) | true |
+| `obb` | OBB Home Care | `act_425612416873215` | USD | `America/New_York` | **Neon (GHL walker, identical to CG/BP) as of Part 11 / 2026-05-20.** Hyros retired. | true |
 
 Other columns the audit reads: `meta_secret_name`, `ghl_api_secret_name`, `hyros_secret_name`, `ghl_paid_calendar_ids`, `token_expires_at`. If `enabled = false` for a client, skip its entire section.
 
-Conversion source dispatch lives at [api/ads/_sources.ts:62-105](api/ads/_sources.ts#L62) (`fetchConversionCounts`): CG and BP route to the Neon-backed GHL UNION path, OBB routes to `fetchHyrosCallsCount`.
+OBB's `ghl_location_id` is `Mns7ICmnKi3Pr4QuKmgp`, paid calendars are `ClJ06JUJICgDCoELfn9A` (Home Care Hero Application: Interview Scheduling) and `1FlpwUCCzC52Zt9y6cr2` (Home Care Hero Application: Franchise Interview). API key in `GHL_KEY_OBB`. `hyros_secret_name` is still 'HYROS_KEY_OBB' in the row but the env var is unused by the dashboard post-Part-11.
+
+Conversion source dispatch lives at [api/ads/_sources.ts:155-179](api/ads/_sources.ts#L155) (`fetchConversionCounts`): **all three clients** route to the Neon-backed GHL UNION path (`fetchGhlCountsFromNeon`). `fetchHyrosCallsCount` remains in the file as dead code pending a follow-up cleanup PR.
 
 ---
 
@@ -201,7 +203,7 @@ WHERE client_id = $client_id
 GROUP BY source;
 ```
 
-Schema: [drizzle/schema.ts:309-325 `adsSyncLog`](drizzle/schema.ts#L309). Sources expected: `meta_insights`, `meta_structure`, `ghl` (CG/BP), `hyros` (OBB), `orchestrator`.
+Schema: [drizzle/schema.ts:309-325 `adsSyncLog`](drizzle/schema.ts#L309). Sources expected (post-Part-11): `meta_insights:campaign`, `meta_insights:adset`, `meta_insights:ad`, `meta_structure`, `ghl_conversions` (all 3 clients), `orchestrator`. `hyros` is no longer expected; if it appears, it's residual log data from before Part 11.
 
 ### Most-recent paid event (sanity)
 
@@ -224,7 +226,7 @@ GET {origin}/api/ads/drilldown/adsets?client_id=...&campaign_id=...&date_start=.
 GET {origin}/api/ads/drilldown/ad?client_id=...&adset_id=...&date_start=...&date_end=...
 ```
 
-Compare each response field by field to Andy's independent Neon + Meta + GHL/Hyros computation. Any divergence is a finding.
+Compare each response field by field to Andy's independent Neon + Meta + GHL computation. Any divergence is a finding.
 
 ---
 
@@ -238,14 +240,14 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-A2 | BLOCKER | Meta ↔ Neon | Impressions, ±5% |
 | ORBIT-A3 | BLOCKER | Meta ↔ Neon | Clicks (inline_link_clicks), ±5% |
 | ORBIT-A4 | WARN    | Meta ↔ Neon | Derived CPC/CPM/CTR, ±5% (CTR ±0.1pp) |
-| ORBIT-B1 | BLOCKER | GHL ↔ Neon, CG+BP | Paid lead UNION count equality |
+| ORBIT-B1 | BLOCKER | GHL ↔ Neon, all 3 clients | Paid lead UNION count equality |
 | ORBIT-B2 | BLOCKER | Golden rule grep | No `created_at`/`dateAdded`/`first_paid_opt_in_at` in window filters |
-| ORBIT-B3 | BLOCKER | GHL ↔ Neon, CG+BP | Re-opt-in survives: contact with `dateAdded` < window_start but `last_paid_opt_in_at` in window appears in Neon |
-| ORBIT-C1 | BLOCKER | GHL ↔ Neon, CG+BP | Paid booked count equality vs walked GHL events |
-| ORBIT-C2 | BLOCKER | Display, CG+BP | CPBC = spend / paid_booked within ±5% of `/api/ads/overview` |
-| ORBIT-D1 | SKIP    | Hyros, OBB | Hyros leads not server-filterable; promote to BLOCKER post Phase 3 |
-| ORBIT-D2 | BLOCKER | Hyros, OBB | Hyros paid booked count == `clients.obb.paid_booked_calls` from `/api/ads/overview` |
-| ORBIT-D3 | WARN    | Hyros, OBB | `HYROS_KEY_OBB` not nearing expiry (stub, no Hyros introspection endpoint) |
+| ORBIT-B3 | BLOCKER | GHL ↔ Neon, all 3 clients | Re-opt-in survives: contact with `dateAdded` < window_start but `last_paid_opt_in_at` in window appears in Neon |
+| ORBIT-C1 | BLOCKER | GHL ↔ Neon, all 3 clients | Paid booked count equality vs walked GHL events |
+| ORBIT-C2 | BLOCKER | Display, all 3 clients | CPBC = spend / paid_booked within ±5% of `/api/ads/overview` |
+| ORBIT-D1 | DEPRECATED | Hyros, OBB | (Part 11) OBB no longer Hyros-backed; section retired |
+| ORBIT-D2 | DEPRECATED | Hyros, OBB | (Part 11) Same — count now sourced from Neon under B/C |
+| ORBIT-D3 | DEPRECATED | Hyros, OBB | (Part 11) HYROS_KEY_OBB env unused; advisory retired |
 | ORBIT-E1 | BLOCKER | API ↔ Neon | Per-client spend/impressions/clicks exact match to Neon rollup |
 | ORBIT-E2 | BLOCKER | API ↔ Neon | Per-client paid_leads / paid_booked_calls exact match to B/C/D2 ground truth |
 | ORBIT-E3 | BLOCKER | API ↔ Neon | CPL/CPBC recomputed within ±0.5% / ±5% |
@@ -268,7 +270,7 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-H5 | WARN/BLOCKER | Schema drift | Tracked `ads_*` table blocks (checksums/schema-baseline.json) hash unchanged. BLOCKER if referenced column removed/renamed. |
 | ORBIT-H6 | WARN    | Endpoint coverage | All `api/ads/*.ts` route files (excluding `_*.ts` helpers) appear in `known_endpoints` below or are explicitly skipped |
 
-Sections marked **CG+BP only** are skipped for OBB. ORBIT-D is OBB-only.
+As of Part 11 (2026-05-20), Sections B and C apply to **all three clients** (CG B2B, BuilderPro, OBB). ORBIT-D is fully **DEPRECATED** — there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
 
 ---
 
@@ -284,17 +286,19 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/audit.ts` | cross-validation only (not ground truth, per audit.ts:240-258 caveat) | in-app drift report |
 | `api/ads/sync-meta-structure.ts` | ORBIT-G1 (freshness) + Slack alert on fail | Meta object metadata sync |
 | `api/ads/sync-meta-insights.ts` | ORBIT-A, G1 + Slack alert on fail | Meta insights sync |
-| `api/ads/sync-conversions.ts` | ORBIT-B, C, G1 + Slack alert on fail | GHL contacts + bookings walker |
+| `api/ads/sync-conversions.ts` | ORBIT-B, C, G1 + Slack alert on fail | GHL contacts + bookings walker (all 3 clients post-Part-11) |
 | `api/ads/cron-orchestrator.ts` | ORBIT-G1 + Slack alert on fail | structure + insights fan-out |
 | `api/ads/drilldown/campaigns.ts` | ORBIT-F | per-campaign breakdown |
 | `api/ads/drilldown/adsets.ts` | ORBIT-F | per-adset breakdown |
+| `api/ads/drilldown/ads.ts` | ORBIT-F | per-ad list under an adset |
 | `api/ads/drilldown/ad.ts` | ORBIT-F | single-ad detail |
 | `api/ads/contacts/list.ts` | skipped (read-only convenience listing) | contacts paginator |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
 | `api/ads/best-ads.ts` | skipped (informational ranking, no attribution write path) | cross-client best ads |
 | `api/ads/actions/meta.ts` | out of scope (write path, separate audit concern) | pause / resume / budget |
 | `api/ads/actions/log.ts` | out of scope (audit log write) | write audit trail |
-| `api/ads/slack-obb-update.ts` | skipped (Slack-only output, no Neon writes) | OBB-specific Slack |
+| `api/ads/sync-status.ts` | skipped (read-only sync state for the dashboard) | feeds the Last-sync badge + SyncNowButton polling |
+| `api/ads/slack-client-weekly.ts` | skipped (Slack-only output, no Neon writes) | weekly client-facing Slack recap, all 3 clients |
 
 Underscore-prefixed helpers (not routes; NEVER counted by ORBIT-H6):
 `_db.ts`, `_drilldown-sql.ts`, `_ghl-direct.ts`, `_meta.ts`, `_slack-alert.ts`, `_sources.ts`
@@ -312,7 +316,7 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-B count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts), paid-attribution logic in walker, 14-day stale cutoff |
 | ORBIT-B golden rule violation | grep target file:line, the violator query lives at the cited line |
 | ORBIT-C booked count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts), calendar filter, booking_source filter |
-| ORBIT-D Hyros count off | [api/ads/_sources.ts:123-150](api/ads/_sources.ts#L123), Hyros pagination, organic filter |
+| ORBIT-D (DEPRECATED post-Part-11) | n/a — Hyros no longer in dashboard data path |
 | ORBIT-E aggregation off | [api/ads/overview.ts:212-233](api/ads/overview.ts#L212), cross-client SUM logic |
 | ORBIT-E CPL/CPBC off | [api/ads/overview.ts:208-209](api/ads/overview.ts#L208), null-safe formulas |
 | ORBIT-F orphan ads | [api/ads/sync-meta-structure.ts](api/ads/sync-meta-structure.ts), missing `parent_id` / `campaign_id` on ad rows |
@@ -334,7 +338,7 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | ORBIT-A (Meta ↔ Neon) | RUN | RUN |
 | ORBIT-B (GHL ↔ Neon, CG+BP) | RUN | RUN |
 | ORBIT-C (Booked, CG+BP) | RUN | RUN |
-| ORBIT-D (Hyros, OBB) | RUN | RUN |
+| ORBIT-D (Hyros, OBB) | DEPRECATED (Part 11) | DEPRECATED (Part 11) |
 | ORBIT-E (API ↔ Neon) | RUN | RUN |
 | ORBIT-F (Per-adset drilldown) | RUN | **SKIP** (top-20 loop is too slow for Slack TTL) |
 | ORBIT-G (Sync freshness) | RUN | RUN |
