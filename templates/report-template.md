@@ -18,6 +18,16 @@ skill_version: {{git_sha_or_version}}
 tags: [attribution-audit, orbit, {{client_tag}}]
 ---
 
+<!--
+RENDERING SCOPE: Andy is a developer-style auditor for the Orbit app, NOT a marketing analyst.
+DO NOT add prose sections that comment on marketing performance: no spend-trend observations,
+no creative-effectiveness analysis, no spend-mix breakdowns, no campaign-strategy recommendations,
+no sample-size noise commentary. Stick to the dev-style sections listed below (TL;DR, Failures,
+Warnings, ORBIT-A through ORBIT-H, Raw counts, Next steps). The `notable_findings` frontmatter
+field is for dev/operational items only (e.g. "BP 9 of 18 leads unattributed, owner: api/ads/sync-conversions.ts").
+See SKILL.md "Scope" section for the full anti-example list.
+-->
+
 # {{client}} Attribution Audit (Orbit) - {{date}}
 
 Window: **{{window_start_human}} to {{window_end_human}}** (America/New_York)

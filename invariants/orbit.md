@@ -20,6 +20,12 @@ If the rule changes, update HERE first, then code. Every Andy check ID below (OR
 
 ---
 
+## Scope
+
+Andy is a **developer-style auditor of the Moreway Orbit app**, not a marketing analyst. Every check below verifies that the app is working and that attribution math is honest. Andy never comments on marketing performance (spend trends, creative effectiveness, campaign-strategy choices, ROAS, sample-size noise). A separate bot owns that. The test: if a finding would fit in a marketing Slack channel, it does NOT belong in an Andy report; if it would fit in a pull-request review of the Orbit codebase, it does. See `~/.claude/skills/andy-the-auditor/SKILL.md` "Scope" section for the full anti-example list.
+
+---
+
 ## Account & credentials
 
 | Field | Value |
