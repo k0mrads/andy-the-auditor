@@ -81,8 +81,9 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 - Positional arg ∈ `caregenius` | `builderpro` | `obb` | empty (= all enabled clients in `ads_clients_config`).
 - **`--slack <ENV_VAR_NAME>`** flag (optional). If present, switches to **Slack output mode**:
-  - Skip ORBIT-F (per-adset drill-down) and ORBIT-H (code-static greps). Both require local repo access and are too slow for a 60s routine ceiling.
-  - Skip vault writes. The remote sandbox has no Obsidian access.
+  - Run sections ORBIT-A, B, C, D, E, **F** (per-adset drill-down via `/api/ads/drilldown/adsets`), and G. Per-adset drill-down DOES run in Slack mode now: it makes the morning Slack message a real deep audit, not just a smoke check. The per-adset call is just more API hits to Orbit, no local repo needed.
+  - **Skip ORBIT-H** (code-static greps). H needs the Orbit code repo and a local grep harness; not appropriate for a cloud sandbox. H stays local-only, runs during vault mode (when you manually fire andy locally before pushing a code change).
+  - **Skip vault writes.** The remote sandbox has no Obsidian access.
   - POST a structured Slack summary to the webhook URL in `process.env[<ENV_VAR_NAME>]` (e.g. `--slack ADS_AUDITS_SLACK_WEBHOOK` reads from `$ADS_AUDITS_SLACK_WEBHOOK`).
   - Halt with a clear error if the env var is missing or empty.
 - **Window** = Orbit's "Last 3 days" preset:
@@ -194,24 +195,26 @@ POST a single Slack message to the webhook URL stored in `process.env[ENV_VAR]`.
 **Main message** (one line per client + a top header):
 
 ```
-*Orbit Attribution Audit — {{date}} ({{window_label}})*
+*Orbit Attribution Audit, {{date}} ({{window_label}})*
 {{client_emoji}} CareGenius: {{status_word}} ({{counts}})
 {{client_emoji}} BuilderPro: {{status_word}} ({{counts}})
 {{client_emoji}} OBB: {{status_word}} ({{counts}})
-Skill version: `{{skill_sha_or_version}}`
+Skill version: `{{skill_sha_or_version}}`  ·  Window: {{date_start}} to {{date_end}}
 ```
 
-Where `{{status_word}}` ∈ "all clear", "WARN", "FAIL"; `{{client_emoji}}` ∈ ✅ ⚠️ ❌; `{{counts}}` is e.g. "ORBIT-A through G, 0 blockers, 1 warning".
+Where `{{status_word}}` ∈ "all clear", "WARN", "FAIL"; `{{client_emoji}}` ∈ ✅ ⚠️ ❌; `{{counts}}` is e.g. "ORBIT-A through G + F, 0 blockers, 1 warning, 12 adsets checked".
 
-**Threaded reply** (only when ANY client status != PASS) — for each failed/warning check across all clients:
+**Threaded reply** (only when ANY client status != PASS) — for each failed/warning check across all clients, including per-adset drift findings from ORBIT-F:
 
 ```
-{{client}} :: {{check_id}} ({{severity}}) — {{one_line_explanation}}
+{{client}} :: {{check_id}} ({{severity}}) :: {{one_line_explanation}}
   truth: {{truth_value}}  app: {{app_value}}  delta: {{delta}}
   likely owner: {{file_path}}:{{line}}
 ```
 
-Skip vault writes entirely in Slack mode. Skip ORBIT-F and ORBIT-H sections (not run). Include the skill commit SHA (from `git -C ~/.claude/skills/andy-the-auditor rev-parse --short HEAD` if available, else "unversioned") so Zander can see which version of the skill produced the message.
+For ORBIT-F per-adset findings, include the adset_id and name in the explanation. Cap at top 10 failing adsets per client; aggregate-summarize the rest with a line like "12 more adsets within tolerance, 3 more failed (see vault report for full list)."
+
+Skip vault writes entirely in Slack mode. ORBIT-F runs in Slack mode but ORBIT-H does not (no local repo). Include the skill commit SHA (from `git -C $(find / -name SKILL.md -path '*andy-the-auditor*' 2>/dev/null | head -1 | xargs dirname) rev-parse --short HEAD` if available, else "unversioned") so Zander can see which version of the skill produced the message.
 
 If the Slack POST fails (non-2xx response), retry once with exponential backoff, then halt with the response body printed to stdout (the routine logs that).
 
