@@ -377,6 +377,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/contacts/list.ts` | ORBIT-I3 | backs the Leads / Booked popovers + Contacts tab. Renders the cohort behind every clickable count, so it IS a conversion surface — its list MUST reconcile with `paidConversionsByObject` (was wrongly skipped as a "convenience listing" pre-2026-05-21, which masked the Booked count-vs-popover bug). |
 | `api/ads/contacts/all.ts` | ORBIT-I3 | full-contacts view; renders attribution per contact, so it IS a conversion surface — its cohort MUST reconcile with `paidConversionsByObject` for the same window/client like `contacts/list.ts` (cataloged 2026-05-21, H6). |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
+| `api/ads/contacts/review.ts` | skipped (reviewer-state writer, no conversion attribution) | marks contacts reviewed/needs-review |
 | `api/ads/best-ads.ts` | ORBIT-I | cross-client best ads. Renders paid_leads/booked/CPL/CPBC per ad, so it IS a conversion surface (was wrongly skipped pre-2026-05-21). Keys on `meta_ad_id`. |
 | `api/ads/drilldown/adsets-all.ts` | ORBIT-F | cross-campaign per-adset breakdown; per-adset leads/booked MUST reconcile with `paidConversionsByObject` the same way `drilldown/adsets.ts` does (cataloged 2026-05-21, H6). |
 | `api/ads/drilldown/paused-ads-history.ts` | skipped (read-only historical status display, no conversion attribution) | paused-ad timeline |
