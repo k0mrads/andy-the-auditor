@@ -215,6 +215,35 @@ WHERE client_id = $client_id AND meta_ad_id IS NOT NULL
   AND last_paid_opt_in_at <= $window_end_iso;
 ```
 
+### Drill-in list ↔ aggregate reconciliation (ORBIT-I3, per client + window)
+
+The Leads / Booked popovers and the Contacts tab expand a count via `api/ads/contacts/list.ts`. The list cohort MUST equal the aggregate it expands (`paidConversionsByObject` in `api/ads/_drilldown-sql.ts`). Compute both independently in Neon and require equality:
+
+```sql
+-- Aggregate paid_booked (what the count shows): bookers windowed on booked_at.
+SELECT COUNT(DISTINCT contact_id) AS agg_booked
+FROM ads_paid_bookings
+WHERE client_id = $client_id
+  AND booked_at >= $window_start_iso AND booked_at <= $window_end_iso;
+
+-- List cohort for booked=yes (what the popover lists). MUST equal agg_booked.
+SELECT COUNT(*) AS list_booked FROM (
+  SELECT contact_id FROM ads_paid_bookings
+  WHERE client_id = $client_id
+    AND booked_at >= $window_start_iso AND booked_at <= $window_end_iso
+  GROUP BY contact_id) x;
+
+-- Aggregate paid_leads (UNION) vs list cohort for booked=any. MUST be equal.
+SELECT COUNT(DISTINCT contact_id) AS agg_leads FROM (
+  SELECT contact_id FROM ads_paid_leads
+    WHERE client_id=$client_id AND last_paid_opt_in_at>=$window_start_iso AND last_paid_opt_in_at<=$window_end_iso
+  UNION
+  SELECT contact_id FROM ads_paid_bookings
+    WHERE client_id=$client_id AND booked_at>=$window_start_iso AND booked_at<=$window_end_iso) u;
+```
+
+BLOCKER on any inequality. The legacy bug windowed *all* list modes on `last_paid_opt_in_at` and treated booked as `EXISTS(any booking)`, so the popover both leaked (opt-in in window, booking out) and dropped (booked in window, opt-in before) vs the count. Equivalent live check: call `GET /api/ads/contacts/list?...&booked=yes&limit=250` and compare `rows.length` to the campaign/client `paid_booked` from `/api/ads/drilldown/campaigns` for the same window.
+
 ### Sync freshness (per client_id + source)
 
 ```sql
@@ -250,6 +279,7 @@ GET {origin}/api/ads/drilldown/campaigns?client_id=...&date_start=...&date_end=.
 GET {origin}/api/ads/drilldown/adsets?client_id=...&campaign_id=...&date_start=...&date_end=...
 GET {origin}/api/ads/drilldown/ad?client_id=...&adset_id=...&date_start=...&date_end=...
 GET {origin}/api/ads/best-ads?date_start=...&date_end=...&min_spend=0   # ORBIT-I1
+GET {origin}/api/ads/contacts/list?client_id=...&date_start=...&date_end=...&booked=yes&limit=250   # ORBIT-I3 (rows.length == paid_booked)
 ```
 
 Compare each response field by field to Andy's independent Neon + Meta + GHL computation. Any divergence is a finding.
@@ -297,10 +327,11 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-H6 | WARN    | Endpoint coverage | All `api/ads/*.ts` route files (excluding `_*.ts` helpers) appear in `known_endpoints` below or are explicitly skipped |
 | ORBIT-I1 | BLOCKER | Per-ad surface | Best Ads (`/api/ads/best-ads`) shows non-zero conversions when the client has ad-attributable conversions in window; SUM(per-ad paid_leads) reconciles to the `meta_ad_id`-attributed subset |
 | ORBIT-I2 | BLOCKER/WARN | Attribution writer | `meta_ad_id` population health: BLOCKER if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0` per (client, table); WARN if non-zero but materially below campaign coverage |
+| ORBIT-I3 | BLOCKER | Drill-in lists | `contacts/list.ts` cohort reconciles with `paidConversionsByObject`: `booked=yes` count == aggregate `paid_booked`; `booked=any` count == aggregate `paid_leads`, per client + window |
 
 As of Part 11 (2026-05-20), Sections B and C apply to **all three clients** (CG B2B, BuilderPro, OBB). ORBIT-D is fully **DEPRECATED** — there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
 
-ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the per-ad surface. It runs in **both** vault and `--slack` modes (one best-ads API call + two Neon counts; cheap, unlike per-adset ORBIT-F).
+ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the conversion surfaces downstream of the headline counts: the per-ad Best Ads tab (I1), the `meta_ad_id` writer health (I2), and the drill-in popovers/Contacts list (I3, added later on 2026-05-21 after the Booked-popover count-vs-list bug). It runs in **both** vault and `--slack` modes (a best-ads call + a handful of Neon counts; cheap, unlike per-adset ORBIT-F).
 
 ---
 
@@ -322,7 +353,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/drilldown/adsets.ts` | ORBIT-F | per-adset breakdown |
 | `api/ads/drilldown/ads.ts` | ORBIT-F | per-ad list under an adset |
 | `api/ads/drilldown/ad.ts` | ORBIT-F | single-ad detail |
-| `api/ads/contacts/list.ts` | skipped (read-only convenience listing) | contacts paginator |
+| `api/ads/contacts/list.ts` | ORBIT-I3 | backs the Leads / Booked popovers + Contacts tab. Renders the cohort behind every clickable count, so it IS a conversion surface — its list MUST reconcile with `paidConversionsByObject` (was wrongly skipped as a "convenience listing" pre-2026-05-21, which masked the Booked count-vs-popover bug). |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
 | `api/ads/best-ads.ts` | ORBIT-I | cross-client best ads. Renders paid_leads/booked/CPL/CPBC per ad, so it IS a conversion surface (was wrongly skipped pre-2026-05-21). Keys on `meta_ad_id`. |
 | `api/ads/actions/meta.ts` | out of scope (write path, separate audit concern) | pause / resume / budget |
@@ -357,6 +388,7 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-H6 uncatalogued endpoint | the `api/ads/*.ts` file path returned by the grep |
 | ORBIT-G4-G7 latency | endpoint config in `vercel.json` (`maxDuration`), Neon pool exhaustion, or upstream Meta/GHL slowness inside the endpoint |
 | ORBIT-I `meta_ad_id` all-zero / Best Ads shows 0 | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` — ad-name → ad-id backfill dropped. Read path [api/ads/best-ads.ts:245-272](api/ads/best-ads.ts#L245) keys on `meta_ad_id` with no true-total fallback. |
+| ORBIT-I3 popover/list count ≠ the number it expands | [api/ads/contacts/list.ts](api/ads/contacts/list.ts) cohort SQL diverged from `paidConversionsByObject` ([api/ads/_drilldown-sql.ts](api/ads/_drilldown-sql.ts)): leads window on `last_paid_opt_in_at`, bookings MUST window on `booked_at`; "booked" cohort is bookers-in-window, not EXISTS-any-booking. |
 
 ---
 
@@ -374,7 +406,7 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | ORBIT-F (Per-adset drilldown) | RUN | **SKIP** (top-20 loop is too slow for Slack TTL) |
 | ORBIT-G (Sync freshness) | RUN | RUN |
 | ORBIT-H (Code-static grep) | RUN | **SKIP** (no repo checkout in cloud routine) |
-| ORBIT-I (Per-ad surface + meta_ad_id health) | RUN | RUN |
+| ORBIT-I (Per-ad surface + meta_ad_id health + I3 drill-in reconciliation) | RUN | RUN |
 
 **Vault is the deep audit. Slack is a smoke check.** Slack post format: one line per client with PASS / WARN / FAIL totals + the top failing check ID, plus a vault link for the full report. Slack mode never substitutes for the vault report; both run on the daily 7am schedule.
 
