@@ -244,6 +244,26 @@ SELECT COUNT(DISTINCT contact_id) AS agg_leads FROM (
 
 BLOCKER on any inequality. The legacy bug windowed *all* list modes on `last_paid_opt_in_at` and treated booked as `EXISTS(any booking)`, so the popover both leaked (opt-in in window, booking out) and dropped (booked in window, opt-in before) vs the count. Equivalent live check: call `GET /api/ads/contacts/list?...&booked=yes&limit=250` and compare `rows.length` to the campaign/client `paid_booked` from `/api/ads/drilldown/campaigns` for the same window.
 
+### Opt-in dated by event, not sync clock (ORBIT-B5, per client)
+
+A `now()`-stamped re-opt-in is detectable by `last_paid_opt_in_at ≈ synced_at`. For each such row, the stored `raw` must carry a real event timestamp on the SAME calendar day (client tz). The fbc click time is `raw.lastAttributionSource.fbc` parsed as `fb.<v>.<ms>.<fbclid>` (the `<ms>` is epoch-ms); fallback is `raw.dateUpdated`.
+
+```sql
+-- now()-stamped rows whose dateUpdated lands on a DIFFERENT day than the stamp = FAIL (mis-windowed).
+SELECT client_id, contact_id,
+       last_paid_opt_in_at,
+       raw->>'dateUpdated'                                  AS date_updated,
+       raw->'lastAttributionSource'->>'fbc'                 AS fbc
+FROM ads_paid_leads
+WHERE client_id = $client_id
+  AND ABS(EXTRACT(EPOCH FROM (last_paid_opt_in_at - synced_at))) < 2
+  AND raw->>'dateUpdated' IS NOT NULL
+  AND (last_paid_opt_in_at AT TIME ZONE $tz)::date
+      <> ((raw->>'dateUpdated')::timestamptz AT TIME ZONE $tz)::date;
+```
+
+Any row returned is a BLOCKER (the writer dated the lead by the clock; the fbc click time / dateUpdated proves the real event was on another day). Remediation for historical rows: `scripts/backfill-reoptin-timestamp.ts`. Forward owner: [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts) `resolveReOptInDate`.
+
 ### Sync freshness (per client_id + source)
 
 ```sql
@@ -299,6 +319,7 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-B1 | BLOCKER | GHL ↔ Neon, all 3 clients | Paid lead UNION count equality |
 | ORBIT-B2 | BLOCKER | Golden rule grep | No `created_at`/`dateAdded`/`first_paid_opt_in_at` in window filters |
 | ORBIT-B3 | BLOCKER | GHL ↔ Neon, all 3 clients | Re-opt-in survives: contact with `dateAdded` < window_start but `last_paid_opt_in_at` in window appears in Neon |
+| ORBIT-B5 | BLOCKER/WARN | Neon writer, all 3 clients | Opt-in dated by the EVENT not the sync clock: a `now()`-stamp (`\|opt_in - synced_at\| < 2s`) must corroborate a real event timestamp (fbc click time / `dateUpdated`) on the same calendar day. BLOCKER on different-day; WARN on same-day but >1h off |
 | ORBIT-C1 | BLOCKER | GHL ↔ Neon, all 3 clients | Paid booked count equality vs walked GHL events |
 | ORBIT-C2 | BLOCKER | Display, all 3 clients | CPBC = spend / paid_booked within ±5% of `/api/ads/overview` |
 | ORBIT-D1 | DEPRECATED | Hyros, OBB | (Part 11) OBB no longer Hyros-backed; section retired |
@@ -376,6 +397,7 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-A clicks drift | [api/ads/audit.ts:88-95](api/ads/audit.ts#L88), `inline_link_clicks` vs `clicks` |
 | ORBIT-B count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts), paid-attribution logic in walker, 14-day stale cutoff |
 | ORBIT-B golden rule violation | grep target file:line, the violator query lives at the cited line |
+| ORBIT-B5 opt-in == synced_at on wrong day | [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts) `resolveReOptInDate` (fbc click → dateUpdated → now ladder) + its caller in [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) re-opt-in branch. Historical rows: `scripts/backfill-reoptin-timestamp.ts` |
 | ORBIT-C booked count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts), calendar filter, booking_source filter |
 | ORBIT-D (DEPRECATED post-Part-11) | n/a — Hyros no longer in dashboard data path |
 | ORBIT-E aggregation off | [api/ads/overview.ts:212-233](api/ads/overview.ts#L212), cross-client SUM logic |
