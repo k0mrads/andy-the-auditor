@@ -375,12 +375,24 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/drilldown/ads.ts` | ORBIT-F | per-ad list under an adset |
 | `api/ads/drilldown/ad.ts` | ORBIT-F | single-ad detail |
 | `api/ads/contacts/list.ts` | ORBIT-I3 | backs the Leads / Booked popovers + Contacts tab. Renders the cohort behind every clickable count, so it IS a conversion surface — its list MUST reconcile with `paidConversionsByObject` (was wrongly skipped as a "convenience listing" pre-2026-05-21, which masked the Booked count-vs-popover bug). |
+| `api/ads/contacts/all.ts` | ORBIT-I3 | full-contacts view; renders attribution per contact, so it IS a conversion surface — its cohort MUST reconcile with `paidConversionsByObject` for the same window/client like `contacts/list.ts` (cataloged 2026-05-21, H6). |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
 | `api/ads/best-ads.ts` | ORBIT-I | cross-client best ads. Renders paid_leads/booked/CPL/CPBC per ad, so it IS a conversion surface (was wrongly skipped pre-2026-05-21). Keys on `meta_ad_id`. |
+| `api/ads/drilldown/adsets-all.ts` | ORBIT-F | cross-campaign per-adset breakdown; per-adset leads/booked MUST reconcile with `paidConversionsByObject` the same way `drilldown/adsets.ts` does (cataloged 2026-05-21, H6). |
+| `api/ads/drilldown/paused-ads-history.ts` | skipped (read-only historical status display, no conversion attribution) | paused-ad timeline |
 | `api/ads/actions/meta.ts` | out of scope (write path, separate audit concern) | pause / resume / budget |
 | `api/ads/actions/log.ts` | out of scope (audit log write) | write audit trail |
 | `api/ads/sync-status.ts` | skipped (read-only sync state for the dashboard) | feeds the Last-sync badge + SyncNowButton polling |
 | `api/ads/slack-client-weekly.ts` | skipped (Slack-only output, no Neon writes) | weekly client-facing Slack recap, all 3 clients |
+| `api/ads/slack-daily.ts` | skipped (Slack-only output, no Neon writes) | daily Moreway audit/perf/eod Slack posts; reads /overview + /audit, posts to Slack |
+| `api/ads/sync-ghl-contacts.ts` | skipped (sync writer; freshness covered transitively by ORBIT-B/G1) | GHL contacts sync |
+| `api/ads/cron-ghl-contacts.ts` | skipped (cron wrapper for sync-ghl-contacts) | scheduled GHL contacts fan-out |
+| `api/ads/kpi-targets.ts` | skipped (config CRUD, no conversion attribution) | per-client KPI target storage |
+| `api/ads/diagnose-meta-permissions.ts` | skipped (ops diagnostic, read-only) | Meta token/role debug |
+| `api/ads/migrate-ghl-contacts.ts` | skipped (one-off migration) | backfill script |
+| `api/ads/migrate-kpi-targets.ts` | skipped (one-off migration) | backfill script |
+| `api/ads/migrate-kpi-overrides.ts` | skipped (one-off migration) | backfill script |
+| `api/ads/migrate-paused-history.ts` | skipped (one-off migration) | backfill script |
 
 Underscore-prefixed helpers (not routes; NEVER counted by ORBIT-H6):
 `_db.ts`, `_drilldown-sql.ts`, `_ghl-direct.ts`, `_meta.ts`, `_slack-alert.ts`, `_sources.ts`
