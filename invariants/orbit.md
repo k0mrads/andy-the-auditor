@@ -24,6 +24,8 @@ If the rule changes, update HERE first, then code. Every Andy check ID below (OR
 
 Andy is a **developer-style auditor of the Moreway Orbit app**, not a marketing analyst. Every check below verifies that the app is working and that attribution math is honest. Andy never comments on marketing performance (spend trends, creative effectiveness, campaign-strategy choices, ROAS, sample-size noise). A separate bot owns that. The test: if a finding would fit in a marketing Slack channel, it does NOT belong in an Andy report; if it would fit in a pull-request review of the Orbit codebase, it does. See `~/.claude/skills/andy-the-auditor/SKILL.md` "Scope" section for the full anti-example list.
 
+**Working-MVP clause (standing principle).** Every display surface that renders a conversion metric (`paid_leads`, `paid_booked`, `CPL`, `CPBC`) is in Andy's scope **by default**, whether or not it has its own check ID below. The north star applies to all of them. If a conversion column renders all-zero / dashes on a surface where the same client shows spend AND shows conversions elsewhere (Overview, Campaigns, Adsets), that is a correctness FAIL — a working MVP shows one truth everywhere. New conversion-bearing tabs/endpoints are presumed in-scope until explicitly justified as out-of-scope here. "Informational ranking" is not a valid skip reason for a surface that displays attribution (this is what masked the 2026-05-21 Best Ads `meta_ad_id` regression — see ORBIT-I).
+
 ---
 
 ## Account & credentials
@@ -190,6 +192,29 @@ WHERE client_id = $client_id
 
 Schema: [drizzle/schema.ts:386-419 `adsPaidBookings`](drizzle/schema.ts#L386).
 
+### `meta_ad_id` population health (ORBIT-I2, per client + table)
+
+```sql
+SELECT client_id,
+       COUNT(*)                AS total,
+       COUNT(meta_campaign_id) AS has_campaign,
+       COUNT(meta_adset_id)    AS has_adset,
+       COUNT(meta_ad_id)       AS has_ad
+FROM ads_paid_leads      -- repeat for ads_paid_bookings
+GROUP BY client_id
+ORDER BY client_id;
+```
+
+BLOCKER when `has_campaign > 0` AND `has_ad = 0` (writer dropped ad-level resolution). WARN when `has_ad` is non-zero but well below `has_campaign` (URL-tag coverage limitation, not a code bug). For ORBIT-I1, also count the **in-window** ad-attributed contacts to compare against the Best Ads response:
+
+```sql
+SELECT COUNT(DISTINCT contact_id) AS ad_attributed_leads
+FROM ads_paid_leads
+WHERE client_id = $client_id AND meta_ad_id IS NOT NULL
+  AND last_paid_opt_in_at >= $window_start_iso
+  AND last_paid_opt_in_at <= $window_end_iso;
+```
+
 ### Sync freshness (per client_id + source)
 
 ```sql
@@ -224,6 +249,7 @@ GET {origin}/api/ads/audit?date_start=YYYY-MM-DD&date_end=YYYY-MM-DD
 GET {origin}/api/ads/drilldown/campaigns?client_id=...&date_start=...&date_end=...
 GET {origin}/api/ads/drilldown/adsets?client_id=...&campaign_id=...&date_start=...&date_end=...
 GET {origin}/api/ads/drilldown/ad?client_id=...&adset_id=...&date_start=...&date_end=...
+GET {origin}/api/ads/best-ads?date_start=...&date_end=...&min_spend=0   # ORBIT-I1
 ```
 
 Compare each response field by field to Andy's independent Neon + Meta + GHL computation. Any divergence is a finding.
@@ -269,8 +295,12 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-H4 | WARN    | Code drift | Cited code lines (checksums/code-anchors.json) hash unchanged. Regen via scripts/regen-baselines.sh after intentional changes. |
 | ORBIT-H5 | WARN/BLOCKER | Schema drift | Tracked `ads_*` table blocks (checksums/schema-baseline.json) hash unchanged. BLOCKER if referenced column removed/renamed. |
 | ORBIT-H6 | WARN    | Endpoint coverage | All `api/ads/*.ts` route files (excluding `_*.ts` helpers) appear in `known_endpoints` below or are explicitly skipped |
+| ORBIT-I1 | BLOCKER | Per-ad surface | Best Ads (`/api/ads/best-ads`) shows non-zero conversions when the client has ad-attributable conversions in window; SUM(per-ad paid_leads) reconciles to the `meta_ad_id`-attributed subset |
+| ORBIT-I2 | BLOCKER/WARN | Attribution writer | `meta_ad_id` population health: BLOCKER if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0` per (client, table); WARN if non-zero but materially below campaign coverage |
 
 As of Part 11 (2026-05-20), Sections B and C apply to **all three clients** (CG B2B, BuilderPro, OBB). ORBIT-D is fully **DEPRECATED** — there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
+
+ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the per-ad surface. It runs in **both** vault and `--slack` modes (one best-ads API call + two Neon counts; cheap, unlike per-adset ORBIT-F).
 
 ---
 
@@ -294,7 +324,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/drilldown/ad.ts` | ORBIT-F | single-ad detail |
 | `api/ads/contacts/list.ts` | skipped (read-only convenience listing) | contacts paginator |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
-| `api/ads/best-ads.ts` | skipped (informational ranking, no attribution write path) | cross-client best ads |
+| `api/ads/best-ads.ts` | ORBIT-I | cross-client best ads. Renders paid_leads/booked/CPL/CPBC per ad, so it IS a conversion surface (was wrongly skipped pre-2026-05-21). Keys on `meta_ad_id`. |
 | `api/ads/actions/meta.ts` | out of scope (write path, separate audit concern) | pause / resume / budget |
 | `api/ads/actions/log.ts` | out of scope (audit log write) | write audit trail |
 | `api/ads/sync-status.ts` | skipped (read-only sync state for the dashboard) | feeds the Last-sync badge + SyncNowButton polling |
@@ -326,6 +356,7 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-H5 schema drift | [drizzle/schema.ts](drizzle/schema.ts) at the cited line range |
 | ORBIT-H6 uncatalogued endpoint | the `api/ads/*.ts` file path returned by the grep |
 | ORBIT-G4-G7 latency | endpoint config in `vercel.json` (`maxDuration`), Neon pool exhaustion, or upstream Meta/GHL slowness inside the endpoint |
+| ORBIT-I `meta_ad_id` all-zero / Best Ads shows 0 | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` — ad-name → ad-id backfill dropped. Read path [api/ads/best-ads.ts:245-272](api/ads/best-ads.ts#L245) keys on `meta_ad_id` with no true-total fallback. |
 
 ---
 
@@ -343,6 +374,7 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | ORBIT-F (Per-adset drilldown) | RUN | **SKIP** (top-20 loop is too slow for Slack TTL) |
 | ORBIT-G (Sync freshness) | RUN | RUN |
 | ORBIT-H (Code-static grep) | RUN | **SKIP** (no repo checkout in cloud routine) |
+| ORBIT-I (Per-ad surface + meta_ad_id health) | RUN | RUN |
 
 **Vault is the deep audit. Slack is a smoke check.** Slack post format: one line per client with PASS / WARN / FAIL totals + the top failing check ID, plus a vault link for the full report. Slack mode never substitutes for the vault report; both run on the daily 7am schedule.
 

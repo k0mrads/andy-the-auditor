@@ -40,6 +40,12 @@ Andy is a **developer-style auditor for the Moreway Orbit app**, not a marketing
 - Catches sync drift, schema regressions, golden-rule violations in code, attribution gaps in the writer pipeline.
 - Provides root-cause hints as a developer would: failure-mode → file:line owner, with code-static greps and schema invariants.
 
+### The working-MVP clause (standing principle)
+
+Every display surface that renders a conversion metric (`paid_leads`, `paid_booked`, `CPL`, `CPBC`) is in Andy's scope **by default**, whether or not it is enumerated as a check below. The north star applies to all of them equally. Andy does not need each tab, column, or endpoint listed to be responsible for it.
+
+Concretely: if any conversion column renders all-zero / dashes on a surface where the same client shows spend **and** shows conversions on another surface (Overview, Campaigns, Adsets), that is a correctness FAIL — a working MVP shows the same truth everywhere. New conversion-bearing tabs/endpoints are presumed in-scope until explicitly justified as out-of-scope in `invariants/orbit.md`. "It's just an informational ranking" is not a valid reason to skip a surface that displays attribution; the Best Ads regression (2026-05-21, meta_ad_id never written → every ad showed 0 leads while Campaigns showed leads fine) is the canonical example of why this clause exists.
+
 ### What Andy ISN'T
 
 - Andy does NOT comment on marketing performance. Spend going up or down, CTR being high or low, creative effectiveness, campaign-strategy decisions, ROAS optimization, period-over-period business analysis are out of scope.
@@ -122,7 +128,7 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 - Positional arg ∈ `caregenius` | `builderpro` | `obb` | empty (= all enabled clients in `ads_clients_config`).
 - **`--slack <ENV_VAR_NAME>`** flag (optional). If present, switches to **Slack output mode**:
-  - Run sections ORBIT-A, B, C, D, E, **F** (per-adset drill-down via `/api/ads/drilldown/adsets`), and G. Per-adset drill-down DOES run in Slack mode now: it makes the morning Slack message a real deep audit, not just a smoke check. The per-adset call is just more API hits to Orbit, no local repo needed.
+  - Run sections ORBIT-A, B, C, D, E, **F** (per-adset drill-down via `/api/ads/drilldown/adsets`), G, and **I** (per-ad surface + `meta_ad_id` population). Per-adset drill-down DOES run in Slack mode now: it makes the morning Slack message a real deep audit, not just a smoke check. The per-adset call is just more API hits to Orbit, no local repo needed. ORBIT-I is cheap (one best-ads call + two Neon counts) so it runs in Slack mode too.
   - **Skip ORBIT-H** (code-static greps). H needs the Orbit code repo and a local grep harness; not appropriate for a cloud sandbox. H stays local-only, runs during vault mode (when you manually fire andy locally before pushing a code change).
   - **Skip vault writes.** The remote sandbox has no Obsidian access.
   - POST a structured Slack summary to the webhook URL in `process.env[<ENV_VAR_NAME>]` (e.g. `--slack ADS_AUDITS_SLACK_WEBHOOK` reads from `$ADS_AUDITS_SLACK_WEBHOOK`).
@@ -138,7 +144,7 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 ### Step 2 — Per target client
 
-For each target client, run sections ORBIT-A through ORBIT-H below. **As of Part 11 (PR #51, 2026-05-20)**, OBB joins CG B2B and BuilderPro on the GHL-backed conversion path; ORBIT-B and ORBIT-C apply to all three clients. ORBIT-D (Hyros) is **deprecated** as of Part 11 and is logged as INFO only — there is no longer anything to audit on the Hyros path because the dashboard no longer reads from it.
+For each target client, run sections ORBIT-A through ORBIT-I below. **As of Part 11 (PR #51, 2026-05-20)**, OBB joins CG B2B and BuilderPro on the GHL-backed conversion path; ORBIT-B and ORBIT-C apply to all three clients. ORBIT-D (Hyros) is **deprecated** as of Part 11 and is logged as INFO only — there is no longer anything to audit on the Hyros path because the dashboard no longer reads from it.
 
 #### ORBIT-A — Meta Graph API ↔ Neon `ads_meta_insights`
 
@@ -225,6 +231,15 @@ Read-only grep + hash comparisons against the Orbit repo. Each is INFO unless it
 - **H6 (WARN)** — Uncatalogued endpoint detection. Lists `api/ads/*.ts` files (recursive, excluding `_*.ts` helpers), compares to the `known_endpoints` list in `invariants/orbit.md`. Any uncatalogued endpoint = WARN with the file path. Forces a conscious decision to either include the new endpoint in andy's coverage or explicitly mark it skipped in invariants.
 
 These run in vault mode only (require local Orbit repo + skill checksums dir). In `--slack` mode they're skipped — the morning Slack post is a smoke check, the deep code-level audit is local.
+
+#### ORBIT-I — Per-ad attribution surfaces & `meta_ad_id` population health
+
+This section is the concrete enforcement of the working-MVP clause for the per-ad surface (the **Best ads** tab, backed by [api/ads/best-ads.ts](api/ads/best-ads.ts)). It keys conversions on `meta_ad_id`, which the writer historically never populated — so the surface silently showed 0 leads / booked / CPL / CPBC for every ad while Campaigns and Overview showed leads. Runs in **both** vault and `--slack` modes (one API call + two Neon counts; cheap, unlike the per-adset ORBIT-F loop).
+
+- **ORBIT-I1 (BLOCKER)** — Per-ad surface reconciles. Call `GET {origin}/api/ads/best-ads?date_start=…&date_end=…&min_spend=0`. For each client that has **ad-attributable** conversions in window (Neon: `COUNT(DISTINCT contact_id)` over `ads_paid_leads`/`ads_paid_bookings` with non-null `meta_ad_id` in window), the Best Ads response must contain rows for that client with `paid_leads`/`paid_booked > 0`, and `SUM(per-ad paid_leads)` must reconcile to the ad-attributed subset (DISTINCT-contact UNION semantics, same as ORBIT-B). **FAIL** if the surface returns all-zero conversions while ORBIT-B/E show the client has leads in window — that is the regression class this section exists to catch.
+- **ORBIT-I2 (BLOCKER)** — `meta_ad_id` population health. For each `(client, table)` in {`ads_paid_leads`, `ads_paid_bookings`}: if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0`, **FAIL** — the writer dropped ad-level resolution wholesale. Likely owner: [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` (the unique-ad-name → ad-id backfill). If `meta_ad_id` coverage is non-zero but materially below `meta_campaign_id` coverage, that is a **WARN**, not a FAIL — it reflects URL-tag coverage (some conversions only carry adset/campaign-level signal), not a code regression. Use the population query in `invariants/orbit.md`.
+
+> Coverage ceiling: conversions whose only signal is an adset- or campaign-name match can never tie to a single ad row, so Best Ads shows the **ad-attributable subset** by design — it is not expected to equal the client total. The durable lift path is the URL-tag rewriter at [api/ads/sync-conversions.ts:148](api/ads/sync-conversions.ts#L148) referencing `scripts/rewrite-meta-url-tags.ts`.
 
 ### Step 2.5 — Optional: `--gap-scan` mode
 
@@ -326,6 +341,7 @@ When a check fails, Andy includes a likely-owner hint in the report. The mapping
 | ORBIT-F orphan ads | structure walker in [api/ads/sync-meta-structure.ts](api/ads/sync-meta-structure.ts) — missing `parent_id`/`campaign_id` on ad rows |
 | ORBIT-G stale | [api/ads/cron-orchestrator.ts](api/ads/cron-orchestrator.ts) + cron schedule in `vercel.json` |
 | ORBIT-H1 code-static fail | the grep hit's file:line |
+| ORBIT-I `meta_ad_id` all-zero / Best Ads shows 0 | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` — ad-name → ad-id backfill dropped |
 
 ---
 
@@ -394,6 +410,7 @@ If the morning Slack message looks stale: confirm `git log -1 --format=%h` match
 
 - **Hyros retired (Part 11, 2026-05-20)** — OBB now flows through GHL like CG/BP. Hyros code (`fetchHyrosCallsCount`) and env (`HYROS_KEY_OBB`) remain in the repo as dead code pending a follow-up cleanup PR. ORBIT-D is deprecated; no Hyros checks today.
 - **OBB attribution rate** — at the time Part 11 shipped, ~62% of OBB leads/bookings carry a Meta `meta_campaign_id`. Lower than CG (~72%) and far below BP (~99%) because OBB Meta ads were explicitly skipped from the Part 3 Track 2 URL-tag rewrite when OBB was Hyros-only. Recommended follow-up: `scripts/rewrite-meta-url-tags.ts --client obb --apply` to lift the rate above ~95%.
+- **Ad-level attribution ceiling (ORBIT-I)** — `meta_ad_id` is only resolvable when a conversion's ad name (`ad_name` or `utm_content`) uniquely matches one ad in `ads_meta_structure`, or GHL delivers `adId` directly. Conversions whose only signal is an adset/campaign-name match can't tie to a single ad, so Best Ads shows the **ad-attributable subset** by design (not the client total). After the 2026-05-21 writer fix + backfill, coverage was ~100% of attributed for BuilderPro, ~64% for CG, ~83% for OBB leads. The durable lift path is the URL-tag rewriter `scripts/rewrite-meta-url-tags.ts`. ORBIT-I2 WARNs on low-but-nonzero coverage, FAILs only on wholesale zero.
 - **GHL walker timezone** — [_ghl-direct.ts:165-166](api/ads/_ghl-direct.ts#L165) builds the window as UTC (`T00:00:00Z` / `T23:59:59.999Z`), while Neon's union semantics use client-tz-aware boundaries via [_drilldown-sql.ts `clientWindow()`](api/ads/_drilldown-sql.ts#L54). A contact whose lastTouch is e.g. 23:00 EST can fall in different windows depending on path. Treat as a known low-magnitude drift class until the walker also uses `clientWindow()`.
 - **Pre-commit / post-edit hooks** — out of scope; Andy is the post-hoc audit.
 
