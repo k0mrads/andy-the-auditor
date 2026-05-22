@@ -244,6 +244,87 @@ SELECT COUNT(DISTINCT contact_id) AS agg_leads FROM (
 
 BLOCKER on any inequality. The legacy bug windowed *all* list modes on `last_paid_opt_in_at` and treated booked as `EXISTS(any booking)`, so the popover both leaked (opt-in in window, booking out) and dropped (booked in window, opt-in before) vs the count. Equivalent live check: call `GET /api/ads/contacts/list?...&booked=yes&limit=250` and compare `rows.length` to the campaign/client `paid_booked` from `/api/ads/drilldown/campaigns` for the same window.
 
+### Booked Calls surface (ORBIT-J, per client + window)
+
+Schema: `ads_all_bookings` (added 2026-05-22, migration `drizzle/ads_all_bookings.sql`) holds every appointment from every calendar in the location; columns `client_id, appointment_id, contact_id, booked_at, appointment_date, status, calendar_id, calendar_name, raw, synced_at`, PK `(client_id, appointment_id)`. PAID/OTHER is derived at read time, never stored.
+
+**J1 — PAID ⊆ ALL** (any row returned = BLOCKER; lists paid bookings missing from all-bookings):
+
+```sql
+SELECT pb.appointment_id, pb.contact_id, pb.calendar_id, pb.booked_at
+FROM ads_paid_bookings pb
+LEFT JOIN ads_all_bookings ab
+  ON ab.client_id = pb.client_id AND ab.appointment_id = pb.appointment_id
+WHERE pb.client_id = $client_id
+  AND pb.booked_at >= $window_start_iso AND pb.booked_at <= $window_end_iso
+  AND ab.appointment_id IS NULL;
+```
+
+**J2 — bucket math** (Neon side; must equal the endpoint's `counts` and satisfy all = paid + other):
+
+```sql
+SELECT
+  COUNT(*)::int                                                AS all_count,
+  COUNT(*) FILTER (WHERE pb.appointment_id IS NOT NULL)::int    AS paid_count,
+  COUNT(*) FILTER (WHERE pb.appointment_id IS NULL)::int        AS other_count
+FROM ads_all_bookings ab
+LEFT JOIN ads_paid_bookings pb
+  ON pb.client_id = ab.client_id AND pb.appointment_id = ab.appointment_id
+WHERE ab.client_id = $client_id
+  AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso;
+```
+
+**J3 — PAID deduped by contact == `/api/ads/overview` `paid_booked_calls`** (the ORBIT-C/E2 number):
+
+```sql
+SELECT COUNT(DISTINCT ab.contact_id)::int AS paid_distinct_contacts
+FROM ads_all_bookings ab
+JOIN ads_paid_bookings pb
+  ON pb.client_id = ab.client_id AND pb.appointment_id = ab.appointment_id
+WHERE ab.client_id = $client_id
+  AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso;
+```
+
+**J4 — OTHER-bucket paid-signal triage** (WARN; the morning "look through these" queue). Up to 15/client in vault mode, count-only in Slack:
+
+```sql
+SELECT ab.appointment_id, ab.contact_id, ab.calendar_name, ab.booked_at,
+       g.first_utm_source, g.last_utm_source, g.last_fbclid
+FROM ads_all_bookings ab
+LEFT JOIN ads_paid_bookings pb
+  ON pb.client_id = ab.client_id AND pb.appointment_id = ab.appointment_id
+LEFT JOIN ads_ghl_contacts g
+  ON g.client_id = ab.client_id AND g.contact_id = ab.contact_id
+WHERE ab.client_id = $client_id
+  AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso
+  AND pb.appointment_id IS NULL                              -- OTHER bucket
+  AND (
+    LOWER(COALESCE(g.last_utm_source,''))  IN ('facebook','instagram','fb','ig','meta')
+    OR LOWER(COALESCE(g.first_utm_source,'')) IN ('facebook','instagram','fb','ig','meta')
+    OR g.last_fbclid IS NOT NULL
+  )
+ORDER BY ab.booked_at DESC
+LIMIT 15;
+```
+
+GHL deep link for each: `https://app.gohighlevel.com/v2/location/{ghl_location_id}/contacts/detail/{contact_id}` (`ghl_location_id` from `ads_clients_config`). Helper in code: `buildGhlContactUrl()` in `src/lib/ads-clients.ts`.
+
+**J5 — unreviewed backlog** (INFO):
+
+```sql
+SELECT
+  COUNT(*)::int AS all_unreviewed,
+  COUNT(*) FILTER (WHERE pb.appointment_id IS NULL)::int AS other_unreviewed
+FROM ads_all_bookings ab
+LEFT JOIN ads_paid_bookings pb
+  ON pb.client_id = ab.client_id AND pb.appointment_id = ab.appointment_id
+LEFT JOIN ads_ghl_contacts g
+  ON g.client_id = ab.client_id AND g.contact_id = ab.contact_id
+WHERE ab.client_id = $client_id
+  AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso
+  AND (g.review_status IS NULL);
+```
+
 ### Opt-in dated by event, not sync clock (ORBIT-B5, per client)
 
 A `now()`-stamped re-opt-in is detectable by `last_paid_opt_in_at ≈ synced_at`. For each such row, the stored `raw` must carry a real event timestamp on the SAME calendar day (client tz). The fbc click time is `raw.lastAttributionSource.fbc` parsed as `fb.<v>.<ms>.<fbclid>` (the `<ms>` is epoch-ms); fallback is `raw.dateUpdated`.
@@ -300,6 +381,7 @@ GET {origin}/api/ads/drilldown/adsets?client_id=...&campaign_id=...&date_start=.
 GET {origin}/api/ads/drilldown/ad?client_id=...&adset_id=...&date_start=...&date_end=...
 GET {origin}/api/ads/best-ads?date_start=...&date_end=...&min_spend=0   # ORBIT-I1
 GET {origin}/api/ads/contacts/list?client_id=...&date_start=...&date_end=...&booked=yes&limit=250   # ORBIT-I3 (rows.length == paid_booked)
+GET {origin}/api/ads/bookings/list?client_id=...&date_start=...&date_end=...&bucket=all             # ORBIT-J2 (counts.all == counts.paid + counts.other)
 ```
 
 Compare each response field by field to Andy's independent Neon + Meta + GHL computation. Any divergence is a finding.
@@ -349,8 +431,15 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-I1 | BLOCKER | Per-ad surface | Best Ads (`/api/ads/best-ads`) shows non-zero conversions when the client has ad-attributable conversions in window; SUM(per-ad paid_leads) reconciles to the `meta_ad_id`-attributed subset |
 | ORBIT-I2 | BLOCKER/WARN | Attribution writer | `meta_ad_id` population health: BLOCKER if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0` per (client, table); WARN if non-zero but materially below campaign coverage |
 | ORBIT-I3 | BLOCKER | Drill-in lists | `contacts/list.ts` cohort reconciles with `paidConversionsByObject`: `booked=yes` count == aggregate `paid_booked`; `booked=any` count == aggregate `paid_leads`, per client + window |
+| ORBIT-J1 | BLOCKER | Booked Calls surface | PAID ⊆ ALL: every `ads_paid_bookings` row (booked_at in window) exists in `ads_all_bookings`. Missing = `listCalendars()` skipped a paid calendar |
+| ORBIT-J2 | BLOCKER | Booked Calls surface | Bucket math: `/api/ads/bookings/list?bucket=all` `counts.all == counts.paid + counts.other`, and counts match independent Neon derivation exactly |
+| ORBIT-J3 | BLOCKER | Booked Calls surface | PAID bucket deduped by contact == `/api/ads/overview` `paid_booked_calls` (per-appointment `counts.paid` may exceed it for re-bookers, by design) |
+| ORBIT-J4 | WARN | Booked Calls triage | OTHER-bucket bookings carrying an ad signal (first OR last touch) — the morning "look through these" review queue. Vault: list ≤15/client w/ GHL link; Slack: count only |
+| ORBIT-J5 | INFO | Booked Calls triage | Unreviewed booked-call backlog: in-window bookings with `review_status IS NULL`, split ALL vs OTHER |
 
-As of Part 11 (2026-05-20), Sections B and C apply to **all three clients** (CG B2B, BuilderPro, OBB). ORBIT-D is fully **DEPRECATED** — there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
+As of Part 11 (2026-05-20), Sections B and C apply to **all three clients** (CG B2B, BuilderPro, OBB).
+
+ORBIT-J (added 2026-05-22) audits the Booked Calls (ALL / PAID / OTHER) tab + `ads_all_bookings` table + `/api/ads/bookings/list`. J1–J3 enforce correctness (PAID ⊆ ALL, bucket sum, KPI reconciliation) and run in both modes. J4–J5 are the deep morning triage queue Zander asked Andy to "look through" — OTHER-bucket calls that carry a paid signal but missed the confident set, plus the unreviewed backlog. Freshness is covered by ORBIT-G1 (the all-bookings sync runs inside `sync-conversions.ts`, source `ghl_conversions`). ORBIT-D is fully **DEPRECATED** — there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
 
 ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the conversion surfaces downstream of the headline counts: the per-ad Best Ads tab (I1), the `meta_ad_id` writer health (I2), and the drill-in popovers/Contacts list (I3, added later on 2026-05-21 after the Booked-popover count-vs-list bug). It runs in **both** vault and `--slack` modes (a best-ads call + a handful of Neon counts; cheap, unlike per-adset ORBIT-F).
 
@@ -377,7 +466,8 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/contacts/list.ts` | ORBIT-I3 | backs the Leads / Booked popovers + Contacts tab. Renders the cohort behind every clickable count, so it IS a conversion surface — its list MUST reconcile with `paidConversionsByObject` (was wrongly skipped as a "convenience listing" pre-2026-05-21, which masked the Booked count-vs-popover bug). |
 | `api/ads/contacts/all.ts` | ORBIT-I3 | full-contacts view; renders attribution per contact, so it IS a conversion surface — its cohort MUST reconcile with `paidConversionsByObject` for the same window/client like `contacts/list.ts` (cataloged 2026-05-21, H6). |
 | `api/ads/contacts/[id].ts` | skipped (read-only convenience detail) | single contact |
-| `api/ads/contacts/review.ts` | skipped (reviewer-state writer, no conversion attribution) | marks contacts reviewed/needs-review |
+| `api/ads/contacts/review.ts` | skipped (reviewer-state writer, no conversion attribution) | marks contacts reviewed/needs-review. NOTE: also the write path behind the Booked Calls review toggle (J4/J5 surface review state but don't write it). |
+| `api/ads/bookings/list.ts` | ORBIT-J | Booked Calls (ALL/PAID/OTHER) tab. Reads `ads_all_bookings` joined to `ads_paid_bookings` + `ads_ghl_contacts`. PAID bucket IS a conversion surface (must reconcile with `paid_booked_calls`); ALL/OTHER are the triage queue. Cataloged 2026-05-22. |
 | `api/ads/best-ads.ts` | ORBIT-I | cross-client best ads. Renders paid_leads/booked/CPL/CPBC per ad, so it IS a conversion surface (was wrongly skipped pre-2026-05-21). Keys on `meta_ad_id`. |
 | `api/ads/drilldown/adsets-all.ts` | ORBIT-F | cross-campaign per-adset breakdown; per-adset leads/booked MUST reconcile with `paidConversionsByObject` the same way `drilldown/adsets.ts` does (cataloged 2026-05-21, H6). |
 | `api/ads/drilldown/paused-ads-history.ts` | skipped (read-only historical status display, no conversion attribution) | paused-ad timeline |
@@ -424,6 +514,9 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-G4-G7 latency | endpoint config in `vercel.json` (`maxDuration`), Neon pool exhaustion, or upstream Meta/GHL slowness inside the endpoint |
 | ORBIT-I `meta_ad_id` all-zero / Best Ads shows 0 | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` — ad-name → ad-id backfill dropped. Read path [api/ads/best-ads.ts:245-272](api/ads/best-ads.ts#L245) keys on `meta_ad_id` with no true-total fallback. |
 | ORBIT-I3 popover/list count ≠ the number it expands | [api/ads/contacts/list.ts](api/ads/contacts/list.ts) cohort SQL diverged from `paidConversionsByObject` ([api/ads/_drilldown-sql.ts](api/ads/_drilldown-sql.ts)): leads window on `last_paid_opt_in_at`, bookings MUST window on `booked_at`; "booked" cohort is bookers-in-window, not EXISTS-any-booking. |
+| ORBIT-J1 paid booking missing from `ads_all_bookings` | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `listCalendars()` / `syncOneClientAllBookings` — all-calendars walk didn't return the paid calendar (wrong `Version` header, archived calendar, or calendars-API outage → `calendars.size === 0` warn). |
+| ORBIT-J2 bucket counts wrong / don't sum | [api/ads/bookings/list.ts](api/ads/bookings/list.ts) — `pb.appointment_id IS NULL/NOT NULL` bucket join or the `COUNT(*) FILTER` counts query drifted. |
+| ORBIT-J3 PAID distinct-contact ≠ paid_booked KPI | [api/ads/bookings/list.ts](api/ads/bookings/list.ts) join to `ads_paid_bookings`; if `ads_paid_bookings` itself is off, fix ORBIT-C first. |
 
 ---
 
@@ -442,6 +535,7 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | ORBIT-G (Sync freshness) | RUN | RUN |
 | ORBIT-H (Code-static grep) | RUN | **SKIP** (no repo checkout in cloud routine) |
 | ORBIT-I (Per-ad surface + meta_ad_id health + I3 drill-in reconciliation) | RUN | RUN |
+| ORBIT-J (Booked Calls bucket integrity + triage queue) | RUN (J1–J5, full triage lists) | RUN J1–J3 + J4/J5 counts only (lists deferred to vault) |
 
 **Vault is the deep audit. Slack is a smoke check.** Slack post format: one line per client with PASS / WARN / FAIL totals + the top failing check ID, plus a vault link for the full report. Slack mode never substitutes for the vault report; both run on the daily 7am schedule.
 
