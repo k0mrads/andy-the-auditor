@@ -91,7 +91,7 @@ The test: if the sentence would fit in a marketing-performance Slack channel, it
 Andy auto-loads:
 
 - `~/.claude/skills/andy-the-auditor/invariants/orbit.md` - single canonical config (replaces the three sister-app invariants files).
-- `~/Claude Code/Moreway/Moreway | Tasks/.env` - Orbit's local env: `DATABASE_URL`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB`, `GHL_KEY_CAREGENIUS`, `GHL_KEY_BUILDERPRO`, `GHL_KEY_OBB` (all three clients on GHL as of Part 11), `AUDIT_TOKEN`. `HYROS_KEY_OBB` is unused since Part 11 (kept as dead env for cleanup follow-up).
+- `~/Claude Code/Moreway/Moreway | Tasks/.env` - Orbit's local env: `DATABASE_URL`, `AUDIT_TOKEN`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB` (plus the contractor-launch / painting / queen Meta secrets named in `ads_clients_config.meta_secret_name`), `GHL_KEY_CAREGENIUS`, `GHL_KEY_BUILDERPRO`, `GHL_KEY_OBB` + the contractor-launch GHL key (4 GHL clients). `HYROS_KEY_OBB` is unused since Part 11 (kept as dead env for cleanup follow-up). NOTE (F10): the 2026-06-09 `.env` rewrite silently stripped 5 of these keys and Andy bootstrap-halted while reporting green; the morning runner now flips a no-report run to exit 4.
 - `ads_clients_config` table in Neon - per-client config read at run time so Andy never goes stale on currency / timezone / calendar IDs.
 
 If any required env var is missing, Andy halts with a bootstrap message rather than emitting a misleading green report.
