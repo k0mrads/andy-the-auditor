@@ -364,11 +364,10 @@ LEFT JOIN ads_paid_bookings pb
         AND pb.click_at >= pb.booked_at - interval '28 days'
         AND pb.click_at <= pb.booked_at + interval '1 day')
        OR COALESCE(pb.raw->>'_manual_override', '') = 'true')
+LEFT JOIN ads_ghl_contacts g
+  ON g.client_id = ab.client_id AND g.contact_id = ab.contact_id
 WHERE ab.client_id = $client_id
   AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso;
--- excluded join: LEFT JOIN ads_ghl_contacts g
---   ON g.client_id = ab.client_id AND g.contact_id = ab.contact_id
--- (include it in the FROM block; shown separately here for readability)
 ```
 
 The endpoint's `counts.counted` (5th field) = the counted CTE windowed on `booked_at` (`WITH counted_bookings AS (...CTE above...) SELECT COUNT(*) WHERE booked_at in window`); assert `counted <= paid_count` and `counted == overview KPI` (that part is J3). The pb-join click-gate SQL above mirrors `recentPaidClickClauseSql()` in `api/ads/_drilldown-sql.ts` with `PAID_CLICK_LOOKBACK_DAYS = 28`; if that constant or clause changes on origin/main, re-derive THIS block from the deployed file rather than editing the numbers in place.
