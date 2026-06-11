@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generated_at": "2026-06-11T00:00:31Z",
+  "generated_at": "2026-06-11T19:49:41Z",
   "source": "drizzle/schema.ts",
-  "source_ref": "origin/main@00fc678",
+  "source_ref": "origin/main@f096d5e",
   "tables": {
     "ads_clients_config": {
       "line_start": 198,
@@ -29,20 +29,20 @@
       "columns": "clientId,errorMessage,finishedAt,id,ok,rowsSynced,source,startedAt"
     },
     "ads_paid_leads": {
-      "line_start": 673,
-      "line_end": 715,
+      "line_start": 684,
+      "line_end": 726,
       "hash": "sha256:7e5f243138c68e48fd8c43b3d560d41bed4c29282aba6197b44937a5f4bb9d52",
       "columns": "adName,campaignName,clientId,contactId,fbclid,lastPaidOptInAt,metaAdId,metaAdsetId,metaCampaignId,raw,syncedAt,utmCampaign,utmContent,utmMedium,utmSignature,utmSource"
     },
     "ads_paid_bookings": {
-      "line_start": 720,
-      "line_end": 770,
+      "line_start": 731,
+      "line_end": 781,
       "hash": "sha256:adddb698f4d6ef2dee655030afede5ce268ad7fc7e47310aa5fafe9d5a988d67",
       "columns": "adName,appointmentDate,appointmentId,bookedAt,calendarId,campaignName,clickAt,clientId,contactId,countsAsSeparate,metaAdId,metaAdsetId,metaCampaignId,raw,status,syncedAt"
     },
     "ads_command_center_audit": {
-      "line_start": 808,
-      "line_end": 829,
+      "line_start": 819,
+      "line_end": 840,
       "hash": "sha256:00d253d00ee9bf295e17e84c213891e4da1b8a5d3e4e5ec438dda7a011908e21",
       "columns": "action,clientId,errorMessage,id,metaResponse,objectId,objectType,payloadAfter,payloadBefore,ranAt,status,userIdentity"
     },
@@ -53,20 +53,20 @@
       "columns": "clientId,contactId,dateAdded,dateUpdated,email,excludedAt,excludedBy,excludedFromMetrics,excludedReason,firstAttributionAt,firstUtmCampaign,firstUtmContent,firstUtmSource,fullName,isPaidLastTouch,lastAttributionAt,lastFbclid,lastUtmCampaign,lastUtmContent,lastUtmMedium,lastUtmSource,lastUtmTerm,phone,raw,reviewStatus,reviewedAt,reviewedBy,reviewerNote,syncedAt"
     },
     "ads_all_bookings": {
-      "line_start": 780,
-      "line_end": 799,
+      "line_start": 791,
+      "line_end": 810,
       "hash": "sha256:244b9ebdd7be72023ced4c331c427a647681c36178415db8665f92b762d6de2d",
       "columns": "appointmentDate,appointmentId,bookedAt,calendarId,calendarName,clientId,contactId,raw,status,syncedAt"
     },
     "fmt_catalog": {
-      "line_start": 1286,
-      "line_end": 1303,
+      "line_start": 1297,
+      "line_end": 1314,
       "hash": "sha256:6a89d1ea5950fdf8e97572f423422b43eece783c325090f5284647d8d994e1e2",
       "columns": "anchor,aspectRatios,brandInjection,displayName,effortTier,formatId,formatType,funnelStageBias,meta,name,origin,provenForClients,specFile,syncedAt,vertical,visualSignature"
     },
     "fmt_usage": {
-      "line_start": 1308,
-      "line_end": 1331,
+      "line_start": 1319,
+      "line_end": 1342,
       "hash": "sha256:f4f325f7de9010824cc41b2b16e45a7993f23db224c99c2c836575772d7f188a",
       "columns": "adId,batchId,clientId,createdAt,formatId,formatType,funnelStage,meta,ratio,slotId,source,uploadedAt"
     }

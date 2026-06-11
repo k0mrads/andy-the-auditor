@@ -343,19 +343,35 @@ WHERE cb.booked_at >= $window_start_iso AND cb.booked_at <= $window_end_iso
   AND ab.appointment_id IS NULL;
 ```
 
-**J2 - bucket math** (Neon side; must equal the endpoint's `counts` and satisfy all = paid + other). The endpoint's PAID bucket join is on `ads_paid_bookings` membership; replicate exactly what `bookings/list.ts` computes:
+**J2 - bucket math** (Neon side; must equal the endpoint's `counts` and satisfy **all = paid + other + excluded** exactly, per-appointment). Re-derived 2026-06-11 from deployed `bookings/list.ts` (origin/main): the endpoint now has FOUR buckets plus a `counted` field. The PAID join carries `recentPaidClickClause('pb')` (28-day click gate + manual override), and excluded contacts (`ads_ghl_contacts.excluded_from_metrics`) move OUT of paid/other into their own bucket so the PAID count matches the Overview KPI layer-for-layer:
 
 ```sql
 SELECT
-  COUNT(*)::int                                                AS all_count,
-  COUNT(*) FILTER (WHERE pb.appointment_id IS NOT NULL)::int    AS paid_count,
-  COUNT(*) FILTER (WHERE pb.appointment_id IS NULL)::int        AS other_count
+  COUNT(*)::int AS all_count,
+  COUNT(*) FILTER (
+    WHERE pb.appointment_id IS NOT NULL
+      AND COALESCE(g.excluded_from_metrics, false) = false
+  )::int AS paid_count,
+  COUNT(*) FILTER (
+    WHERE pb.appointment_id IS NULL
+      AND COALESCE(g.excluded_from_metrics, false) = false
+  )::int AS other_count,
+  COUNT(*) FILTER (WHERE COALESCE(g.excluded_from_metrics, false) = true)::int AS excluded_count
 FROM ads_all_bookings ab
 LEFT JOIN ads_paid_bookings pb
   ON pb.client_id = ab.client_id AND pb.appointment_id = ab.appointment_id
+  AND ((pb.click_at IS NOT NULL
+        AND pb.click_at >= pb.booked_at - interval '28 days'
+        AND pb.click_at <= pb.booked_at + interval '1 day')
+       OR COALESCE(pb.raw->>'_manual_override', '') = 'true')
 WHERE ab.client_id = $client_id
   AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso;
+-- excluded join: LEFT JOIN ads_ghl_contacts g
+--   ON g.client_id = ab.client_id AND g.contact_id = ab.contact_id
+-- (include it in the FROM block; shown separately here for readability)
 ```
+
+The endpoint's `counts.counted` (5th field) = the counted CTE windowed on `booked_at` (`WITH counted_bookings AS (...CTE above...) SELECT COUNT(*) WHERE booked_at in window`); assert `counted <= paid_count` and `counted == overview KPI` (that part is J3). The pb-join click-gate SQL above mirrors `recentPaidClickClauseSql()` in `api/ads/_drilldown-sql.ts` with `PAID_CLICK_LOOKBACK_DAYS = 28`; if that constant or clause changes on origin/main, re-derive THIS block from the deployed file rather than editing the numbers in place.
 
 **J3 - PAID bucket reconciles with `/api/ads/overview` `paid_booked_calls`** (the ORBIT-C/E2 number). The KPI is COUNTED bookings in window, so the reconciling Neon form is the counted CTE joined into all-bookings - NOT a distinct-contact count over the raw join:
 

@@ -103,7 +103,7 @@ ANCHORS=(
   "overview-aggregation|api/ads/overview.ts|let spend = 0;|until@cpbc: anyCallsKnown@1|invariants/orbit.md#orbit-e4|cross-client SUM aggregation"
   "fetchGhlCountsFromNeon-union|api/ads/_sources.ts|async function fetchGhlCountsFromNeon(|brace|invariants/orbit.md#paid-attribution-rule|counted UNION for paid_leads + counted bookings count (overview KPI, all clients)"
   "requireSession-audit-bypass|api/_db.ts|const auditToken = process.env.AUDIT_TOKEN|until@expiresAt: new Date@2|invariants/orbit.md#account-credentials|AUDIT_TOKEN bearer bypass"
-  "audit-endpoint-conversion-shortcut|api/ads/audit.ts|// Ground-truth side:|until@paid_booked_calls_check.ground_truth = @0|invariants/orbit.md#orbit-b-coverage|ground_truth=dashboard caveat"
+  "audit-endpoint-conversion-shortcut|api/ads/audit.ts|'dashboard_self_reference' = ground_truth is the dashboard's OWN number|until@ground_truth_source: 'dashboard_self_reference'@0|invariants/orbit.md#orbit-b-coverage|ground_truth=dashboard_self_reference caveat (restructured 2026-06-10, F24)"
 )
 
 resolve_range() {

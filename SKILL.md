@@ -125,6 +125,10 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 ## Execution flow
 
+### Step 0 - Audit-first: check prior findings before deriving anything
+
+Before deep-diving any discrepancy (user-reported or self-found), check whether it is already a known finding: `~/Claude Code/_audits/` (latest REPORT.md + FIX-BACKLOG.md STATUS section) and the newest vault reports under `20-Clients/*/attribution-audits/` + `_Moreway-Agency/ecosystem-audits/`. If a finding ID covers it, cite the ID and its fix status instead of re-deriving the analysis. (2026-06-10 precedent: Stuart Kaye + KPI-vs-popover were both already specced as F01/F02 the same day.)
+
 ### Step 1 - Parse arguments, flags, and compute window
 
 - Positional arg ∈ any enabled `client_id` in `ads_clients_config` (`caregenius` accepted as alias for `caregenius-b2b`) | empty (= all enabled clients, 7 as of 2026-06-10).

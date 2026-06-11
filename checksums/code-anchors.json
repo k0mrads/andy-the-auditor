@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "generated_at": "2026-06-11T00:00:31Z",
-  "source_ref": "origin/main@00fc678",
+  "generated_at": "2026-06-11T19:49:41Z",
+  "source_ref": "origin/main@f096d5e",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
       "file": "api/ads/_ghl-direct.ts",
-      "line_start": 168,
-      "line_end": 170,
+      "line_start": 165,
+      "line_end": 167,
       "start_pattern": "export function isLastTouchPaid(",
       "end_spec": "brace",
       "hash": "sha256:159b6b6bc4797fb61f6342f022327791a63697b84465f1f79bc4f25a877a9514",
@@ -17,8 +17,8 @@
     {
       "id": "touchIsPaidMeta-per-touch",
       "file": "api/ads/_ghl-direct.ts",
-      "line_start": 149,
-      "line_end": 152,
+      "line_start": 146,
+      "line_end": 149,
       "start_pattern": "export function touchIsPaidMeta(",
       "end_spec": "brace",
       "hash": "sha256:c39a54a17c5ba572f6ee121fa2d65ecf2102ee4a085476fd07284039262397bf",
@@ -28,8 +28,8 @@
     {
       "id": "countedPaidBookings-cte",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 118,
-      "line_end": 133,
+      "line_start": 152,
+      "line_end": 167,
       "start_pattern": "export function countedPaidBookings(",
       "end_spec": "brace",
       "hash": "sha256:70c6b55dd7033d3321e62dfa67661c6e8931a197ec47f6933133c9e3688065c5",
@@ -39,8 +39,8 @@
     {
       "id": "paidConversionsByObject-union",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 223,
-      "line_end": 267,
+      "line_start": 257,
+      "line_end": 301,
       "start_pattern": "export function paidConversionsByObject(",
       "end_spec": "brace",
       "hash": "sha256:e89e13db8413a875c8d799c9541481e5ac5c5560bda570d369c97deb7bb13a48",
@@ -50,8 +50,8 @@
     {
       "id": "clientWindow-tz-builder",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 160,
-      "line_end": 167,
+      "line_start": 194,
+      "line_end": 201,
       "start_pattern": "export function clientWindow(",
       "end_spec": "brace",
       "hash": "sha256:bfadb9fa488e6c62debc28838ca42071cf07628cf18df2a61d422f7f4efe7e89",
@@ -83,8 +83,8 @@
     {
       "id": "fetchGhlCountsFromNeon-union",
       "file": "api/ads/_sources.ts",
-      "line_start": 55,
-      "line_end": 115,
+      "line_start": 34,
+      "line_end": 94,
       "start_pattern": "async function fetchGhlCountsFromNeon(",
       "end_spec": "brace",
       "hash": "sha256:277aec4d3491e30b6b4c2039835867bbf8b02e60795eaf7c421ec4204ff7f5d7",
@@ -94,24 +94,24 @@
     {
       "id": "requireSession-audit-bypass",
       "file": "api/_db.ts",
-      "line_start": 120,
-      "line_end": 130,
+      "line_start": 150,
+      "line_end": 160,
       "start_pattern": "const auditToken = process.env.AUDIT_TOKEN",
       "end_spec": "until@expiresAt: new Date@2",
-      "hash": "sha256:1b858036c48e43f4d183a92541c5a9f59b0baac36f96472abda722f0c81b706e",
+      "hash": "sha256:cea83287ad1a8321ed69f6a6ed5bb5917a8a2d194f45d3e00ffd2b7ccae4a456",
       "invariants_ref": "invariants/orbit.md#account-credentials",
       "purpose": "AUDIT_TOKEN bearer bypass"
     },
     {
       "id": "audit-endpoint-conversion-shortcut",
       "file": "api/ads/audit.ts",
-      "line_start": 243,
-      "line_end": 259,
-      "start_pattern": "// Ground-truth side:",
-      "end_spec": "until@paid_booked_calls_check.ground_truth = @0",
-      "hash": "sha256:f8c594758804367c630fe5f74a000d48aee0b4464cabea2059a9a93295084a22",
+      "line_start": 56,
+      "line_end": 62,
+      "start_pattern": "'dashboard_self_reference' = ground_truth is the dashboard's OWN number",
+      "end_spec": "until@ground_truth_source: 'dashboard_self_reference'@0",
+      "hash": "sha256:b5e57e10284733b159095982910b0605cab475bf32b39346948277d11cdb02ee",
       "invariants_ref": "invariants/orbit.md#orbit-b-coverage",
-      "purpose": "ground_truth=dashboard caveat"
+      "purpose": "ground_truth=dashboard_self_reference caveat (restructured 2026-06-10, F24)"
     }
   ]
 }
