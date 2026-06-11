@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generated_at": "2026-06-11T19:49:41Z",
+  "generated_at": "2026-06-11T22:42:33Z",
   "source": "drizzle/schema.ts",
-  "source_ref": "origin/main@f096d5e",
+  "source_ref": "origin/main@13cfe9b",
   "tables": {
     "ads_clients_config": {
       "line_start": 198,
