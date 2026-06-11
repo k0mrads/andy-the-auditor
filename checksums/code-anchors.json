@@ -1,39 +1,70 @@
 {
-  "version": 1,
-  "generated_at": "2026-05-20T16:38:26Z",
+  "version": 2,
+  "generated_at": "2026-06-11T00:00:31Z",
+  "source_ref": "origin/main@00fc678",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
       "file": "api/ads/_ghl-direct.ts",
-      "line_start": 69,
-      "line_end": 75,
-      "hash": "sha256:8cf1fbd741138070ddfbbff1b70ae7e6d666d8e27529ecea05f0528587dffe37",
+      "line_start": 168,
+      "line_end": 170,
+      "start_pattern": "export function isLastTouchPaid(",
+      "end_spec": "brace",
+      "hash": "sha256:159b6b6bc4797fb61f6342f022327791a63697b84465f1f79bc4f25a877a9514",
       "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
-      "purpose": "canonical isLastTouchPaid paid predicate"
+      "purpose": "canonical isLastTouchPaid paid predicate (first-or-last touchIsPaidMeta)"
+    },
+    {
+      "id": "touchIsPaidMeta-per-touch",
+      "file": "api/ads/_ghl-direct.ts",
+      "line_start": 149,
+      "line_end": 152,
+      "start_pattern": "export function touchIsPaidMeta(",
+      "end_spec": "brace",
+      "hash": "sha256:c39a54a17c5ba572f6ee121fa2d65ecf2102ee4a085476fd07284039262397bf",
+      "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
+      "purpose": "per-touch paid signal set (paid-social session / Meta entity id / paid medium; bare fbclid NOT sufficient)"
+    },
+    {
+      "id": "countedPaidBookings-cte",
+      "file": "api/ads/_drilldown-sql.ts",
+      "line_start": 118,
+      "line_end": 133,
+      "start_pattern": "export function countedPaidBookings(",
+      "end_spec": "brace",
+      "hash": "sha256:70c6b55dd7033d3321e62dfa67661c6e8931a197ec47f6933133c9e3688065c5",
+      "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
+      "purpose": "counted-bookings CTE (28d click gate + exclusions + primary anchor + counts_as_separate)"
     },
     {
       "id": "paidConversionsByObject-union",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 98,
-      "line_end": 156,
-      "hash": "sha256:4879d3ffefe4c4893ed75c7e163ed8dfe148b04e3d6db9deb647d2675abd5cb6",
+      "line_start": 223,
+      "line_end": 267,
+      "start_pattern": "export function paidConversionsByObject(",
+      "end_spec": "brace",
+      "hash": "sha256:e89e13db8413a875c8d799c9541481e5ac5c5560bda570d369c97deb7bb13a48",
       "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
-      "purpose": "UNION semantics for paid_leads"
+      "purpose": "counted UNION semantics for paid_leads/paid_booked per meta object"
     },
     {
       "id": "clientWindow-tz-builder",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 54,
-      "line_end": 60,
-      "hash": "sha256:b476db6eea5ea013831761948f138a3222a68177b6d09fd90d4130a4cff9224f",
+      "line_start": 160,
+      "line_end": 167,
+      "start_pattern": "export function clientWindow(",
+      "end_spec": "brace",
+      "hash": "sha256:bfadb9fa488e6c62debc28838ca42071cf07628cf18df2a61d422f7f4efe7e89",
       "invariants_ref": "invariants/orbit.md#window",
       "purpose": "DST-aware tz window builder"
     },
     {
       "id": "cpl-cpbc-formulas",
       "file": "api/ads/overview.ts",
-      "line_start": 208,
-      "line_end": 209,
+      "line_start": 220,
+      "line_end": 221,
+      "start_pattern": "c.cpl = counts.paidLeads",
+      "end_spec": "+1",
       "hash": "sha256:4b9aa062b7b7ba0980cb43cfb6bb334c4aa93b8fa608210efdc51be48ed782fa",
       "invariants_ref": "invariants/orbit.md#orbit-e3",
       "purpose": "CPL and CPBC formulas"
@@ -41,8 +72,10 @@
     {
       "id": "overview-aggregation",
       "file": "api/ads/overview.ts",
-      "line_start": 212,
-      "line_end": 233,
+      "line_start": 224,
+      "line_end": 245,
+      "start_pattern": "let spend = 0;",
+      "end_spec": "until@cpbc: anyCallsKnown@1",
       "hash": "sha256:cd3493590b241f9907d597faa441f7d1bded06a22e66db5fa68cd1f9de6a4fc2",
       "invariants_ref": "invariants/orbit.md#orbit-e4",
       "purpose": "cross-client SUM aggregation"
@@ -50,27 +83,33 @@
     {
       "id": "fetchGhlCountsFromNeon-union",
       "file": "api/ads/_sources.ts",
-      "line_start": 54,
-      "line_end": 106,
-      "hash": "sha256:05effc890042e4d2e7c18514d047a43b8641be24d3ff0cc4d884572f149d0676",
+      "line_start": 55,
+      "line_end": 115,
+      "start_pattern": "async function fetchGhlCountsFromNeon(",
+      "end_spec": "brace",
+      "hash": "sha256:277aec4d3491e30b6b4c2039835867bbf8b02e60795eaf7c421ec4204ff7f5d7",
       "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
-      "purpose": "GHL UNION semantics for paid_leads (all 3 clients post-Part-11)"
+      "purpose": "counted UNION for paid_leads + counted bookings count (overview KPI, all clients)"
     },
     {
       "id": "requireSession-audit-bypass",
       "file": "api/_db.ts",
-      "line_start": 76,
-      "line_end": 86,
-      "hash": "sha256:2f5007c58a360e55b6c799cbcc17dc6de1a10be6ea7ded01c7e67a445fb49ce6",
+      "line_start": 120,
+      "line_end": 130,
+      "start_pattern": "const auditToken = process.env.AUDIT_TOKEN",
+      "end_spec": "until@expiresAt: new Date@2",
+      "hash": "sha256:1b858036c48e43f4d183a92541c5a9f59b0baac36f96472abda722f0c81b706e",
       "invariants_ref": "invariants/orbit.md#account-credentials",
       "purpose": "AUDIT_TOKEN bearer bypass"
     },
     {
       "id": "audit-endpoint-conversion-shortcut",
       "file": "api/ads/audit.ts",
-      "line_start": 240,
-      "line_end": 258,
-      "hash": "sha256:4356639ef5bb465a8697a5163ad376394dd6cec47a36844ee7897724b9be4d74",
+      "line_start": 243,
+      "line_end": 259,
+      "start_pattern": "// Ground-truth side:",
+      "end_spec": "until@paid_booked_calls_check.ground_truth = @0",
+      "hash": "sha256:f8c594758804367c630fe5f74a000d48aee0b4464cabea2059a9a93295084a22",
       "invariants_ref": "invariants/orbit.md#orbit-b-coverage",
       "purpose": "ground_truth=dashboard caveat"
     }

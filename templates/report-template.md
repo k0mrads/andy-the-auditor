@@ -45,7 +45,7 @@ Skill version: {{git_sha_or_version}}
 {{else if warn_count > 0}}
 {{summary}} ⚠️ **Investigate.** No blockers, but warnings present.
 {{else}}
-{{summary}} ✅ **All green.** Orbit math reconciles with Meta, GHL, and Hyros ground truth.
+{{summary}} ✅ **All green.** Orbit math reconciles with Meta + upstream conversion truth (GHL walk / leadform / Calendly payloads) on counted semantics.
 {{end}}
 
 ---
@@ -122,12 +122,14 @@ Note: most-recent day tolerance loosens to ±10% (Meta still aggregating).
 {{if has_ghl}}
 ## ORBIT-B: GHL (live walk) vs Neon `ads_paid_leads`
 
-Union semantics: `paid_leads = COUNT(DISTINCT contact_id) of (opt-iners with last_paid_opt_in_at in window) UNION (bookers with booked_at in window)`. Bookers whose original opt-in landed before the window still count as a lead.
+Counted union semantics: `paid_leads = COUNT(DISTINCT contact_id) of (non-excluded opt-iners with last_paid_opt_in_at in window) UNION (COUNTED bookings with booked_at in window)`. COUNTED = 28-day click gate (or `_manual_override`) + excluded-contacts antijoin + one primary booking per contact (all-time MIN(booked_at)) + `counts_as_separate` overrides. Bookers whose original opt-in landed before the window still count as a lead.
 
 | Metric | Ground truth (GHL walk) | Neon | App | Delta | Status |
 |---|---|---|---|---|---|
-| Paid leads in window (union) | {{truth_paid_leads}} | {{neon_paid_leads}} | {{app_paid_leads}} | {{delta_b1}} | {{status_b1}} |
+| Paid leads in window (counted union) | {{truth_paid_leads}} | {{neon_paid_leads}} | {{app_paid_leads}} | {{delta_b1}} | {{status_b1}} |
 | Re-opt-in survival test | {{b3_result}} | - | - | - | {{status_b3}} |
+| B5 now()-stamp corroboration | {{b5_result}} | - | - | - | {{status_b5}} |
+| B6 rung-2 stale-corroboration candidates | {{b6_candidate_count}} | - | - | - | {{status_b6}} |
 
 **Golden-rule grep (B2):** {{b2_result}}
 {{if b2_violations > 0}}
@@ -145,11 +147,13 @@ Violations:
 
 ---
 
-## ORBIT-C: GHL bookings vs Neon `ads_paid_bookings`
+## ORBIT-C: GHL bookings vs Neon `ads_paid_bookings` (COUNTED)
 
-| Metric | Ground truth (GHL walk) | Neon | App | Delta | Status |
+Both sides apply the counted gates (click recency / exclusions / primary anchor / counts_as_separate) before comparing. Raw row counts are diagnostics only.
+
+| Metric | Ground truth (GHL walk, counted) | Neon (counted) | App | Delta | Status |
 |---|---|---|---|---|---|
-| Paid booked calls in window | {{truth_paid_booked}} | {{neon_paid_booked}} | {{app_paid_booked}} | {{delta_c1}} | {{status_c1}} |
+| Counted paid booked calls in window | {{truth_paid_booked}} | {{neon_paid_booked}} | {{app_paid_booked}} | {{delta_c1}} | {{status_c1}} |
 | Cost per booked | ${{truth_cpbc}} | - | ${{app_cpbc}} | {{delta_cpbc_pct}}% | {{status_c2}} |
 
 {{if c1_delta > 0}}
@@ -161,20 +165,10 @@ Violations:
 ---
 {{end}}
 
-{{if has_hyros}}
-## ORBIT-D: Hyros vs Orbit API (OBB only)
+<!-- ORBIT-D (Hyros) is DEPRECATED as of Part 11 (2026-05-20). Hyros is retired
+from every conversion path; do not render a Hyros section. Log one INFO line
+("ORBIT-D: DEPRECATED, Hyros retired") under Warnings/Info if anything. -->
 
-| Metric | Hyros (truth) | App (/api/ads/overview) | Delta | Status |
-|---|---|---|---|---|
-| Paid booked calls | {{hyros_paid_booked}} | {{app_paid_booked}} | {{delta_d2}} | {{status_d2}} |
-| Paid leads | null (SKIPPED) | null | - | SKIPPED |
-
-**D1 SKIPPED:** Hyros `/leads` has no server-side date filter; counts stay null until Phase 3 (paginate + cache Hyros leads in Neon like the GHL path).
-
-**D3:** {{d3_result}} (HYROS_KEY_OBB expiry advisory; Hyros keys have no documented introspection endpoint, stub for now).
-
----
-{{end}}
 
 ## ORBIT-E: API vs Neon (display-layer reconciliation)
 
@@ -271,7 +265,7 @@ Orphan ads (meta_ad_id present, meta_adset_id null): {{orphan_count}}
 ---
 {{end}}
 
-## Raw counts (for spot-checking against Orbit / Meta Ads Manager / GHL UI / Hyros UI)
+## Raw counts (for spot-checking against Orbit / Meta Ads Manager / GHL UI)
 
 ```
 Client:            {{client}}
@@ -285,14 +279,8 @@ App spend:         ${{app_spend}}
 Meta impressions:  {{meta_impressions}}
 Meta clicks:       {{meta_clicks}} (inline_link_clicks)
 
-{{if has_ghl}}
-Paid leads (truth / neon / app):     {{truth_paid_leads}} / {{neon_paid_leads}} / {{app_paid_leads}}
-Paid booked (truth / neon / app):    {{truth_paid_booked}} / {{neon_paid_booked}} / {{app_paid_booked}}
-{{end}}
-{{if has_hyros}}
-Hyros paid booked (truth / app):     {{hyros_paid_booked}} / {{app_paid_booked}}
-Hyros paid leads:                    null (SKIPPED, Phase 3)
-{{end}}
+Paid leads, counted union (truth / neon / app):    {{truth_paid_leads}} / {{neon_paid_leads}} / {{app_paid_leads}}
+Paid booked, counted (truth / neon / app):         {{truth_paid_booked}} / {{neon_paid_booked}} / {{app_paid_booked}}
 
 CPL:               ${{app_cpl}}
 CPBC:              ${{app_cpbc}}

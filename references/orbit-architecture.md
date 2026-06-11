@@ -1,6 +1,6 @@
 # Orbit Architecture: Cold-Start Map for Andy
 
-One-paragraph orientation: **Moreway Orbit** (repo `k0mrads/moreway-orbit`, local path `~/Claude Code/Moreway/Moreway | Tasks/`) is a single Vercel app that fronts the Ads Command Center for three clients: **CareGenius B2B** (CAD, NY tz), **BuilderPro** (USD, LA tz), and **OBB** (USD, NY tz). The backend is **Neon Postgres + Drizzle ORM** behind Vercel serverless functions under `api/`. Conversion truth comes from two different upstream systems: **GHL** (live walked + cached in Neon) for CG B2B + BuilderPro, **Hyros** (live walked, no Neon cache yet) for OBB. The north-star attribution rule Andy defends on every check: **a lead is paid-in-window iff its `last_paid_opt_in_at` falls in the window; contact age is irrelevant; re-opt-ins of older contacts count**. The canonical predicate lives in [`isLastTouchPaid()` at api/ads/_ghl-direct.ts:69](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L69).
+One-paragraph orientation (updated 2026-06-10): **Moreway Orbit** (repo `k0mrads/moreway-orbit`, local path `~/Claude Code/Moreway/Moreway | Tasks/`) is a single Vercel app that fronts the Ads Command Center for **seven enabled clients**: **CareGenius B2B** (CAD, NY tz), **BuilderPro** (USD, LA tz), **OBB** (USD, NY tz), **Contractor Launch** (USD, Chicago tz), **Mustache Painting**, **Peach Paint Co** (Meta leadform clients), and **Queen Consultancy** (leadform leads + Calendly bookings). The backend is **Neon Postgres + Drizzle ORM** behind Vercel serverless functions under `api/`. Conversion truth is ALWAYS Neon: the GHL walker (`sync-conversions.ts`) feeds the 4 GHL clients, `sync-meta-leadforms.ts` feeds the painting clients + queen leads, `sync-calendly-bookings.ts` feeds queen bookings. **Hyros is fully retired from every conversion path (Part 11, 2026-05-20).** The north-star attribution rule Andy defends on every check: **a lead is paid-in-window iff its `last_paid_opt_in_at` falls in the window; contact age is irrelevant; re-opt-ins of older contacts count**; booked calls count under the COUNTED semantics (28-day click gate + exclusions + one primary booking per contact + `counts_as_separate`). The canonical predicate lives in [`touchIsPaidMeta()` + `isLastTouchPaid()` at api/ads/_ghl-direct.ts:149-170](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L149) (first-or-last touch; bare fbclid NOT sufficient).
 
 ---
 
@@ -14,15 +14,15 @@ One-paragraph orientation: **Moreway Orbit** (repo `k0mrads/moreway-orbit`, loca
    adset|ad)                                                             /api/ads/drilldown/{campaigns,adsets,ads,ad}
                                                                          /api/ads/best-ads
   GHL /contacts/, /contacts/{id},             ads_paid_leads         ─►  /api/ads/contacts/list, /api/ads/contacts/[id]
-      /calendars/events  (CG+BP)              ads_paid_bookings          /api/ads/slack-obb-update
-                                                                         /api/ads/actions/{meta,log}
-  Hyros /v1/api/v1.0/calls  (OBB)             (no cache; read live)
-                                              ads_sync_log               (cron writes; auditor reads)
+      /calendars/events  (4 GHL clients)      ads_paid_bookings          /api/ads/bookings/list, /api/ads/slack-*
+                                              ads_all_bookings           /api/ads/actions/{meta,log}
+  Meta leadforms (mustache, peach, queen)     ads_ghl_contacts
+  Calendly /scheduled_events (queen)          ads_sync_log               (cron writes; auditor reads)
                                               ads_clients_config         (config; read every request)
                                               ads_command_center_audit   (write-action log; never read by auditor)
 ```
 
-The display layer never talks to upstream directly except for OBB Hyros and the audit endpoint's Meta cross-check. Everything else reads Neon.
+The display layer never talks to upstream directly except the audit endpoint's Meta cross-check. Everything else reads Neon. Hyros appears nowhere in the data path (retired Part 11).
 
 ---
 
@@ -34,17 +34,19 @@ All under `api/ads/`. Cron schedule from [`vercel.json`](../../../Claude%20Code/
 |---|---|---|
 | [`sync-meta-insights.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-meta-insights.ts) (383 lines) | Walks Meta Graph per-client at `level=campaign|adset|ad`, writes `ads_meta_insights` rows per `(client, date_start, level, object_id)`. | via orchestrator |
 | [`sync-meta-structure.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-meta-structure.ts) (299 lines) | Walks campaigns/adsets/ads + creative fields; writes `ads_meta_structure`. | via orchestrator |
-| [`sync-conversions.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-conversions.ts) (626 lines) | CG+BP only. Walks GHL contacts newest-first, applies `isLastTouchPaid + getLastTouchDate`, UPSERTs `ads_paid_leads` (bumps `last_paid_opt_in_at` on UTM signature change = re-opt-in detection). Walks each `ghl_paid_calendar_ids` value, UPSERTs `ads_paid_bookings`. | via orchestrator |
+| [`sync-conversions.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-conversions.ts) | The 4 GHL clients (CG, BP, OBB, contractor-launch). Walks GHL contacts newest-first, applies `isLastTouchPaid` (first-or-last `touchIsPaidMeta`), UPSERTs `ads_paid_leads` (re-opt-in dating via `resolveReOptInDate` event ladder). Walks each `ghl_paid_calendar_ids` value, UPSERTs `ads_paid_bookings` with `click_at` from the fbc cookie, plus `ads_all_bookings` (every calendar). | via orchestrator |
+| [`sync-meta-leadforms.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-meta-leadforms.ts) | Leadform clients (mustache-painting, peach-paint-co, queen leads). Writes `ads_paid_leads.last_paid_opt_in_at = lead.created_time`. Sync-log source `meta_leadforms`. | cron |
+| [`sync-calendly-bookings.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/sync-calendly-bookings.ts) | Queen bookings. Calendly events → `ads_paid_bookings`, `booked_at = event.created_at`, `click_at` = matched lead opt-in. Sync-log source `calendly`. | cron |
 | [`cron-orchestrator.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/cron-orchestrator.ts) (122 lines) | Fan-out parent that triggers the three syncs per enabled client. Writes parent row to `ads_sync_log` with `source='orchestrator'`. | `0 14 * * *`, `0 19 * * *` (UTC) |
 | [`slack-obb-update.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/slack-obb-update.ts) (706 lines) | Daily + weekly Slack summary for OBB. Not strictly a sync, but cron-driven. | `0 13,14 * * *` (24h), `0 13,14 * * 5` (7d) |
 
 Cron auth: handlers detect `req.headers['x-vercel-cron'] === '1'` and bypass `requireSession()`. See [`audit.ts:332-336`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L332) for the canonical pattern.
 
-OBB has NO Neon conversion cache. `sync-conversions.ts` is a no-op for OBB; Hyros is read live every request via [`_sources.ts:123-150`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L123).
+OBB is a full GHL-walker client like CG/BP/contractor-launch (Part 11, 2026-05-20). `fetchHyrosCallsCount` survives in `_sources.ts` as dead code only; nothing reads Hyros live.
 
 ---
 
-## 3. Schema essentials (`drizzle/schema.ts:223-449`)
+## 3. Schema essentials (`drizzle/schema.ts`; line numbers drift - locate tables by `pgTable('name'` search. New since baseline: `ads_ghl_contacts`, `ads_all_bookings`, `fmt_catalog`, `fmt_usage`, kpi/spend-controller/sales tables)
 
 ### `ads_clients_config` ([schema.ts:223](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L223))
 - **PK**: `id` (e.g. `'caregenius-b2b'`, `'builderpro'`, `'obb'`)
@@ -69,17 +71,18 @@ OBB has NO Neon conversion cache. `sync-conversions.ts` is a no-op for OBB; Hyro
 - `source` schema comment says `'meta_insights' | 'meta_structure' | 'ghl' | 'hyros' | 'orchestrator'` ([schema.ts:316](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L316)) but **actual writes may use suffixed forms** like `'meta_insights:campaign'`, `'meta_insights:adset'`, `'ghl_conversions'`. Verify at run time via `SELECT DISTINCT source FROM ads_sync_log` before equality matching.
 - Indexes: `started_at_idx`, `client_source_idx (client_id, source, started_at)`
 
-### `ads_paid_leads` ([schema.ts:339](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L339)) (CG + BP only)
+### `ads_paid_leads` ([schema.ts, `adsPaidLeads`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts)) (all clients)
 - **PK**: `(client_id, contact_id)` (one row per contact, NOT per opt-in event)
 - **Window-filter column (north star)**: `last_paid_opt_in_at` ([schema.ts:347](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L347)). Schema comment line 344-346: "For brand-new contacts on first sync: dateAdded. For re-opt-ins detected via UTM signature change on a subsequent sync: NOW (sync time)." That bump is the entire mechanism for re-opt-in to land in a current window.
 - `utm_signature` = `utm_source|utm_medium|utm_campaign|utm_content|utm_term|fbclid`, used by `sync-conversions.ts` to detect signature drift = new paid opt-in.
 - **Attribution columns**: `meta_campaign_id`, `meta_adset_id`, `meta_ad_id`, `campaign_name`, `ad_name`
 - Indexes: `window_idx (client_id, last_paid_opt_in_at)`, plus **three partial indexes** that skip NULLs for drill-down join speed: `meta_campaign_idx`, `meta_adset_idx`, `meta_ad_idx` (`WHERE meta_*_id IS NOT NULL`).
 
-### `ads_paid_bookings` ([schema.ts:386](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L386)) (CG + BP only)
+### `ads_paid_bookings` ([schema.ts, `adsPaidBookings`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts)) (all clients with bookings)
 - **PK**: `(client_id, appointment_id)`
-- **Window-filter column**: `booked_at` (timestamp with tz; comes from event `dateAdded` or `startTime` fallback per [_ghl-direct.ts:318-323](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L318))
+- **Window-filter column**: `booked_at` (timestamp with tz; comes from event `dateAdded` or `startTime` fallback)
 - `calendar_id`, `status`, `appointment_date` (date)
+- **Counted-semantics columns** (post 2026-05-26/#94 and 2026-06-09/#208): `click_at` (fbc click time; gates paid counting to clicks within 28d before booking) and `counts_as_separate` (operator override crediting a genuine re-book). Raw rows ≠ counted rows: reschedules, stale-click rows, and excluded contacts exist in the table but do NOT count.
 - Same three partial meta_*_id indexes as `ads_paid_leads`.
 
 ### `ads_command_center_audit` ([schema.ts:428](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/drizzle/schema.ts#L428))
@@ -93,14 +96,21 @@ OBB has NO Neon conversion cache. `sync-conversions.ts` is a no-op for OBB; Hyro
 
 Lives in [`api/ads/_ghl-direct.ts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts). The same module is used both by `sync-conversions.ts` (writer) and by Andy (auditor's independent walk).
 
-**`isLastTouchPaid(contact)` ([_ghl-direct.ts:69-75](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L69))**:
+**`touchIsPaidMeta(t)` + `isLastTouchPaid(contact)` ([_ghl-direct.ts:149-170](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L149))** (current deployed semantics; the old bare-fbclid last-touch-only form was replaced by #79 + #147):
 
 ```ts
-const t = getEffectiveLastTouch(c);
-if (!t) return false;
-if (t.utmFbclid || t.fbclid || t.fbc) return true;
-const src = (t.utmSource || '').toLowerCase();
-return ['facebook', 'instagram', 'fb', 'ig', 'meta'].includes(src);
+// per-touch: paid IFF GHL labeled it Paid Social, OR a 6+ digit Meta entity id
+// resolves (adId/adGroupId/utmTerm, or adId/adGroupId/adsetId/utm_id/utm_term
+// in the landing URL), OR utm_medium matches /paid|cpc|ppc/.
+// A bare fbclid/_fbc is NOT sufficient (organic clicks carry it too).
+export function touchIsPaidMeta(t) {
+  if (!t) return false;
+  return isPaidSocialSession(t) || hasMetaEntityId(t) || hasPaidMedium(t);
+}
+// contact-level: FIRST OR LAST touch (name retained for compatibility).
+export function isLastTouchPaid(c) {
+  return touchIsPaidMeta(getEffectiveLastTouch(c)) || touchIsPaidMeta(getEffectiveFirstTouch(c));
+}
 ```
 
 No tag backup. Unlike the deprecated sister apps, Orbit does NOT honor a `BAC` / `OPT IN` tag.
@@ -115,19 +125,25 @@ No tag backup. Unlike the deprecated sister apps, Orbit does NOT honor a `BAC` /
 
 ### Phase 2: read-time (server-side, the UNION)
 
-Lives in [`api/ads/_drilldown-sql.ts:98-156`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L98). This is **THE** paid-leads definition the dashboard returns:
+Lives in [`api/ads/_drilldown-sql.ts:118-133 `countedPaidBookings()` + :223-267 `paidConversionsByObject()`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L118). This is **THE** paid-conversions definition the dashboard returns:
 
 ```
+counted booking = ads_paid_bookings row that passes ALL of:
+  (a) click_at in [booked_at - 28d, booked_at + 1d]  OR  raw._manual_override = 'true'
+  (b) parent contact not ads_ghl_contacts.excluded_from_metrics
+  (c) booked_at = MIN(booked_at) OVER (PARTITION BY contact_id)  [all-time, over qualifying rows]
+      OR counts_as_separate = true
+
 paid_leads  = COUNT(DISTINCT contact_id) of
-              (opt-iners with last_paid_opt_in_at in window)
+              (non-excluded opt-iners with last_paid_opt_in_at in window)
               UNION
-              (bookers with booked_at in window)
-paid_booked = COUNT(DISTINCT contact_id) of bookers in window
+              (COUNTED bookings with booked_at in window)
+paid_booked = COUNT(*) of COUNTED bookings with booked_at in window   [per booking, not per contact]
 ```
 
-The "lead OR booker" union is what makes bookers whose original opt-in landed pre-window still count as a lead (you can't book without opting in at some point). Same semantics applied scope-agnostically by `paidConversionsByObject(clientId, joinColumn, windowStart, windowEnd)` where `joinColumn ∈ {'meta_campaign_id', 'meta_adset_id', 'meta_ad_id'}`.
+The "lead OR booker" union is what makes bookers whose original opt-in landed pre-window still count as a lead (you can't book without opting in at some point). The counted-booking gates are what stop reschedules double-counting (GHL creates a fresh confirmed appointment per reschedule with no cancel signal) - including ACROSS windows, which the old `COUNT(DISTINCT contact_id)`-per-window form missed. Same semantics applied scope-agnostically by `paidConversionsByObject(clientId, joinColumn, windowStart, windowEnd)` where `joinColumn ∈ {'meta_campaign_id', 'meta_adset_id', 'meta_ad_id'}`.
 
-The overview KPI cards use the same UNION via [`_sources.ts:fetchGhlCountsFromNeon` at lines 54-106](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L54) (un-grouped variant). Note: `paid_booked_calls` is **NOT** a UNION; it's just a `COUNT` of `ads_paid_bookings.booked_at` in window.
+The overview KPI cards use the same counted union via [`_sources.ts:fetchGhlCountsFromNeon` at lines 55-115](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L55) (un-grouped variant). Any audit SQL that counts raw `ads_paid_bookings` rows in window WILL overcount vs the app and produce false blockers.
 
 ---
 
@@ -188,7 +204,7 @@ For future-me (Andy) to be aware of:
 
 4. **Audit endpoint's "ground truth" is dashboard**. [`audit.ts:240-258`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L240) explicitly sets `ground_truth = dashboard` for conversions. The audit endpoint does NOT independently walk GHL. That's why Andy exists.
 
-5. **OBB Hyros leads = null**. [`_sources.ts:172-173`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L172) returns `paidLeads: null` because Hyros `/leads` has no server-side date filter. Phase 3 work item.
+5. **slack-obb-update.ts still reimplements conversions from retired Hyros** (audit F03, known drift): the client-facing OBB Slack post counts cancelled calls + organic leads and diverges from the dashboard definition. Every dashboard surface is GHL/Neon-counted; only this Slack post lags. Fix tracked separately - report divergence there as the known F03 finding, not a fresh regression.
 
 6. **Cross-client totals at 1:1 FX**. [`CrossClientStrip.tsx:50`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/src/components/ads-command-center/components/CrossClientStrip.tsx#L50) explicitly: "Aggregate sums spend across USD + CAD at 1:1; Phase 4 adds live FX." Best-ads endpoint uses `currency_to_usd` (manual rate), but cross-client KPI strip does not.
 
@@ -216,7 +232,7 @@ Andy provides all of the above (sections ORBIT-B, C, F, G, H per SKILL.md).
 [`requireSession()` at api/_db.ts:58-103](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/_db.ts#L58) accepts three auth modes:
 
 1. **Sessions-table token**: `Authorization: Bearer <token>` or `?token=<token>` (the query-string fallback exists for `@vercel/blob`'s `upload()` helper which strips Authorization). Looked up in `sessions` table; checks `expires_at`.
-2. **AUDIT_TOKEN env-var bypass** ([_db.ts:77-85](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/_db.ts#L77)): if the supplied token equals `process.env.AUDIT_TOKEN`, returns a synthetic session with `userIdentity = 'audit-bot'`. Read on every call (so Vercel env rotation takes immediate effect). This is the path Andy uses.
+2. **AUDIT_TOKEN env-var bypass** ([_db.ts:120-130](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/_db.ts#L120)): if the supplied token equals `process.env.AUDIT_TOKEN`, returns a synthetic session with `userIdentity = 'audit-bot'`, `role = 'internal'`, `scopedClientId = null` (client-portal RBAC added 2026-06). Read on every call (so Vercel env rotation takes immediate effect). This is the path Andy uses.
 3. **Cron header**: handlers check `req.headers['x-vercel-cron'] === '1'` BEFORE calling `requireSession()` and skip it. See [`audit.ts:332-336`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L332).
 
 The `audit-bot` identity is logged into `ads_command_center_audit.user_identity` if any write action is ever attempted by an audit caller; Andy must NEVER call action endpoints, only read endpoints (`/api/ads/overview`, `/api/ads/audit`, `/api/ads/drilldown/*`, `/api/ads/contacts/*`, `/api/ads/best-ads`).
@@ -250,7 +266,7 @@ GET https://graph.facebook.com/v21.0/{act_id}/insights
 - Use **`inline_link_clicks`**, not `clicks`. Meta's `clicks` counts all engagement (page likes, profile expansions, etc.); the dashboard counts link clicks only. Mixing them produced spurious 40-60% drift. See [`audit.ts:88-95`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L88) and [`audit.ts:94`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L94) comment.
 - **Recompute `ctr` / `cpc` / `cpm` in code**, do not request Meta's own `ctr` / `cpc` fields. Meta computes those over `clicks` (all clicks); the dashboard computes them over `inline_link_clicks`. Recomputed identically on both sides at [`audit.ts:115-118`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L115).
 - Most-recent day's Meta data is still aggregating: tolerance loosens to ±10% for the latest day (per SKILL.md A1-A4 spec).
-- Token per client: `process.env[client.metaSecretName]`. Names are stored in `ads_clients_config.meta_secret_name`. Current values: `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB`.
+- Token per client: `process.env[client.metaSecretName]`. Names are stored in `ads_clients_config.meta_secret_name` (read live; the roster is 7 clients now). Known values include `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB`, plus the contractor-launch / painting / queen secrets per config.
 
 ---
 
@@ -258,18 +274,18 @@ GET https://graph.facebook.com/v21.0/{act_id}/insights
 
 | Need | File:line |
 |---|---|
-| Canonical paid-Meta predicate | [api/ads/_ghl-direct.ts:69-75](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L69) |
-| Canonical last-touch date extraction | [api/ads/_ghl-direct.ts:92-109](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L92) |
-| GHL walker (paid leads ground truth) | [api/ads/_ghl-direct.ts:155-251](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L155) |
-| GHL walker (paid bookings ground truth) | [api/ads/_ghl-direct.ts:269-361](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L269) |
-| Hyros walker (OBB calls ground truth) | [api/ads/_sources.ts:123-150](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L123) |
-| Tz-aware window construction | [api/ads/_drilldown-sql.ts:54-60](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L54) |
-| Read-side UNION (paid_leads definition) | [api/ads/_drilldown-sql.ts:98-156](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L98) |
-| Read-side UNION (overview variant) | [api/ads/_sources.ts:77-99](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L77) |
-| Conversion-source dispatcher | [api/ads/_sources.ts:155-179](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L155) |
-| CPL formula | [api/ads/overview.ts:208](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L208) |
-| CPBC formula | [api/ads/overview.ts:209](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L209) |
-| Cross-client totals aggregation | [api/ads/overview.ts:212-233](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L212) |
+| Canonical paid-Meta predicate | [api/ads/_ghl-direct.ts:149-170](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts#L149) (`touchIsPaidMeta` + first-or-last `isLastTouchPaid`) |
+| Paid click time (fbc → click_at) | [api/ads/_ghl-direct.ts `getPaidClickTime`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts) |
+| GHL walker (paid leads ground truth) | [api/ads/_ghl-direct.ts `fetchGhlGroundTruthCounts`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts) |
+| GHL walker (paid bookings ground truth) | [api/ads/_ghl-direct.ts `fetchGhlBookedCallsGroundTruth`](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_ghl-direct.ts) |
+| Counted-bookings gates (click recency, exclusions, primary anchor) | [api/ads/_drilldown-sql.ts:49-133](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L49) |
+| Tz-aware window construction | [api/ads/_drilldown-sql.ts:160-166](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L160) (duplicate private copy: `_sources.ts:46-53`) |
+| Read-side counted UNION (per meta object) | [api/ads/_drilldown-sql.ts:223-267](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_drilldown-sql.ts#L223) |
+| Read-side counted UNION (overview variant) | [api/ads/_sources.ts:55-115](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L55) |
+| Conversion-source dispatcher (7 clients) | [api/ads/_sources.ts:164-213](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/_sources.ts#L164) |
+| CPL formula | [api/ads/overview.ts:220](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L220) |
+| CPBC formula | [api/ads/overview.ts:221](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L221) |
+| Cross-client totals aggregation | [api/ads/overview.ts:224-245](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/overview.ts#L224) |
 | Meta Graph fetch (account-level) | [api/ads/audit.ts:82-119](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L82) |
 | Picker window logic (yesterday + 2 prior) | [src/components/.../DateRangePresetPicker.tsx:60-78](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/src/components/ads-command-center/components/DateRangePresetPicker.tsx#L60) |
 | Stale-audit default window (today + 2 prior, INCONSISTENT) | [api/ads/audit.ts:316-325](../../../Claude%20Code/Moreway/Moreway%20%7C%20Tasks/api/ads/audit.ts#L316) |
@@ -283,10 +299,14 @@ GET https://graph.facebook.com/v21.0/{act_id}/insights
 
 ## Per-client cheatsheet
 
-| Client | client_id | meta_account_id | currency | tz | conversion source | Hyros? |
-|---|---|---|---|---|---|---|
-| CareGenius B2B | `caregenius-b2b` | (per `ads_clients_config`) | CAD (×0.73 → USD) | America/New_York | Neon (GHL walker) | No |
-| BuilderPro | `builderpro` | act_1586857008888840 | USD | America/Los_Angeles | Neon (GHL walker) | No |
-| OBB | `obb` | (per registry) | USD | America/New_York | Hyros live (`/v1/api/v1.0/calls`) | Yes (HYROS_KEY_OBB) |
+| Client | client_id | meta_account_id | currency | tz | conversion source |
+|---|---|---|---|---|---|
+| CareGenius B2B | `caregenius-b2b` | act_27449078924707675 | CAD (×0.73 → USD) | America/New_York | Neon (GHL walker) |
+| BuilderPro | `builderpro` | act_1586857008888840 | USD | America/Los_Angeles | Neon (GHL walker) |
+| OBB | `obb` | act_425612416873215 | USD | America/New_York | Neon (GHL walker; 3 paid calendars) |
+| Contractor Launch | `contractor-launch` | act_626274846998122 | USD | America/Chicago | Neon (GHL walker) |
+| Mustache Painting | `mustache-painting` | per config | USD | per config | Neon (Meta leadforms; no bookings) |
+| Peach Paint Co | `peach-paint-co` | per config | USD | per config | Neon (Meta leadforms; no bookings) |
+| Queen Consultancy | `queen-consultancy` | act_2115558905474636 | USD | America/Los_Angeles | Neon (leadform leads + Calendly bookings) |
 
-Andy's sections ORBIT-B and ORBIT-C are CG+BP only. Section ORBIT-D is OBB only. A, E, F, G, H apply to all three.
+Andy's live GHL walks (ORBIT-B/C) cover the 4 GHL clients; B5/B6 and the counted read-side checks cover all 7. Section ORBIT-D is fully deprecated (Hyros retired). A, E, F, G, H, I, J apply to all enabled clients. Roster, tz, currency, and calendar IDs are read live from `ads_clients_config` at run time.
