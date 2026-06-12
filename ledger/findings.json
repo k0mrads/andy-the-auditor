@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T18:30:00Z",
-  "updated_by": "vault run 2026-06-12 (acceptance run, revamp session)",
+  "updated_at": "2026-06-12T19:05:00Z",
+  "updated_by": "operator decisions 2026-06-12 (CL deprioritized; mirror backfill parked)",
   "baselines": {
     "i2_coverage": {
       "as_of": "2026-06-12",
@@ -254,9 +254,10 @@
       "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-12",
-      "status": "new",
-      "unblocking_action": "In Business Manager, assign Contractor Launch's Instagram account to act_626274846998122 (grant the moreway_claude_connect system user access to the IG asset), then re-run: npx tsx scripts/rewrite-meta-url-tags.ts --client contractor-launch --include-paused --apply. 4 link_source=none ads (120242437121730007, 120239959643160007, 120236112869530007, 120235841559090007) need manual review.",
-      "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. All CL ads currently paused, so the re-tag is zero-risk once unblocked."
+      "status": "snoozed_until",
+      "unblocking_action": "Deprioritized by Zander 2026-06-12 (CL not a main client). Re-raise only if CL campaigns un-pause AND ad-level coverage matters again; then: BM-assign CL Instagram to act_626274846998122 and re-run rewrite-meta-url-tags --client contractor-launch --include-paused --apply. I2 floor regime covers any DROP meanwhile.",
+      "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. All CL ads currently paused, so the re-tag is zero-risk once unblocked.",
+      "snoozed_until": "2026-07-12"
     },
     "d12355cf14": {
       "key": "ORBIT-J4|caregenius-b2b|t9tZmCw8iX7s9CvJgTg2",
@@ -420,9 +421,10 @@
       "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows (CG 1291, OBB 1229, BP 446, CL 202) + an incremental-walk miss",
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-12",
-      "status": "new",
-      "unblocking_action": "Run a flag recompute under the current predicate (forceFull contacts re-walk or an approved apply-script with --confirm-prod-write), then /diagnose-orbit the incremental-walk miss (OBB iWCXCHohIhmPyWGTapbO mirror row synced 06-01 despite GHL dateUpdated 06-11). Owner: api/ads/sync-ghl-contacts.ts",
-      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are the Contacts Diagnostic verdicts + operator triage trust."
+      "status": "snoozed_until",
+      "unblocking_action": "Parked 2026-06-12: no KPI impact (cosmetic Contacts-Diagnostic labels only). Run whenever Zander says 'run the mirror-flag backfill' (approved apply-script, --confirm-prod-write). If still parked at snooze expiry, extend or close as accepted-cosmetic.",
+      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are the Contacts Diagnostic verdicts + operator triage trust.",
+      "snoozed_until": "2026-06-19"
     }
   }
 }
