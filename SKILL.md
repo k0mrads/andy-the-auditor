@@ -129,11 +129,28 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 Before deep-diving any discrepancy (user-reported or self-found), check whether it is already a known finding: `~/Claude Code/_audits/` (latest REPORT.md + FIX-BACKLOG.md STATUS section) and the newest vault reports under `20-Clients/*/attribution-audits/` + `_Moreway-Agency/ecosystem-audits/`. If a finding ID covers it, cite the ID and its fix status instead of re-deriving the analysis. (2026-06-10 precedent: Stuart Kaye + KPI-vs-popover were both already specced as F01/F02 the same day.)
 
+### Step 0.5 - Load the findings ledger (added 2026-06-12)
+
+Read `~/.claude/skills/andy-the-auditor/ledger/findings.json` (schema in `ledger/README.md`). The ledger is Andy's persistent memory: every WARN/FAIL ever emitted has a stable finding ID (`sha256("{check}|{client}|{subject}")[:10]`; subject = B6 contact_id, J4 appointment_id, I2 table/sub-issue, code-static file:symbol) with `first_seen`, `last_seen`, `status (new | known | snoozed_until | fixed_pending_verify | closed)`, and a **named `unblocking_action`** on every non-closed entry.
+
+The whole report is rendered as a diff against this ledger (Step 3). Classification of every WARN/FAIL the checks produce this run:
+
+- **Not in ledger** → NEW. Add it (`status: new`).
+- **In ledger, still reproduces** → carry-over. Bump `last_seen`. `new` from a prior run decays to `known`.
+- **In ledger as `snoozed_until` (date in the future)** → silent carry-over (collapsed one-liner only).
+- **In ledger as `snoozed_until` (date passed) and still reproduces** → SNOOZE EXPIRED (a state change; escalates).
+- **In ledger as `fixed_pending_verify` and no longer reproduces** → FIXED (state change; flip to `closed`).
+- **In ledger as `closed` but reproduces again** → REGRESSED (state change, not a new finding; re-open as `new` with history intact).
+
+**The permanent-WARN rule (hard):** a WARN older than 7 days may never render as a plain repeated warning. It must either carry a valid future `snoozed_until` + `unblocking_action`, or be escalated into the report's ACTION section ("needs a snooze decision or a fix today"). Andy never silently repeats an aged warning, and never invents a snooze on his own authority: snoozes name the unblocking event (a PR, a Business Manager change, a Monday triage) and a date.
+
+In `--slack` mode the ledger is **read-only** (the committed copy in the cloned repo). Vault mode is the single writer and MUST commit + push the updated ledger at the end of the run (Step 3c) - both launchd runners `git reset --hard origin/main` before invoking the skill, so an unpushed ledger write is destroyed by the next scheduled run.
+
 ### Step 1 - Parse arguments, flags, and compute window
 
 - Positional arg ∈ any enabled `client_id` in `ads_clients_config` (`caregenius` accepted as alias for `caregenius-b2b`) | empty (= all enabled clients, 7 as of 2026-06-10).
 - **`--slack <ENV_VAR_NAME>`** flag (optional). If present, switches to **Slack output mode**:
-  - Run sections ORBIT-A, B, C, D, E, **F** (per-adset drill-down via `/api/ads/drilldown/adsets`), G, **I** (per-ad surface + `meta_ad_id` population), and **J1–J3** (Booked Calls bucket + reconciliation; plus the J4 candidate count and J5 backlog count, lists deferred to vault mode). Per-adset drill-down DOES run in Slack mode now: it makes the morning Slack message a real deep audit, not just a smoke check. The per-adset call is just more API hits to Orbit, no local repo needed. ORBIT-I is cheap (one best-ads call + two Neon counts) so it runs in Slack mode too. ORBIT-J1–J3 are cheap (one `/api/ads/bookings/list` call + two Neon counts).
+  - Run sections ORBIT-A, B, C, D, E, **F** (per-adset drill-down via `/api/ads/drilldown/adsets`), G, **I** (per-ad surface + `meta_ad_id` population), **J1–J3** (Booked Calls bucket + reconciliation; plus the J4 candidate count and J5 backlog count, lists deferred to Monday vault mode), **LEADFORM-1/CAL-1** (writer-truth, leadform/Calendly clients), and **MUT-1** as a read-only diff vs the committed ledger snapshot (counts only; the snapshot is written by vault mode only). Per-adset drill-down DOES run in Slack mode now: it makes the morning Slack message a real deep audit, not just a smoke check. The per-adset call is just more API hits to Orbit, no local repo needed. ORBIT-I is cheap (one best-ads call + two Neon counts) so it runs in Slack mode too. ORBIT-J1–J3 are cheap (one `/api/ads/bookings/list` call + two Neon counts).
   - **Skip ORBIT-H** (code-static greps). H needs the Orbit code repo and a local grep harness; not appropriate for a cloud sandbox. H stays local-only, runs during vault mode (when you manually fire andy locally before pushing a code change).
   - **Skip vault writes.** The remote sandbox has no Obsidian access.
   - POST a structured Slack summary to the webhook URL in `process.env[<ENV_VAR_NAME>]` (e.g. `--slack ADS_AUDITS_SLACK_WEBHOOK` reads from `$ADS_AUDITS_SLACK_WEBHOOK`).
@@ -172,7 +189,7 @@ The north-star check. Use the canonical walker from [api/ads/_ghl-direct.ts `fet
 - **B2 (BLOCKER, GOLDEN RULE)** - Code-static check: no `created_at` / `dateAdded` / `first_paid_opt_in_at` references inside window filters of any `api/ads/*.ts` or `src/**/*.ts`. Grep for these tokens; failure = automatic FAIL with file:line.
 - **B3 (BLOCKER)** - Re-opt-in survives: pick a contact in the GHL-walked set whose `dateAdded < window_start` but whose `last_paid_opt_in_at` is in window. Confirm they're in Neon. If no such contact exists in this window, log INFO ("no re-opt-ins available to test this window").
 - **B5 (BLOCKER) - opt-in dated by the EVENT, not the sync clock.** The north star says window membership is the paid opt-in *event* timestamp. The writer must never stamp `last_paid_opt_in_at` at the moment the sync ran. Detector: any `ads_paid_leads` row where `ABS(last_paid_opt_in_at - synced_at) < 2s` is a `now()`-stamp (the re-opt-in path). For each such row, a real event timestamp must exist in the stored `raw` and corroborate the stamp **on the same calendar day** (client tz): the `_fbc` cookie click time (`raw.lastAttributionSource.fbc` → `fb.<v>.<ms>.<fbclid>`), else `raw.dateUpdated`. **FAIL** when a `now()`-stamp lands on a different calendar day than the best available event timestamp (the lead is mis-windowed - this is the 2026-05-21 Britteni Colbert bug: stamped today, real fbc click was yesterday). **WARN** when same-day but more than ~1h off the event time. Owner: [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveReOptInDate` (in [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts)). Remediation for historical rows: `scripts/backfill-reoptin-timestamp.ts`. Code-static companion: grep that the re-opt-in branch does NOT assign a bare `now`/`new Date()` to `lastPaidOptInAt` without going through the event ladder.
-- **B6 (WARN, appended 2026-06-10) - rung-2 stamps need fresh-event corroboration.** B5 only sees `now()`-stamps. The ladder's rung 2 takes `raw.dateUpdated` as the event time, and GHL bumps `dateUpdated` on ANY contact touch - bulk edits, touch-flips, reactivation workflows (e.g. CG `tfu_ai_reactivation`) - producing **phantom re-opt-ins stamped at a real, non-clock timestamp** that B5 structurally cannot catch (audit F23: ~13-16 false placements all-time). Detector: rows where `last_paid_opt_in_at == raw.dateUpdated` (and NOT ≈ `synced_at`) whose best corroborating event (parseable fbc click time) is **more than 7 days older than the stamp, or absent**. WARN per hit (a genuine re-opt-in through a UTM-less path can look identical - this is a review queue, not an auto-FAIL); list with GHL deep links in vault mode, count-only in Slack. SQL in `invariants/orbit.md`. Owner: `resolveReOptInDate` rung 2 (accepts any `dateUpdated > priorAt && <= now`); the forward fix is fresh-event corroboration in code (tracked as F23).
+- **B6 (WARN, appended 2026-06-10) - rung-2 stamps need fresh-event corroboration.** B5 only sees `now()`-stamps. The ladder's rung 2 takes `raw.dateUpdated` as the event time, and GHL bumps `dateUpdated` on ANY contact touch - bulk edits, touch-flips, reactivation workflows (e.g. CG `tfu_ai_reactivation`) - producing **phantom re-opt-ins stamped at a real, non-clock timestamp** that B5 structurally cannot catch (audit F23: ~13-16 false placements all-time). Detector: rows where `last_paid_opt_in_at == raw.dateUpdated` (and NOT ≈ `synced_at`) whose best corroborating event (parseable fbc click time) is **more than 7 days older than the stamp, or absent**. WARN per hit (a genuine re-opt-in through a UTM-less path can look identical - this is a review queue, not an auto-FAIL). SQL in `invariants/orbit.md`. **Ledger-once rule:** each candidate (keyed by contact_id) enters the findings ledger ONCE on first detection - it appears in the NEW section that day with its GHL deep link, then collapses to the known-carry-over line; it is never re-listed daily. **Forward fix SHIPPED:** Orbit PR #253 (2026-06-12) adds fresh-event corroboration to `resolveReOptInDate` rung 2 (live `paid social` session, or fbc click within 7d of the stamp; uncorroborated flips keep the prior date), so NEW candidates appearing after #253 deploys are a regression signal, not routine noise. Pre-#253 candidates sit in the ledger as `fixed_pending_verify` until restamped/verdicted via the F23 cleanup apply-script.
 
 #### ORBIT-C - GHL bookings ↔ Neon `ads_paid_bookings` (4 GHL-walker clients; counted read-side all clients)
 
@@ -246,7 +263,7 @@ These run in vault mode only (require local Orbit repo + skill checksums dir). I
 This section is the concrete enforcement of the working-MVP clause for the surfaces that render attribution downstream of the headline counts: the **Best ads** tab (I1, backed by [api/ads/best-ads.ts](api/ads/best-ads.ts)), the `meta_ad_id` writer health (I2), and the click-to-expand **Leads / Booked popovers + Contacts tab** (I3, backed by [api/ads/contacts/list.ts](api/ads/contacts/list.ts)). The common failure mode: a surface answers a *slightly different question* than the number it sits under, so it silently disagrees. Best Ads keyed on a `meta_ad_id` the writer never populated (every ad showed 0); the popover windowed the wrong column (count and dropdown disagreed). All three run in **both** vault and `--slack` modes (a handful of API calls + Neon counts; cheap, unlike the per-adset ORBIT-F loop).
 
 - **ORBIT-I1 (BLOCKER)** - Per-ad surface reconciles. Call `GET {origin}/api/ads/best-ads?date_start=…&date_end=…&min_spend=0`. For each client that has **ad-attributable** conversions in window (Neon: `COUNT(DISTINCT contact_id)` over `ads_paid_leads`/`ads_paid_bookings` with non-null `meta_ad_id` in window), the Best Ads response must contain rows for that client with `paid_leads`/`paid_booked > 0`, and `SUM(per-ad paid_leads)` must reconcile to the ad-attributed subset (DISTINCT-contact UNION semantics, same as ORBIT-B). **FAIL** if the surface returns all-zero conversions while ORBIT-B/E show the client has leads in window - that is the regression class this section exists to catch.
-- **ORBIT-I2 (BLOCKER)** - `meta_ad_id` population health. For each `(client, table)` in {`ads_paid_leads`, `ads_paid_bookings`}: if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0`, **FAIL** - the writer dropped ad-level resolution wholesale. Likely owner: [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` (the unique-ad-name → ad-id backfill). If `meta_ad_id` coverage is non-zero but materially below `meta_campaign_id` coverage, that is a **WARN**, not a FAIL - it reflects URL-tag coverage (some conversions only carry adset/campaign-level signal), not a code regression. Use the population query in `invariants/orbit.md`.
+- **ORBIT-I2 (BLOCKER on zero / INFO with floor, reclassified 2026-06-12)** - `meta_ad_id` population health. For each `(client, table)` in {`ads_paid_leads`, `ads_paid_bookings`}: if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0`, **FAIL** - the writer dropped ad-level resolution wholesale. Likely owner: [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveMetaIds` / `adByName` (the unique-ad-name → ad-id backfill). Coverage materially below campaign coverage is **INFO, not WARN**: the all-time percentage is historical drag from pre-canonical-UTM conversions and CANNOT be lifted retroactively (verified 2026-06-12: CG 69/69 + OBB 60/60 active ads already fully tagged, rewriters report 0 would-change). The actionable signal is a **DROP**: compute `ad_coverage = has_ad / has_campaign` per (client, table) and WARN only when it falls more than `warn_drop_pp` (2pp) below `baselines.i2_coverage` in the ledger - that means newly-arriving conversions stopped carrying ad ids, which IS a live regression (untagged new ads, resolver break, or URL-tag loss). When coverage improves, ratchet the baseline UP in the ledger. Use the population query in `invariants/orbit.md`.
 - **ORBIT-I3 (BLOCKER)** - Drill-in list reconciles with the count above it, on the **COUNTED cohort**, computed **non-tautologically**. Every clickable count (Leads / Booked popovers, the Contacts tab) expands a list via [api/ads/contacts/list.ts](api/ads/contacts/list.ts). That list MUST be the same cohort as the number it expands. Compare two INDEPENDENT live surfaces: the list side is the LIVE endpoint response length (`GET /api/ads/contacts/list?...&booked=yes&limit=250` → `rows.length`; same for `booked=any`), the aggregate side is the LIVE `/api/ads/overview` KPI (`paid_booked_calls` / `paid_leads`). NEVER recompute both sides from one SQL - the pre-2026-06-10 form did, a tautological PASS that structurally could not catch the bug class. Neon counted SQL (in `invariants/orbit.md`) is the referee when the surfaces disagree. **FAIL** on any divergence (modulo documented `counts_as_separate` booking-vs-contact cases, which the referee SQL quantifies). Two canonical breaks: (2026-05-21) the list windowed every mode on `last_paid_opt_in_at` and treated "booked" as EXISTS(any booking, any date); (2026-06-09, #208) `countedPaidBookings` was wired into `_drilldown-sql`/`_sources`/`best-ads`/`bookings/list` but NOT `contacts/list.ts`, so popovers listed reschedule ghosts the KPI excluded (CG 8 vs 6, OBB 7 vs 5) - **this check, run this way, is what catches that**. Owner: `api/ads/contacts/list.ts` cohort SQL must mirror the counted semantics in [api/ads/_drilldown-sql.ts](api/ads/_drilldown-sql.ts). Cheap: two API calls + referee counts; runs in **both** modes.
 
 > Coverage ceiling: conversions whose only signal is an adset- or campaign-name match can never tie to a single ad row, so Best Ads shows the **ad-attributable subset** by design - it is not expected to equal the client total. The durable lift path is the URL-tag rewriter at [api/ads/sync-conversions.ts:148](api/ads/sync-conversions.ts#L148) referencing `scripts/rewrite-meta-url-tags.ts`.
@@ -258,10 +275,32 @@ Added 2026-05-22. Backs the **Booked Calls tab** on each client (`ClientHome.tsx
 - **ORBIT-J1 (BLOCKER) - PAID ⊆ ALL.** Every `(client_id, appointment_id)` in `ads_paid_bookings` with `booked_at` in window MUST also exist in `ads_all_bookings`. A paid booking missing from all-bookings would wrongly fall into OTHER (or vanish from the tab entirely). **FAIL** with sample `appointment_id`s. Root cause when it fails: `listCalendars()` didn't return the paid calendar (wrong `Version` header, archived/renamed calendar, or GHL calendars-API outage - note the silent `calendars.size === 0` warn added in `syncOneClientAllBookings`), so the all-bookings walk skipped a calendar the paid walk reaches via `ghl_paid_calendar_ids`.
 - **ORBIT-J2 (BLOCKER) - Bucket math invariant.** Call `GET {origin}/api/ads/bookings/list?client_id=…&date_start=…&date_end=…&bucket=all`. Require `counts.all == counts.paid + counts.other`. Independently re-derive all/paid/other from Neon (query in `invariants/orbit.md`) and require the endpoint's `counts` to match Neon **exactly**. Catches a bucket-filter regression where the `pb.appointment_id IS NULL/NOT NULL` join drifts.
 - **ORBIT-J3 (BLOCKER) - PAID reconciles with the paid-booked KPI on COUNTED semantics.** The KPI is COUNTED bookings in window, so the reconciling Neon form is the counted CTE joined into `ads_all_bookings` (`COUNT(*)` of counted bookings in window that exist in all-bookings; SQL in `invariants/orbit.md`) - NOT a distinct-contact count over the raw join (that pre-counted form double-counted cross-window reschedules and missed `counts_as_separate`). It MUST equal `/api/ads/overview` `clients.<id>.paid_booked_calls` (the same number ORBIT-C1/E2 verify). The endpoint's per-appointment `counts.paid` (raw `ads_paid_bookings` membership) MAY exceed it - non-counted rows (reschedules, stale-click rows) display in the bucket by design. FAIL only on the counted mismatch.
-- **ORBIT-J4 (WARN) - OTHER-bucket paid-signal triage ("look through these").** This is the morning review queue Zander asked for. Surface OTHER-bucket bookings whose parent contact carries an ad signal on **first OR last** touch (`ads_ghl_contacts`: `last_utm_source ∈ {facebook,instagram,fb,ig,meta}` OR `last_fbclid` present OR `first_utm_source ∈ {…}`). These look paid but missed the confident set - either booked on a calendar outside `ghl_paid_calendar_ids`, or first-touch-paid / last-touch-organic. In **vault mode**, list up to 15 per client: `appointment_id`, `contact_id`, `calendar_name`, the signal (which UTM/fbclid), `booked_at`, and the GHL deep link (`https://app.gohighlevel.com/v2/location/{ghl_location_id}/contacts/detail/{contact_id}`) so the assistant can confirm/deny and re-bucket. In **`--slack` mode**, post only the candidate count. WARN, never FAIL: ambiguous calls living in OTHER is by design - this is a queue, not a correctness break. (If a candidate's calendar IS in `ghl_paid_calendar_ids` yet it's in OTHER, escalate that specific row to BLOCKER under J1 - it means the paid walk and the all walk disagree.)
+- **ORBIT-J4 (WARN, WEEKLY cadence since 2026-06-12) - OTHER-bucket paid-signal triage.** Surface OTHER-bucket bookings whose parent contact carries an ad signal on **first OR last** touch and has **no `review_status`** (answered candidates drop out permanently - the SQL filters `review_status IS NULL`). These look paid but missed the confident set - either booked on a calendar outside `ghl_paid_calendar_ids`, or first-touch-paid / last-touch-organic. **Cadence:** the triage LIST renders only in **Monday vault runs** as the "Monday triage" section; every run still detects candidates and updates the ledger (so ages stay true and brand-new candidates show in NEW once), but non-Monday reports carry only the collapsed carry-over line ("J4: N candidates queued for Monday"). `--slack` mode posts the count only, every day. **Monday section format - one yes/no question per candidate, decision-ready:**
+
+  ```
+  - [ ] **{{full_name}}** booked {{booked_at}} on "{{calendar_name}}" - signal: {{signal}}. Real paid booking?
+        GHL: https://app.gohighlevel.com/v2/location/{{ghl_location_id}}/contacts/detail/{{contact_id}}
+        YES → curl -X POST {{origin}}/api/ads/bookings/promote -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{{client_id}}","appointment_id":"{{appointment_id}}","action":"promote"}'
+        NO  → curl -X POST {{origin}}/api/ads/contacts/review -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{{client_id}}","contact_id":"{{contact_id}}","status":"ignored"}'
+  ```
+
+  `full_name` comes from `ads_ghl_contacts.full_name` (fall back to email, then contact_id). WARN, never FAIL: ambiguous calls living in OTHER is by design. (If a candidate's calendar IS in `ghl_paid_calendar_ids` yet it's in OTHER, escalate that specific row to BLOCKER under J1 - it means the paid walk and the all walk disagree - and that escalation ignores the weekly cadence.)
 - **ORBIT-J5 (INFO) - Unreviewed booked-call backlog.** Count in-window booked calls with `review_status IS NULL` (from `ads_ghl_contacts`), split ALL vs OTHER, so the report tells the assistant how big the triage queue is. Pure surfacing; never fails.
 
 > Onboarding calls: by design they are pushed through into ALL/OTHER (no calendar taxonomy). Andy does NOT fail on their presence - `calendar_name` is surfaced on every row so the assistant can `ignore` them via the review workflow. If Zander later adds an excluded-calendar list, add a J6 to assert excluded calendars never appear in any bucket.
+
+#### MUT-1 - Operator-mutation ledger (added 2026-06-12, audit F20)
+
+Four write paths mutate paid counts outside the sync pipeline: `contacts/attribute` + `bookings/promote` (write `raw._manual_override='true'` rows), `contacts/exclusion` (`ads_ghl_contacts.excluded_from_metrics`), `bookings/count-separate` (`ads_paid_bookings.counts_as_separate`). They are legitimate operator tools, but an unnoticed mutation silently changes historical KPIs.
+
+Per vault run: enumerate all four sets (SQL in `invariants/orbit.md`), diff against `mutations_snapshot` in the ledger, report every ADD and REMOVE under the report's STATE CHANGES section ("operator mutations") with client + id + which flag, then overwrite the snapshot. INFO severity when the diff is plausibly operator-intentional; escalate to WARN if a mutation appears with no plausible operator session (e.g. dozens of rows in one day) or if a `_manual_override` row violates the golden rule (stamped at `date_added` - the F21 class). `--slack` mode: read-only compare, report counts only.
+
+#### LEADFORM-1 / CAL-1 - Writer-truth checks for the non-GHL conversion paths (formalized 2026-06-12, audit F20)
+
+These were previously prose-only ("leadform clients verify against stored raw payloads") and ran informally; they now have check IDs so their results are ledgerable and their absence from a report is itself detectable. They run **every run, both modes**, for their respective clients.
+
+- **LEADFORM-1 (BLOCKER)** - mustache-painting, peach-paint-co, queen-consultancy: every `ads_paid_leads` row satisfies `last_paid_opt_in_at == (raw->>'created_time')::timestamptz` (±1s) and zero rows have a missing/unparseable `raw.created_time`. The leadform writer (`sync-meta-leadforms.ts`) has exactly one legitimate date source: the Meta leadform `created_time`. Any drift = the writer re-dated a lead (golden-rule violation on the leadform path). Companion INFO: person-level duplicate scan (same client + normalized email/phone appearing under multiple leadgen ids, the F29 class) - count only.
+- **CAL-1 (BLOCKER)** - queen-consultancy bookings: every `ads_paid_bookings` row satisfies `booked_at == (raw->'event'->>'created_at')::timestamptz` (±1s); zero rows with `raw.event.status = 'canceled'` are COUNTED; synthetic `cal:` contact count == 0 while F30 is open. SQL for both in `invariants/orbit.md`.
 
 ### Step 2.5 - Optional: `--gap-scan` mode
 
@@ -276,69 +315,74 @@ What it does:
 
 Skipped automatically when `DATABASE_URL` isn't reachable. The remote routine doesn't run gap-scan (only `--slack` mode). Scheduled locally as a separate launchd job: `com.zander.andy-gap-scan` firing Sunday 7am NY.
 
-### Step 3 - Aggregate and emit
+### Step 3 - Reconcile the ledger and emit (rewritten 2026-06-12)
 
-For each client, total PASS / WARN / FAIL across all sections.
+Run every check, then classify each WARN/FAIL against the ledger per Step 0.5. The report is a **diff against yesterday's known world**, not a re-print of it.
+
+#### Top-line status (replaces PASS/WARN/FAIL)
+
+- **BROKEN** ❌ - any BLOCKER failed. Stop-the-line.
+- **ACTION** 🟠 - no blockers, but a human is needed today: ≥1 NEW finding, OR a state change needing acknowledgment (REGRESSED, SNOOZE EXPIRED, FIXED awaiting confirm-close), OR an aged (>7d) warning with no snooze (the permanent-WARN rule forces it here), OR it is Monday and the J4 triage queue is non-empty.
+- **GREEN** ✅ - nothing new, no state changes, every carry-over is validly snoozed/cadenced with a named unblocking action. GREEN is reachable and expected on a normal day; chronic-but-snoozed findings do NOT block it.
+
+Blanket WARN no longer exists as a status. A warning is either NEW (→ ACTION once), validly snoozed (→ GREEN, collapsed line), or aged-out (→ forced ACTION). There is no state in which the same warning prints day after day.
 
 #### 3a - Vault mode (default)
 
-Render the report using `~/.claude/skills/andy-the-auditor/templates/report-template.md`.
+Render per `templates/report-template.md`. The report leads with exactly three sections, full check tables BELOW the fold:
 
-**Day-over-day delta**: read yesterday's report if it exists; surface any check that flipped from PASS → FAIL or PASS → WARN today at the very top under a "Newly failing since yesterday" section.
+1. **NEW since last run** - every finding not in the ledger. Per finding: what, evidence (truth vs app vs delta), the GHL/file deep link, likely owner, and **the one decision or action needed today**.
+2. **STATE CHANGES** - findings that moved: FIXED (was `fixed_pending_verify` or carried, now clean), REGRESSED (was `closed`, reproduces), SNOOZE EXPIRED (date passed, still reproduces), plus **operator mutations** from the MUT-1 diff (adds/removes of `_manual_override` / exclusions / `counts_as_separate`).
+3. **Known carry-overs** - ONE collapsed line each, no detail blocks: `{{check}} ({{client}}): known, day {{age}}, snoozed until {{date|event}} - {{unblocking_action}}`. Example: `ORBIT-I2 (contractor-launch): known, day 1, snoozed until IG asset assigned - BM: assign CL Instagram to act_626274846998122, then re-run rewriter`.
 
-Write to:
-```
-~/Obsidian/Vault/20-Clients/CareGenius/attribution-audits/YYYY-MM-DD.md      # CG B2B
-~/Obsidian/Vault/20-Clients/BuilderPro/attribution-audits/YYYY-MM-DD.md      # BP
-~/Obsidian/Vault/20-Clients/_Moreway-Agency/attribution-audits/YYYY-MM-DD.md # OBB + contractor-launch + mustache-painting + peach-paint-co + queen-consultancy + cross-client totals
-```
+Then the fold marker (`--- full check detail below ---`), then the familiar ORBIT-A..J tables, raw counts, and latency - unchanged in substance, demoted in position.
 
-If the per-client folder doesn't exist, create it.
+Write to the same three vault paths as before (CareGenius / BuilderPro / _Moreway-Agency `attribution-audits/YYYY-MM-DD.md`; create folders if missing).
 
 #### 3b - Slack mode (--slack ENV_VAR)
 
-POST a single Slack message to the webhook URL stored in `process.env[ENV_VAR]`. Format:
-
-**Main message** (one line per client + a top header):
+POST a single message to the webhook in `process.env[ENV_VAR]`. Ledger = the committed copy in the cloned repo, read-only; anything not in it is reported NEW (the next vault run ledgers it). Format mirrors the vault lead sections:
 
 ```
-*Orbit Attribution Audit, {{date}} ({{window_label}})*
-{{client_emoji}} {{client_label}}: {{status_word}} ({{counts}})       # one line per enabled client (7 today)
-...
-Skill version: `{{skill_sha_or_version}}`  ·  Window: {{date_start}} to {{date_end}}
+*Orbit Audit {{date}}* - {{GREEN ✅ | ACTION 🟠 | BROKEN ❌}}  ({{window_label}})
+NEW: {{count}} - {{one line per new finding: client :: check :: what :: action}}        # or "none"
+CHANGED: {{count}} - {{one line per state change}}                                       # or "none"
+Known: {{count}} carry-overs (oldest day {{max_age}}), all snoozed/cadenced              # single line, never itemized
+Mon only → J4 triage: {{count}} yes/no questions waiting in the vault report
+Skill `{{sha}}` · ledger `{{ledger_updated_at}}` · window {{date_start}}→{{date_end}}
 ```
 
-Where `{{status_word}}` ∈ "all clear", "WARN", "FAIL"; `{{client_emoji}}` ∈ ✅ ⚠️ ❌; `{{counts}}` is e.g. "ORBIT-A through G + F, 0 blockers, 1 warning, 12 adsets checked".
+**Threaded reply** only when status != GREEN: one block per NEW/CHANGED finding with `truth / app / delta / likely owner file:line` (same shape as before; ORBIT-F adset findings capped at top 10 per client). Known carry-overs never appear in the thread.
 
-**Threaded reply** (only when ANY client status != PASS) - for each failed/warning check across all clients, including per-adset drift findings from ORBIT-F:
+Skip vault writes entirely in Slack mode. ORBIT-F runs in Slack mode but ORBIT-H does not (no local repo). Include the skill commit SHA so Zander can see which version produced the message. If the Slack POST fails (non-2xx), retry once with backoff, then halt with the response body printed to stdout.
+
+#### 3c - Persist the ledger (vault mode only, MANDATORY)
+
+After writing the vault reports: update `ledger/findings.json` (new findings added, `last_seen` bumped, state transitions applied, I2 baselines ratcheted, MUT-1 snapshot overwritten, `updated_at`/`updated_by` stamped), then:
 
 ```
-{{client}} :: {{check_id}} ({{severity}}) :: {{one_line_explanation}}
-  truth: {{truth_value}}  app: {{app_value}}  delta: {{delta}}
-  likely owner: {{file_path}}:{{line}}
+cd ~/.claude/skills/andy-the-auditor
+git add ledger/ && git commit -m "ledger: YYYY-MM-DD vault run" && git push
 ```
 
-For ORBIT-F per-adset findings, include the adset_id and name in the explanation. Cap at top 10 failing adsets per client; aggregate-summarize the rest with a line like "12 more adsets within tolerance, 3 more failed (see vault report for full list)."
-
-Skip vault writes entirely in Slack mode. ORBIT-F runs in Slack mode but ORBIT-H does not (no local repo). Include the skill commit SHA (from `git -C $(find / -name SKILL.md -path '*andy-the-auditor*' 2>/dev/null | head -1 | xargs dirname) rev-parse --short HEAD` if available, else "unversioned") so Zander can see which version of the skill produced the message.
-
-If the Slack POST fails (non-2xx response), retry once with exponential backoff, then halt with the response body printed to stdout (the routine logs that).
+This is part of the run, not housekeeping: both launchd runners `git reset --hard origin/main` before invoking the skill, so an unpushed ledger update is destroyed by the next scheduled run, and the 7am cloud routine reads the pushed copy. If the push fails, retry once; if it still fails, say so loudly in the terminal summary - a stale ledger means tomorrow's NEW section will be wrong.
 
 ### Step 4 - Surface in terminal (vault mode only)
 
 After writing files in vault mode:
 
-1. If any BLOCKER failed, print a top banner with the failed check IDs and a one-line summary each, plus file:line hints from the failure-mode map.
-2. Print the vault note path(s) so Zander can click and read.
-3. Print PASS / WARN / FAIL totals per client.
+1. Print the top-line status (GREEN / ACTION / BROKEN) with the NEW + CHANGED counts. If BROKEN, list the failed check IDs with one-line summaries + file:line hints from the failure-mode map.
+2. Print each NEW finding's one-line action ("what Zander must decide today").
+3. Print the vault note path(s) so Zander can click and read, and confirm the ledger commit+push succeeded (Step 3c).
 4. Do NOT print the full report inline - the vault notes are the artifact.
 
 Example banner:
 
 ```
-✗ CG B2B: ORBIT-B1 paid lead set off by 3 contacts - vault://20-Clients/CareGenius/attribution-audits/2026-05-19.md
-✓ BuilderPro: all 22 checks green
-⚠ OBB: ORBIT-G2 sync stale (last GHL run 27h ago) - vault://20-Clients/_Moreway-Agency/attribution-audits/2026-05-19.md
+🟠 ACTION (1 new, 1 changed, 17 known-snoozed)
+  NEW  ORBIT-I2/contractor-launch: re-tag blocked on IG asset permission - assign CL Instagram to act_626274846998122 in BM
+  FIXED ORBIT-B6: 0 new candidates since PR #253 deployed
+  vault://20-Clients/_Moreway-Agency/attribution-audits/2026-06-13.md · ledger pushed @ a1b2c3d
 ```
 
 In `--slack` mode, terminal output is minimal: one line confirming the POST succeeded and the message ts (Slack timestamp) for thread anchoring. The routine's logs capture this for debugging.
@@ -376,7 +420,7 @@ When a check fails, Andy includes a likely-owner hint in the report. The mapping
 
 Three per-client files per day, identical frontmatter shape. See `~/.claude/skills/andy-the-auditor/templates/report-template.md`.
 
-Frontmatter (required for Slack-bot consumption):
+Frontmatter (required for Slack-bot consumption; reshaped 2026-06-12 for the ledger regime):
 
 ```yaml
 ---
@@ -386,21 +430,24 @@ window_start: YYYY-MM-DD
 window_end: YYYY-MM-DD
 window_days: 3
 run_type: scheduled | manual
-status: PASS | WARN | FAIL
+status: GREEN | ACTION | BROKEN
 blockers: 0
-warnings: 0
+new_findings: 0             # findings not in the ledger before this run
+state_changes: 0            # FIXED + REGRESSED + SNOOZE-EXPIRED + operator mutations
+known_carryovers: 0         # validly snoozed/cadenced ledger findings still reproducing
 passes: 0
-summary_one_line: "CG ✓ - all 9 checks passed within tolerance"
-failed_checks: []           # ["ORBIT-B1", "ORBIT-E4"] when status != PASS
-warning_checks: []
+summary_one_line: "CG GREEN - 0 new, 0 changed, 3 known (all snoozed); every layer reconciles"
+action_items: []            # one string per thing a human must do today; non-empty iff status == ACTION
+failed_checks: []           # BLOCKER check IDs when status == BROKEN
+new_finding_keys: []        # ledger keys of today's NEW findings
 notable_findings: []
 ---
 ```
 
-Status rules:
-- `status = FAIL` if any BLOCKER failed
-- `status = WARN` if no BLOCKERs but at least one WARN failed
-- `status = PASS` otherwise
+Status rules (same as Step 3):
+- `status = BROKEN` if any BLOCKER failed
+- `status = ACTION` if NEW findings, un-acked state changes, an aged (>7d) un-snoozed warning, or Monday-with-J4-queue
+- `status = GREEN` otherwise - chronic-but-snoozed findings do not block GREEN
 
 `summary_one_line` < 100 chars, Slack-friendly.
 
@@ -450,6 +497,9 @@ If the morning Slack message looks stale: confirm `git log -1 --format=%h` match
 ├── SKILL.md                                # this file
 ├── invariants/
 │   └── orbit.md                            # single canonical config (account, env, rules, tolerances, queries)
+├── ledger/
+│   ├── findings.json                       # persistent findings ledger (single writer: vault mode; commit+push every run)
+│   └── README.md                           # ledger schema + lifecycle spec
 ├── references/
 │   └── orbit-architecture.md               # cross-layer explainer with file:line refs
 └── templates/

@@ -292,7 +292,7 @@ GROUP BY client_id
 ORDER BY client_id;
 ```
 
-BLOCKER when `has_campaign > 0` AND `has_ad = 0` (writer dropped ad-level resolution). WARN when `has_ad` is non-zero but well below `has_campaign` (URL-tag coverage limitation, not a code bug). For ORBIT-I1, also count the **in-window** ad-attributed contacts to compare against the Best Ads response:
+BLOCKER when `has_campaign > 0` AND `has_ad = 0` (writer dropped ad-level resolution). Otherwise **INFO with a floor** (reclassified 2026-06-12): the all-time coverage % is historical drag from pre-canonical-UTM conversions and cannot be lifted retroactively - rewriter re-runs on 2026-06-12 confirmed CG 69/69, OBB 60/60 active ads already fully tagged with 0 would-change. Compute `ad_coverage = has_ad::float / NULLIF(has_campaign,0)` per (client, table) and compare to `baselines.i2_coverage` in the skill's `ledger/findings.json`: **WARN only when coverage drops more than `warn_drop_pp` (2pp) below the floor** (new conversions stopped carrying ad ids = live regression: untagged new ads, resolver break, URL-tag loss). When coverage improves, the vault run ratchets the baseline UP. For ORBIT-I1, also count the **in-window** ad-attributed contacts to compare against the Best Ads response:
 
 ```sql
 SELECT COUNT(DISTINCT contact_id) AS ad_attributed_leads
@@ -385,10 +385,11 @@ WHERE cb.booked_at >= $window_start_iso AND cb.booked_at <= $window_end_iso;
 
 `paid_counted` MUST equal the overview KPI (J1 guarantees the join drops nothing). The endpoint's per-appointment `counts.paid` (raw `ads_paid_bookings` membership) MAY exceed it - reschedules and stale-click rows sit in the PAID bucket display but do not count; that is documented and by design.
 
-**J4 - OTHER-bucket paid-signal triage** (WARN; the morning "look through these" queue). Up to 15/client in vault mode, count-only in Slack:
+**J4 - OTHER-bucket paid-signal triage** (WARN; **WEEKLY cadence since 2026-06-12**: the list renders only in Monday vault runs as decision-ready yes/no questions; every run still ledger-updates candidates; non-Monday reports + Slack carry the count only):
 
 ```sql
 SELECT ab.appointment_id, ab.contact_id, ab.calendar_name, ab.booked_at,
+       g.full_name, g.email,
        g.first_utm_source, g.last_utm_source, g.last_fbclid
 FROM ads_all_bookings ab
 LEFT JOIN ads_paid_bookings pb
@@ -398,6 +399,7 @@ LEFT JOIN ads_ghl_contacts g
 WHERE ab.client_id = $client_id
   AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso
   AND pb.appointment_id IS NULL                              -- OTHER bucket
+  AND g.review_status IS NULL                                -- answered candidates drop out
   AND (
     LOWER(COALESCE(g.last_utm_source,''))  IN ('facebook','instagram','fb','ig','meta')
     OR LOWER(COALESCE(g.first_utm_source,'')) IN ('facebook','instagram','fb','ig','meta')
@@ -409,7 +411,16 @@ LIMIT 15;
 
 (Heads-up: this triage screen intentionally uses the BROAD signal set - utm_source list + fbclid - to surface candidates. That is wider than the counting predicate `touchIsPaidMeta` by design; J4 is a review queue, not a count. Do not "fix" J4 candidates into the paid set unless they pass the real predicate.)
 
-GHL deep link for each: `https://app.gohighlevel.com/v2/location/{ghl_location_id}/contacts/detail/{contact_id}` (`ghl_location_id` from `ads_clients_config`). Helper in code: `buildGhlContactUrl()` in `src/lib/ads-clients.ts`.
+**Monday section format** (one per candidate; `full_name` falling back to email, then contact_id):
+
+```
+- [ ] **{full_name}** booked {booked_at} on "{calendar_name}" - signal: {signal}. Real paid booking?
+      GHL: https://app.gohighlevel.com/v2/location/{ghl_location_id}/contacts/detail/{contact_id}
+      YES → curl -X POST {origin}/api/ads/bookings/promote -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{client_id}","appointment_id":"{appointment_id}","action":"promote"}'
+      NO  → curl -X POST {origin}/api/ads/contacts/review -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{client_id}","contact_id":"{contact_id}","status":"ignored"}'
+```
+
+GHL deep link base: `ghl_location_id` from `ads_clients_config`. Helper in code: `buildGhlContactUrl()` in `src/lib/ads-clients.ts`. Valid review statuses: `verified`, `needs_attention`, `ignored` (`api/ads/contacts/review.ts`). A J1-escalation candidate (paid calendar yet OTHER) ignores the weekly cadence.
 
 **J5 - unreviewed backlog** (INFO):
 
@@ -425,6 +436,66 @@ LEFT JOIN ads_ghl_contacts g
 WHERE ab.client_id = $client_id
   AND ab.booked_at >= $window_start_iso AND ab.booked_at <= $window_end_iso
   AND (g.review_status IS NULL);
+```
+
+### Operator-mutation ledger (MUT-1, all clients, added 2026-06-12 per audit F20)
+
+Four write paths mutate paid counts outside the sync pipeline (`contacts/attribute`, `bookings/promote`, `contacts/exclusion`, `bookings/count-separate`). Enumerate all four sets per vault run, diff against `mutations_snapshot` in the skill's `ledger/findings.json`, report adds/removes under the report's STATE CHANGES section, then overwrite the snapshot. INFO when plausibly operator-intentional; WARN on implausible volume (dozens in a day) or a `_manual_override` row stamped at `date_added` (golden-rule violation, F21 class). Slack mode: counts only, no snapshot write.
+
+```sql
+SELECT client_id, contact_id     FROM ads_paid_leads    WHERE raw->>'_manual_override' = 'true' ORDER BY 1,2;
+SELECT client_id, appointment_id FROM ads_paid_bookings WHERE raw->>'_manual_override' = 'true' ORDER BY 1,2;
+SELECT client_id, contact_id     FROM ads_ghl_contacts  WHERE excluded_from_metrics = true      ORDER BY 1,2;
+SELECT client_id, appointment_id FROM ads_paid_bookings WHERE counts_as_separate = true          ORDER BY 1,2;
+```
+
+### Leadform writer truth (LEADFORM-1, mustache-painting + peach-paint-co + queen-consultancy, formalized 2026-06-12 per audit F20)
+
+The leadform writer's only legitimate date source is the Meta leadform `created_time`. Any drift = the writer re-dated a lead (golden-rule violation on the leadform path). BLOCKER on any row returned:
+
+```sql
+SELECT client_id, contact_id, last_paid_opt_in_at, raw->>'created_time' AS created_time
+FROM ads_paid_leads
+WHERE client_id = $client_id
+  AND (
+    raw->>'created_time' IS NULL
+    OR ABS(EXTRACT(EPOCH FROM (last_paid_opt_in_at - (raw->>'created_time')::timestamptz))) > 1
+  );
+```
+
+Companion INFO (the F29 person-level dup class - count only, never fails):
+
+```sql
+SELECT COUNT(*) FROM (
+  SELECT LOWER(COALESCE(raw->>'email','')) AS em
+  FROM ads_paid_leads
+  WHERE client_id = $client_id AND COALESCE(raw->>'email','') <> ''
+  GROUP BY 1 HAVING COUNT(DISTINCT contact_id) > 1
+) d;
+```
+
+### Calendly writer truth (CAL-1, queen-consultancy, formalized 2026-06-12 per audit F20)
+
+BLOCKER on any row from either query; third query is the F30 synthetic-contact guard (must stay 0 while F30 is open):
+
+```sql
+-- booked_at must equal the Calendly event's created_at (±1s)
+SELECT client_id, appointment_id, booked_at, raw->'event'->>'created_at' AS event_created_at
+FROM ads_paid_bookings
+WHERE client_id = 'queen-consultancy'
+  AND (
+    raw->'event'->>'created_at' IS NULL
+    OR ABS(EXTRACT(EPOCH FROM (booked_at - (raw->'event'->>'created_at')::timestamptz))) > 1
+  );
+
+-- cancelled events must never be counted
+WITH counted_bookings AS ( ... CTE above, client 'queen-consultancy' ... )
+SELECT appointment_id FROM counted_bookings
+WHERE LOWER(COALESCE(raw->'event'->>'status','')) IN ('canceled','cancelled');
+
+-- synthetic cal: contacts (F30 guard)
+SELECT COUNT(*) FROM ads_paid_bookings
+WHERE client_id = 'queen-consultancy' AND contact_id LIKE 'cal:%';
 ```
 
 ### Opt-in dated by event, not sync clock (ORBIT-B5, per client)
@@ -474,7 +545,7 @@ WHERE client_id = $client_id
   );
 ```
 
-Each hit is a phantom-re-opt-in CANDIDATE: a workflow likely re-dated an old lead into the current window. WARN (not BLOCKER - a genuine re-opt-in through a UTM-less path can look identical); list rows with GHL deep links in vault mode, count-only in Slack. Scope to `last_paid_opt_in_at` within the last 14 days to keep the queue current. Root cause class: [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts) `resolveReOptInDate` rung 2 accepts any `dateUpdated > priorAt && <= now`. Forward fix (tracked as audit F23): rung 2 should require fresh-event corroboration in code; until then B6 is the data-side detector.
+Each hit is a phantom-re-opt-in CANDIDATE: a workflow likely re-dated an old lead into the current window. WARN (not BLOCKER - a genuine re-opt-in through a UTM-less path can look identical). Scope to `last_paid_opt_in_at` within the last 14 days to keep the queue current. **Ledger-once (2026-06-12):** each candidate enters the findings ledger keyed by contact_id, appears in the report's NEW section once (with GHL deep link), then collapses to the known-carry-over line - never re-listed daily; Slack always count-only. **Forward fix SHIPPED in Orbit PR #253 (2026-06-12):** `resolveReOptInDate` rung 2 now requires fresh-event corroboration (live `paid social` session, or fbc click within 7d of the stamp; uncorroborated flips keep the prior date). Once #253 is deployed, any NEW B6 candidate is a regression signal. Pre-#253 stamps remain in the data until the F23 cleanup apply-script restamps them.
 
 ### Sync freshness (per client_id + source)
 
@@ -561,14 +632,17 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-H5 | WARN/BLOCKER | Schema drift | Tracked `ads_*` + `fmt_*` table blocks (checksums/schema-baseline.json) hash unchanged. BLOCKER if referenced column removed/renamed. |
 | ORBIT-H6 | WARN    | Endpoint coverage | All `api/ads/*.ts` route files (excluding `_*.ts` helpers) appear in `known_endpoints` below or are explicitly skipped |
 | ORBIT-I1 | BLOCKER | Per-ad surface | Best Ads (`/api/ads/best-ads`) shows non-zero conversions when the client has ad-attributable conversions in window; SUM(per-ad paid_leads) reconciles to the `meta_ad_id`-attributed subset |
-| ORBIT-I2 | BLOCKER/WARN | Attribution writer | `meta_ad_id` population health: BLOCKER if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0` per (client, table); WARN if non-zero but materially below campaign coverage |
+| ORBIT-I2 | BLOCKER/INFO+floor | Attribution writer | `meta_ad_id` population health: BLOCKER if `COUNT(meta_campaign_id) > 0` but `COUNT(meta_ad_id) = 0` per (client, table); otherwise INFO - WARN only when ad-coverage drops >2pp below `baselines.i2_coverage` in the ledger (reclassified 2026-06-12; all-time % is historical drag, only a DROP is a live regression) |
 | ORBIT-I3 | BLOCKER | Drill-in lists | LIVE `contacts/list.ts` response length reconciles with the LIVE overview KPI it expands (counted cohort): `booked=yes` rows == `paid_booked_calls` (modulo documented counts_as_separate cases); `booked=any` rows == `paid_leads`. Sides computed independently; Neon counted SQL is the referee only |
 | ORBIT-J1 | BLOCKER | Booked Calls surface | PAID ⊆ ALL: every COUNTED booking (booked_at in window) exists in `ads_all_bookings`. Missing = `listCalendars()` skipped a paid calendar |
 | ORBIT-J2 | BLOCKER | Booked Calls surface | Bucket math: `/api/ads/bookings/list?bucket=all` `counts.all == counts.paid + counts.other`, and counts match independent Neon derivation exactly |
 | ORBIT-J3 | BLOCKER | Booked Calls surface | COUNTED bookings joined into `ads_all_bookings` == `/api/ads/overview` `paid_booked_calls` (per-appointment `counts.paid` may exceed it: non-counted rows display in the bucket by design) |
-| ORBIT-J4 | WARN | Booked Calls triage | OTHER-bucket bookings carrying an ad signal (first OR last touch) - the morning "look through these" review queue. Vault: list ≤15/client w/ GHL link; Slack: count only |
+| ORBIT-J4 | WARN | Booked Calls triage | OTHER-bucket bookings carrying an ad signal (first OR last touch), `review_status IS NULL` only. **Weekly cadence (2026-06-12): Monday vault runs render the yes/no triage list (full_name + GHL link + promote/ignore command); other days + Slack carry the count only; ledger updated every run** |
 | ORBIT-J5 | INFO | Booked Calls triage | Unreviewed booked-call backlog: in-window bookings with `review_status IS NULL`, split ALL vs OTHER |
-| ORBIT-B6 | WARN | Neon writer, all clients | Rung-2 (`dateUpdated`) re-opt-in stamps require fresh-event corroboration: WARN when the parseable fbc click time is >7d older than the stamp or absent (phantom re-opt-in via workflow touch; the F23 class B5 cannot see). Appended 2026-06-10 |
+| ORBIT-B6 | WARN | Neon writer, all clients | Rung-2 (`dateUpdated`) re-opt-in stamps require fresh-event corroboration: WARN when the parseable fbc click time is >7d older than the stamp or absent (phantom re-opt-in via workflow touch; the F23 class B5 cannot see). Appended 2026-06-10. **Ledger-once: each candidate is reported NEW once, then collapses; never re-listed daily. Forward fix shipped in Orbit PR #253 (2026-06-12) - post-#253 candidates are a regression signal** |
+| MUT-1 | INFO/WARN | Operator mutations | Enumerate `_manual_override` leads/bookings + `excluded_from_metrics` + `counts_as_separate` per run, diff vs the ledger's `mutations_snapshot`, surface adds/removes under STATE CHANGES. WARN on implausible volume or a golden-rule-violating stamp. Added 2026-06-12 (audit F20) |
+| LEADFORM-1 | BLOCKER | Leadform writer truth | mustache-painting / peach-paint-co / queen-consultancy: `last_paid_opt_in_at == raw->>'created_time'` (±1s), zero missing `created_time`; INFO companion: person-level dup count (F29). Formalized 2026-06-12 (audit F20) |
+| CAL-1 | BLOCKER | Calendly writer truth | queen-consultancy: `booked_at == raw->'event'->>'created_at'` (±1s); cancelled events never counted; synthetic `cal:` contact count == 0 (F30 guard). Formalized 2026-06-12 (audit F20) |
 
 Sections B and C apply to the **4 GHL-walker clients** (CG B2B, BuilderPro, OBB, Contractor Launch); B5/B6 data-side detectors apply to ALL clients with `ads_paid_leads` rows. Leadform clients (mustache-painting, peach-paint-co) and queen-consultancy have no GHL to walk - their writer-truth checks compare Neon against the stored raw payloads (`last_paid_opt_in_at == raw->>'created_time'`; queen `booked_at == raw->'event'->>'created_at'`).
 
@@ -690,7 +764,9 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | ORBIT-G (Sync freshness) | RUN | RUN |
 | ORBIT-H (Code-static grep) | RUN | **SKIP** (no repo checkout in cloud routine) |
 | ORBIT-I (Per-ad surface + meta_ad_id health + I3 drill-in reconciliation) | RUN | RUN |
-| ORBIT-J (Booked Calls bucket integrity + triage queue) | RUN (J1–J5, full triage lists) | RUN J1–J3 + J4/J5 counts only (lists deferred to vault) |
+| ORBIT-J (Booked Calls bucket integrity + triage queue) | RUN (J1–J5; J4 list renders Mondays only) | RUN J1–J3 + J4/J5 counts only |
+| LEADFORM-1 / CAL-1 (writer truth, leadform/Calendly clients) | RUN | RUN |
+| MUT-1 (operator-mutation diff vs ledger snapshot) | RUN (writes the snapshot) | RUN read-only (counts vs committed snapshot) |
 
 **Vault is the deep audit. Slack is a smoke check.** Slack post format: one line per client with PASS / WARN / FAIL totals + the top failing check ID, plus a vault link for the full report. Slack mode never substitutes for the vault report; both run on the daily 7am schedule.
 

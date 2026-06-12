@@ -1,0 +1,418 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-12T17:00:00Z",
+  "updated_by": "seed (andy revamp session, 2026-06-12)",
+  "baselines": {
+    "i2_coverage": {
+      "as_of": "2026-06-12",
+      "warn_drop_pp": 2,
+      "ads_paid_leads": {
+        "builderpro": {
+          "has_ad": 164,
+          "has_campaign": 459,
+          "total": 484
+        },
+        "caregenius-b2b": {
+          "has_ad": 421,
+          "has_campaign": 864,
+          "total": 1432
+        },
+        "contractor-launch": {
+          "has_ad": 116,
+          "has_campaign": 287,
+          "total": 292
+        },
+        "mustache-painting": {
+          "has_ad": 171,
+          "has_campaign": 171,
+          "total": 171
+        },
+        "obb": {
+          "has_ad": 2454,
+          "has_campaign": 2818,
+          "total": 2878
+        },
+        "peach-paint-co": {
+          "has_ad": 148,
+          "has_campaign": 148,
+          "total": 148
+        },
+        "queen-consultancy": {
+          "has_ad": 39,
+          "has_campaign": 39,
+          "total": 41
+        }
+      },
+      "ads_paid_bookings": {
+        "builderpro": {
+          "has_ad": 134,
+          "has_campaign": 171,
+          "total": 180
+        },
+        "caregenius-b2b": {
+          "has_ad": 174,
+          "has_campaign": 228,
+          "total": 237
+        },
+        "contractor-launch": {
+          "has_ad": 83,
+          "has_campaign": 102,
+          "total": 104
+        },
+        "obb": {
+          "has_ad": 569,
+          "has_campaign": 596,
+          "total": 617
+        },
+        "queen-consultancy": {
+          "has_ad": 3,
+          "has_campaign": 3,
+          "total": 3
+        }
+      }
+    }
+  },
+  "mutations_snapshot": {
+    "as_of": "2026-06-12",
+    "manual_override_leads": {},
+    "manual_override_bookings": {
+      "caregenius-b2b": [
+        "l7MhLlmHHK8d1XwhmMoG"
+      ]
+    },
+    "excluded_contacts": {
+      "builderpro": [
+        "9qS9y5sx6xfxEjbpQdA9",
+        "fgj33YjKGKFHytTvJzjw"
+      ],
+      "caregenius-b2b": [
+        "8vi0K87GVAxTwwbhofAN",
+        "FMiigczods94seyJhHIt",
+        "Lil6fQqlqcywNAzs0LsP",
+        "lzgT9BGjpsH5WsqvAEMz"
+      ]
+    },
+    "counts_as_separate": {
+      "builderpro": [
+        "abkII0bmZjJt5qL5UXOn"
+      ]
+    }
+  },
+  "findings": {
+    "7e88678361": {
+      "key": "ORBIT-B6|caregenius-b2b|8vi0K87GVAxTwwbhofAN",
+      "check": "ORBIT-B6",
+      "client": "caregenius-b2b",
+      "subject": "8vi0K87GVAxTwwbhofAN",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-09 (IN WINDOW) with fbc click ~05-24, 16d stale",
+      "first_seen": "2026-06-10",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)",
+      "note": "Operator already excluded this contact from metrics (MUT-1 snapshot 2026-06-12), so the KPI is no longer affected; row still needs restamp or closure."
+    },
+    "58c2c36a19": {
+      "key": "ORBIT-B6|caregenius-b2b|i48ffD7iccyplMSkznQx",
+      "check": "ORBIT-B6",
+      "client": "caregenius-b2b",
+      "subject": "i48ffD7iccyplMSkznQx",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-04, no fbc corroboration",
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "e540455581": {
+      "key": "ORBIT-B6|caregenius-b2b|UBwmbLfZlSqbR4ounyrD",
+      "check": "ORBIT-B6",
+      "client": "caregenius-b2b",
+      "subject": "UBwmbLfZlSqbR4ounyrD",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-01, no fbc corroboration",
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "a754c13d08": {
+      "key": "ORBIT-B6|obb|bVnkoZ0h1YGstenmKQkz",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "bVnkoZ0h1YGstenmKQkz",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-10 (was in window), no fbc corroboration",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "fd59415980": {
+      "key": "ORBIT-B6|obb|3XFjrVPShKaJrVHPEFaT",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "3XFjrVPShKaJrVHPEFaT",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-10 (was in window), no fbc corroboration",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "7ef2f1f0a9": {
+      "key": "ORBIT-B6|obb|jgGIugJgG6MZKKHviqnW",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "jgGIugJgG6MZKKHviqnW",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-05, no fbc corroboration",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "d2bf8ebbf8": {
+      "key": "ORBIT-B6|obb|D4P9ZyhWvQVRDxolJzdg",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "D4P9ZyhWvQVRDxolJzdg",
+      "severity": "WARN",
+      "title": "rung-2 re-opt-in stamp 2026-06-04, no fbc corroboration",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "fixed_pending_verify",
+      "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
+    },
+    "aaa1348015": {
+      "key": "ORBIT-I2|caregenius-b2b|ads_paid_leads",
+      "check": "ORBIT-I2",
+      "client": "caregenius-b2b",
+      "subject": "ads_paid_leads",
+      "severity": "INFO",
+      "title": "meta_ad_id lead coverage below campaign coverage (URL-tag ceiling, historical)",
+      "first_seen": "2026-06-01",
+      "last_seen": "2026-06-12",
+      "status": "closed",
+      "unblocking_action": "none needed; floor regime active",
+      "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). Rewriter re-run 2026-06-12: all 69 active ads already canonical (0 would-change, canonical since 2026-05-26)."
+    },
+    "84bfe8b0ff": {
+      "key": "ORBIT-I2|builderpro|ads_paid_leads",
+      "check": "ORBIT-I2",
+      "client": "builderpro",
+      "subject": "ads_paid_leads",
+      "severity": "INFO",
+      "title": "meta_ad_id lead coverage below campaign coverage (URL-tag ceiling, historical)",
+      "first_seen": "2026-06-01",
+      "last_seen": "2026-06-12",
+      "status": "closed",
+      "unblocking_action": "none needed; floor regime active",
+      "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). BP active ads canonical since 2026-05-26 (62/62)."
+    },
+    "5d9b6d3a14": {
+      "key": "ORBIT-I2|obb|ads_paid_leads",
+      "check": "ORBIT-I2",
+      "client": "obb",
+      "subject": "ads_paid_leads",
+      "severity": "INFO",
+      "title": "meta_ad_id lead coverage 85.3%% (URL-tag ceiling, historical)",
+      "first_seen": "2026-06-01",
+      "last_seen": "2026-06-12",
+      "status": "closed",
+      "unblocking_action": "none needed; floor regime active",
+      "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). OBB additive script re-run 2026-06-12: all 60 active ads already carry Hyros pair + Orbit adId (0 would-change, tagged since 2026-06-01)."
+    },
+    "854f53e66f": {
+      "key": "ORBIT-I2|contractor-launch|ads_paid_leads",
+      "check": "ORBIT-I2",
+      "client": "contractor-launch",
+      "subject": "ads_paid_leads",
+      "severity": "INFO",
+      "title": "meta_ad_id lead coverage 39.7%% (URL-tag ceiling, historical)",
+      "first_seen": "2026-06-01",
+      "last_seen": "2026-06-12",
+      "status": "closed",
+      "unblocking_action": "superseded by the ig-asset-permission finding below; floor regime active"
+    },
+    "8547bf03b9": {
+      "key": "ORBIT-I2|contractor-launch|ig-asset-permission",
+      "check": "ORBIT-I2",
+      "client": "contractor-launch",
+      "subject": "ig-asset-permission",
+      "severity": "WARN",
+      "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "new",
+      "unblocking_action": "In Business Manager, assign Contractor Launch's Instagram account to act_626274846998122 (grant the moreway_claude_connect system user access to the IG asset), then re-run: npx tsx scripts/rewrite-meta-url-tags.ts --client contractor-launch --include-paused --apply. 4 link_source=none ads (120242437121730007, 120239959643160007, 120236112869530007, 120235841559090007) need manual review.",
+      "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. All CL ads currently paused, so the re-tag is zero-risk once unblocked."
+    },
+    "d12355cf14": {
+      "key": "ORBIT-J4|caregenius-b2b|t9tZmCw8iX7s9CvJgTg2",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "t9tZmCw8iX7s9CvJgTg2",
+      "severity": "WARN",
+      "title": "OTHER booking 06-11 on Speech Therapy Info Call (Manual Booking), utm=facebook + fbclid",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id eFqPkq0W1nXNRAVhvkwS"
+    },
+    "1e564f3f5e": {
+      "key": "ORBIT-J4|caregenius-b2b|a22DBoSyDXAv8A2Nmrbo",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "a22DBoSyDXAv8A2Nmrbo",
+      "severity": "WARN",
+      "title": "OTHER booking 06-11 on ABA Growth Engine Info Call (PAID cal), bare fbclid; live predicate verifies non-paid",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id mO4TmijObxyJwp66i9pR"
+    },
+    "cd18d97d7e": {
+      "key": "ORBIT-J4|caregenius-b2b|HuJWO9LwnwAbnkD4x6cH",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "HuJWO9LwnwAbnkD4x6cH",
+      "severity": "WARN",
+      "title": "OTHER booking 06-10 on ABA Providers Onboarding, first_utm=ig",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id 9TkIGx39OGC5ZuXlux2m"
+    },
+    "ca0b19d5cb": {
+      "key": "ORBIT-J4|caregenius-b2b|7QRbSztTXJrV7v2opEy3",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "7QRbSztTXJrV7v2opEy3",
+      "severity": "WARN",
+      "title": "OTHER booking 06-09 on ABA Providers Onboarding, first_utm=facebook",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id 8Iv67oTryQEjFdhhpNJE"
+    },
+    "47956a617e": {
+      "key": "ORBIT-J4|builderpro|qg5emxNC5ofDVDYxG71K",
+      "check": "ORBIT-J4",
+      "client": "builderpro",
+      "subject": "qg5emxNC5ofDVDYxG71K",
+      "severity": "WARN",
+      "title": "OTHER booking 06-11 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook + fbclid",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id CSl1tDuM76OxPM2JNX3Q"
+    },
+    "3ccf3ff7a3": {
+      "key": "ORBIT-J4|builderpro|nGfGCkDPu4hSSSGdp346",
+      "check": "ORBIT-J4",
+      "client": "builderpro",
+      "subject": "nGfGCkDPu4hSSSGdp346",
+      "severity": "WARN",
+      "title": "OTHER booking 06-09 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook/fb + fbclid",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id tdlIFfyvUL7RVV9psBtQ"
+    },
+    "c8403093f2": {
+      "key": "ORBIT-J4|obb|xMK3Ss3rUxCyEa5snxxS",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "xMK3Ss3rUxCyEa5snxxS",
+      "severity": "WARN",
+      "title": "OTHER booking 06-11 on Home Care Hero Application: Interview (PAID cal), bare fbclid; live predicate verifies non-paid",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id iWCXCHohIhmPyWGTapbO"
+    },
+    "1a4e39666f": {
+      "key": "ORBIT-J4|contractor-launch|YeJsiJt2FmPinjSQzIJi",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "YeJsiJt2FmPinjSQzIJi",
+      "severity": "WARN",
+      "title": "OTHER booking 06-10 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id tIzQ2J2Krpc2ZQ1ymnJc"
+    },
+    "cfc34b1459": {
+      "key": "ORBIT-J4|contractor-launch|cjDEtMnFBYMpjBbw3dFG",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "cjDEtMnFBYMpjBbw3dFG",
+      "severity": "WARN",
+      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id fwAPBpwbO5U4N0jTucE6"
+    },
+    "9abc6d7402": {
+      "key": "ORBIT-J4|contractor-launch|DLDCW2C81S7FuirUpd39",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "DLDCW2C81S7FuirUpd39",
+      "severity": "WARN",
+      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-15",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "note": "contact_id FCKEWu6RqAooerAvXzVZ"
+    },
+    "9218578f90": {
+      "key": "ORBIT-H2|global|_sources.ts:clientWindow",
+      "check": "ORBIT-H2",
+      "client": "global",
+      "subject": "_sources.ts:clientWindow",
+      "severity": "WARN",
+      "title": "private byte-identical clientWindow copy in api/ads/_sources.ts (drift seed, F42)",
+      "first_seen": "2026-06-10",
+      "last_seen": "2026-06-12",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-26",
+      "unblocking_action": "Orbit PR: delete the private copy and import clientWindow from _drilldown-sql.ts (audit F42)"
+    },
+    "5ba6faaef2": {
+      "key": "MIRROR-PAID-FLAG-DRIFT|global|is_paid_last_touch-backfill",
+      "check": "MIRROR-PAID-FLAG-DRIFT",
+      "client": "global",
+      "subject": "is_paid_last_touch-backfill",
+      "severity": "WARN",
+      "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows (CG 1291, OBB 1229, BP 446, CL 202) + an incremental-walk miss",
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "status": "new",
+      "unblocking_action": "Run a flag recompute under the current predicate (forceFull contacts re-walk or an approved apply-script with --confirm-prod-write), then /diagnose-orbit the incremental-walk miss (OBB iWCXCHohIhmPyWGTapbO mirror row synced 06-01 despite GHL dateUpdated 06-11). Owner: api/ads/sync-ghl-contacts.ts",
+      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are the Contacts Diagnostic verdicts + operator triage trust."
+    }
+  }
+}

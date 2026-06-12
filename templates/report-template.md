@@ -6,103 +6,106 @@ window_end: {{window_end_iso}}
 window_days: 3
 window_label: Last 3 days (NY, yesterday + 2 prior)
 run_type: {{run_type}}
-status: {{status}}
+status: {{GREEN | ACTION | BROKEN}}
 blockers: {{blocker_count}}
-warnings: {{warn_count}}
+new_findings: {{new_count}}
+state_changes: {{changed_count}}
+known_carryovers: {{known_count}}
 passes: {{pass_count}}
 summary_one_line: "{{summary}}"
+action_items: {{action_items_list}}
 failed_checks: {{failed_check_ids}}
-warning_checks: {{warning_check_ids}}
+new_finding_keys: {{new_finding_keys}}
 notable_findings: {{notable_findings}}
 skill_version: {{git_sha_or_version}}
+ledger_updated_at: {{ledger_updated_at}}
 tags: [attribution-audit, orbit, {{client_tag}}]
 ---
 
 <!--
 RENDERING SCOPE: Andy is a developer-style auditor for the Orbit app, NOT a marketing analyst.
-DO NOT add prose sections that comment on marketing performance: no spend-trend observations,
-no creative-effectiveness analysis, no spend-mix breakdowns, no campaign-strategy recommendations,
-no sample-size noise commentary. Stick to the dev-style sections listed below (TL;DR, Failures,
-Warnings, ORBIT-A through ORBIT-H, Raw counts, Next steps). The `notable_findings` frontmatter
-field is for dev/operational items only (e.g. "BP 9 of 18 leads unattributed, owner: api/ads/sync-conversions.ts").
-See SKILL.md "Scope" section for the full anti-example list.
+No spend-trend observations, no creative-effectiveness analysis, no spend-mix breakdowns,
+no campaign-strategy recommendations, no sample-size commentary. See SKILL.md "Scope".
+
+STRUCTURE CONTRACT (2026-06-12 revamp): the report LEADS with the three ledger-diff sections
+(NEW / STATE CHANGES / KNOWN). Full check tables go BELOW the fold. A known carry-over gets
+exactly ONE collapsed line - re-printing its detail block daily is the failure mode this
+template exists to kill. Status is GREEN / ACTION / BROKEN, never blanket WARN.
 -->
 
 # {{client}} Attribution Audit (Orbit) - {{date}}
 
-Window: **{{window_start_human}} to {{window_end_human}}** (America/New_York)
-Run type: {{run_type}}
-Skill version: {{git_sha_or_version}}
+Window: **{{window_start_human}} to {{window_end_human}}** ({{client_timezone}})
+Run type: {{run_type}} · Skill: {{git_sha_or_version}} · Ledger: {{ledger_updated_at}}
 
-## TL;DR
+{{if status == BROKEN}}
+## ❌ BROKEN - {{blocker_count}} blocker(s)
 
-- BLOCKERS: **{{blocker_count}}**
-- WARNINGS: **{{warn_count}}**
-- PASSES: **{{pass_count}}**
-
-{{if blocker_count > 0}}
-{{summary}} ❌ **Action required.** See "Failures" section below.
-{{else if warn_count > 0}}
-{{summary}} ⚠️ **Investigate.** No blockers, but warnings present.
-{{else}}
-{{summary}} ✅ **All green.** Orbit math reconciles with Meta + upstream conversion truth (GHL walk / leadform / Calendly payloads) on counted semantics.
-{{end}}
-
----
-
-## Newly failing since yesterday
-
-{{if newly_failing_count > 0}}
-
-| Check | Yesterday | Today | One-liner |
-|---|---|---|---|
-{{for each flipped check}}
-| {{check_id}} | {{yesterday_status}} | {{today_status}} | {{summary}} |
-{{end}}
-
-{{else}}
-None.
-{{end}}
-
----
-
-## Failures ({{blocker_count}} blockers)
-
-{{if blocker_count > 0}}
 {{for each FAIL check}}
-
-### {{check_id}} - {{check_name}} ({{severity}})
-
+### {{check_id}} - {{check_name}}
 - **Ground truth ({{source}}):** {{truth_value}}
-- **App-displayed (/api/ads/overview):** {{app_value}}
+- **App-displayed:** {{app_value}}
 - **Delta:** {{delta_abs}} ({{delta_pct}}%)
 - **What this means:** {{plain_english_explanation}}
 - **Likely owner:** {{file_path}}{{:line}} ({{regression_class}})
 - **Affected sample IDs:** {{sample_ids}}
-
 {{end}}
+{{else if status == ACTION}}
+## 🟠 ACTION - {{action_count}} item(s) need a human today
 {{else}}
-No blockers today.
+## ✅ GREEN - nothing new, no state changes
+All carry-overs validly snoozed/cadenced. Full reconciliation detail below the fold.
 {{end}}
 
 ---
 
-## Warnings ({{warn_count}})
+## 1. NEW since last run ({{new_count}})
 
-{{if warn_count > 0}}
-{{for each WARN check}}
-
-### {{check_id}} - {{check_name}}
-
-- **Detail:** {{summary}}
-- **Investigate:** {{file_or_query}}
-
+{{if new_count == 0}}None.{{else}}
+{{for each new finding}}
+### {{check_id}} ({{client_id}}) - {{title}}
+- **Evidence:** {{truth_vs_app_or_detector_output}}
+- **Link:** {{ghl_deep_link_or_file_line}}
+- **Likely owner:** {{file_path}}
+- **➜ Decide today:** {{the_one_decision_or_action}}
 {{end}}
-{{else}}
-No warnings today.
+{{end}}
+
+## 2. STATE CHANGES ({{changed_count}})
+
+{{if changed_count == 0}}None.{{else}}
+| Change | Finding | Detail |
+|---|---|---|
+{{for each}}
+| {{FIXED / REGRESSED / SNOOZE EXPIRED / MUTATION+ / MUTATION-}} | {{check_id}} ({{client_id}}) {{subject}} | {{one_liner}} |
+{{end}}
+{{end}}
+
+<!-- MUT-1 adds/removes render here as MUTATION+ / MUTATION- rows
+     (e.g. "MUTATION+ | excluded_from_metrics (caregenius-b2b) 8vi0K87G… | operator excluded contact; historical window counts shift"). -->
+
+## 3. Known carry-overs ({{known_count}})
+
+{{if known_count == 0}}None - ledger is clean.{{else}}
+{{for each known/snoozed finding, one line, NO detail blocks}}
+- `{{check_id}}` ({{client_id}}): known, day {{age}}, {{snoozed until {{date}} | weekly cadence (next: Monday)}} - {{unblocking_action}}
+{{end}}
+{{end}}
+
+{{if is_monday AND j4_queue_nonempty}}
+## Monday triage - J4 yes/no queue ({{j4_count}})
+
+{{for each J4 candidate}}
+- [ ] **{{full_name}}** booked {{booked_at}} on "{{calendar_name}}" - signal: {{signal}}. Real paid booking?
+      GHL: https://app.gohighlevel.com/v2/location/{{ghl_location_id}}/contacts/detail/{{contact_id}}
+      YES → `curl -X POST {{origin}}/api/ads/bookings/promote -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{{client_id}}","appointment_id":"{{appointment_id}}","action":"promote"}'`
+      NO  → `curl -X POST {{origin}}/api/ads/contacts/review -H "Authorization: Bearer $AUDIT_TOKEN" -H 'Content-Type: application/json' -d '{"client_id":"{{client_id}}","contact_id":"{{contact_id}}","status":"ignored"}'`
+{{end}}
 {{end}}
 
 ---
+
+*--- full check detail below the fold ---*
 
 ## ORBIT-A: Meta Graph API vs Neon `ads_meta_insights`
 
@@ -111,196 +114,103 @@ No warnings today.
 | Spend | ${{meta_spend}} | ${{neon_spend}} | ${{app_spend}} | {{delta_spend_pct}}% | {{status_a1}} |
 | Impressions | {{meta_impressions}} | {{neon_impressions}} | {{app_impressions}} | {{delta_impressions_pct}}% | {{status_a2}} |
 | Inline link clicks | {{meta_clicks}} | {{neon_clicks}} | {{app_clicks}} | {{delta_clicks_pct}}% | {{status_a3}} |
-| CPC | ${{meta_cpc}} | ${{neon_cpc}} | ${{app_cpc}} | {{delta_cpc_pct}}% | {{status_a4}} |
-| CPM | ${{meta_cpm}} | ${{neon_cpm}} | ${{app_cpm}} | {{delta_cpm_pct}}% | {{status_a4}} |
-| CTR | {{meta_ctr}}% | {{neon_ctr}}% | {{app_ctr}}% | {{delta_ctr_pp}}pp | {{status_a4}} |
+| CPC / CPM / CTR | ... | ... | ... | ... | {{status_a4}} |
 
 Note: most-recent day tolerance loosens to ±10% (Meta still aggregating).
-
----
 
 {{if has_ghl}}
 ## ORBIT-B: GHL (live walk) vs Neon `ads_paid_leads`
 
-Counted union semantics: `paid_leads = COUNT(DISTINCT contact_id) of (non-excluded opt-iners with last_paid_opt_in_at in window) UNION (COUNTED bookings with booked_at in window)`. COUNTED = 28-day click gate (or `_manual_override`) + excluded-contacts antijoin + one primary booking per contact (all-time MIN(booked_at)) + `counts_as_separate` overrides. Bookers whose original opt-in landed before the window still count as a lead.
+Counted union semantics per invariants/orbit.md (28-day click gate, exclusions antijoin, primary-booking anchor, `counts_as_separate`).
 
 | Metric | Ground truth (GHL walk) | Neon | App | Delta | Status |
 |---|---|---|---|---|---|
 | Paid leads in window (counted union) | {{truth_paid_leads}} | {{neon_paid_leads}} | {{app_paid_leads}} | {{delta_b1}} | {{status_b1}} |
-| Re-opt-in survival test | {{b3_result}} | - | - | - | {{status_b3}} |
+| Re-opt-in survival test (B3) | {{b3_result}} | - | - | - | {{status_b3}} |
 | B5 now()-stamp corroboration | {{b5_result}} | - | - | - | {{status_b5}} |
-| B6 rung-2 stale-corroboration candidates | {{b6_candidate_count}} | - | - | - | {{status_b6}} |
+| B6 rung-2 candidates (count; detail lives in the ledger) | {{b6_candidate_count}} ({{b6_new_count}} new) | - | - | - | {{status_b6}} |
 
 **Golden-rule grep (B2):** {{b2_result}}
-{{if b2_violations > 0}}
-Violations:
-{{for each violation}}
-- `{{file}}:{{line}}` - `{{matched_text}}`
-{{end}}
-{{end}}
-
-{{if b1_delta > 0}}
-**Sample mismatched contact_ids on delta:**
-- Missing-in-Neon: {{missing_in_neon_contact_ids}}
-- Extra-in-Neon: {{extra_in_neon_contact_ids}}
-{{end}}
-
----
 
 ## ORBIT-C: GHL bookings vs Neon `ads_paid_bookings` (COUNTED)
 
-Both sides apply the counted gates (click recency / exclusions / primary anchor / counts_as_separate) before comparing. Raw row counts are diagnostics only.
-
-| Metric | Ground truth (GHL walk, counted) | Neon (counted) | App | Delta | Status |
+| Metric | Ground truth (counted) | Neon (counted) | App | Delta | Status |
 |---|---|---|---|---|---|
 | Counted paid booked calls in window | {{truth_paid_booked}} | {{neon_paid_booked}} | {{app_paid_booked}} | {{delta_c1}} | {{status_c1}} |
 | Cost per booked | ${{truth_cpbc}} | - | ${{app_cpbc}} | {{delta_cpbc_pct}}% | {{status_c2}} |
-
-{{if c1_delta > 0}}
-**Sample mismatched appointment_ids on delta:**
-- Missing-in-Neon: {{missing_in_neon_appointment_ids}}
-- Extra-in-Neon: {{extra_in_neon_appointment_ids}}
 {{end}}
 
----
+{{if is_leadform_client}}
+## LEADFORM-1{{/CAL-1}}: writer truth vs raw payloads
+
+| Check | Rows scanned | Drift rows | Status |
+|---|---|---|---|
+| LEADFORM-1 `last_paid_opt_in_at == raw.created_time` | {{n}} | {{drift}} | {{status}} |
+| LEADFORM-1 dup-person scan (INFO) | {{n}} | {{dups}} | INFO |
+{{if queen}}| CAL-1 `booked_at == event.created_at` / no cancelled counted / no `cal:` synthetics | {{n}} | {{drift}} | {{status}} |{{end}}
 {{end}}
 
-<!-- ORBIT-D (Hyros) is DEPRECATED as of Part 11 (2026-05-20). Hyros is retired
-from every conversion path; do not render a Hyros section. Log one INFO line
-("ORBIT-D: DEPRECATED, Hyros retired") under Warnings/Info if anything. -->
-
-
-## ORBIT-E: API vs Neon (display-layer reconciliation)
+## ORBIT-E: API vs Neon (display layer)
 
 | Check | Truth | App | Delta | Status |
 |---|---|---|---|---|
-| E1 Per-client spend / impressions / clicks | exact | exact | {{e1_delta}} | {{status_e1}} |
-| E2 Per-client paid_leads / paid_booked_calls | exact | exact | {{e2_delta}} | {{status_e2}} |
-| E3 CPL recomputed (±0.5%) | ${{truth_cpl}} | ${{app_cpl}} | {{e3_cpl_delta_pct}}% | {{status_e3}} |
-| E3 CPBC recomputed (±0.5%) | ${{truth_cpbc}} | ${{app_cpbc}} | {{e3_cpbc_delta_pct}}% | {{status_e3}} |
-| E4 Cross-client totals = SUM(clients) | {{sum_check_truth}} | {{sum_check_app}} | {{e4_delta}} | {{status_e4}} |
-| E5 1:1 CAD/USD blend (Phase 4 caveat) | INFO | INFO | - | INFO |
-
----
+| E1 spend/impr/clicks exact | ... | ... | {{e1_delta}} | {{status_e1}} |
+| E2 paid_leads / paid_booked exact | ... | ... | {{e2_delta}} | {{status_e2}} |
+| E3 CPL/CPBC recompute | ... | ... | {{e3_delta}} | {{status_e3}} |
+| E4 totals == SUM(clients) | ... | ... | {{e4_delta}} | {{status_e4}} |
+| E5 CAD/USD blend | INFO | INFO | - | INFO |
 
 {{if include_per_adset}}
-## ORBIT-F: Per-adset drill-down (LOCAL mode)
+## ORBIT-F: Per-adset drill-down
 
-{{for each adset with non-zero activity, sorted by spend desc, capped at top 20}}
-
-### adset {{adset_id}} - {{adset_name}}
-
-| Metric | Meta / truth | App drill-down | Status |
-|---|---|---|---|
-| Spend | ${{meta_spend}} | ${{app_spend}} | {{status}} |
-| Impressions | {{meta_impressions}} | {{app_impressions}} | {{status}} |
-| Inline link clicks | {{meta_clicks}} | {{app_clicks}} | {{status}} |
-| Paid leads | {{truth_leads}} | {{app_leads}} | {{status}} |
-| Paid booked | {{truth_booked}} | {{app_booked}} | {{status}} |
-
-Orphan ads (meta_ad_id present, meta_adset_id null): {{orphan_count}}
-
-{{if adset_mismatch}}
-**Mismatch detail:**
-- Missing contacts in app drill-down: {{missing_contact_ids}}
-- Extra contacts in app drill-down: {{extra_contact_ids}}
+{{adset_table_top20_plus_aggregate_note}}
 {{end}}
 
-{{end}}
+## ORBIT-G: Sync freshness + latency
 
-{{if total_adsets > 20}}
-**Note:** {{remaining_adsets}} additional ad sets aggregated below (no per-adset drill-down). Aggregate spend agrees within ±5%: {{aggregate_pass_or_fail}}.
-{{end}}
-
----
-{{end}}
-
-## ORBIT-G: Sync freshness
-
-| Client | Source | Latest started_at | ok flag | Status |
-|---|---|---|---|---|
-{{for each (client, source) row}}
-| {{client_id}} | {{source}} | {{latest_started_at}} | {{ok}} | {{status}} |
-{{end}}
-
-{{if token_expiry_warnings > 0}}
-**Token-expiry advisory (G3):**
-{{for each expiring token}}
-- {{client_id}}: `token_expires_at` = {{expires_at}} ({{days_remaining}} days remaining)
-{{end}}
-{{end}}
-
----
+{{sync_freshness_table}}
+{{latency_line}}
 
 {{if include_code_static}}
-## ORBIT-H: Code-static checks (LOCAL mode)
+## ORBIT-H: Code-static checks
 
 | Check | Result | Detail |
 |---|---|---|
-| H1 No `created_at`/`dateAdded`/`first_paid_opt_in_at` in `ads_paid_leads` queries | {{status_h1}} | {{h1_findings_count}} hits |
-| H2 No bare `YYYY-MM-DD` strings to Meta / drill-down SQL without `clientWindow()` | {{status_h2}} | {{h2_findings_count}} hits |
-| H3 `isLastTouchPaid()` defined exactly once | {{status_h3}} | {{h3_definition_count}} definitions found |
-
-{{if h1_findings_count > 0}}
-**H1 violations (BLOCKER):**
-{{for each h1 hit}}
-- `{{file}}:{{line}}` - `{{matched_text}}`
-{{end}}
+| H1 banned columns | {{status_h1}} | {{h1_detail}} |
+| H2 bare dates / clientWindow | {{status_h2}} | {{h2_detail}} |
+| H3 single predicate definition | {{status_h3}} | {{h3_detail}} |
+| H4 code anchors | {{status_h4}} | {{h4_detail}} |
+| H5 schema baseline | {{status_h5}} | {{h5_detail}} |
+| H6 endpoint catalog | {{status_h6}} | {{h6_detail}} |
 {{end}}
 
-{{if h2_findings_count > 0}}
-**H2 violations:**
-{{for each h2 hit}}
-- `{{file}}:{{line}}` - `{{matched_text}}`
-{{end}}
-{{end}}
+## ORBIT-I / ORBIT-J: conversion surfaces + booked-calls buckets
 
-{{if h3_definition_count != 1}}
-**H3 violations:**
-{{for each h3 hit}}
-- `{{file}}:{{line}}`
-{{end}}
-{{end}}
+| Check | Result | Status |
+|---|---|---|
+| I1 Best Ads reconciles | {{detail}} | {{status_i1}} |
+| I2 ad-coverage vs ledger floor ({{floor_pct}}% → {{today_pct}}%) | {{detail}} | {{status_i2}} |
+| I3 popover/list == KPI | {{detail}} | {{status_i3}} |
+| J1 PAID ⊆ ALL | {{detail}} | {{status_j1}} |
+| J2 bucket math == Neon | {{detail}} | {{status_j2}} |
+| J3 counted PAID == KPI | {{detail}} | {{status_j3}} |
+| J4 triage candidates ({{weekly cadence}}) | {{count}} queued{{, listed above if Monday}} | {{status_j4}} |
+| J5 unreviewed backlog | {{count}} | INFO |
 
----
-{{end}}
+## MUT-1: operator mutations
 
-## Raw counts (for spot-checking against Orbit / Meta Ads Manager / GHL UI)
+{{if mut1_diff_empty}}No operator mutations since last run. Snapshot refreshed.{{else}}Diffs listed under STATE CHANGES above. Snapshot refreshed.{{end}}
+
+## Raw counts (for spot-checking)
 
 ```
-Client:            {{client}}
-Window:            {{window_start_iso}}  to  {{window_end_iso}}  (NY, yesterday + 2 prior)
-Timezone:          {{client_timezone}}
-
-Meta spend:        ${{meta_spend}}
-Neon spend:        ${{neon_spend}}
-App spend:         ${{app_spend}}
-
-Meta impressions:  {{meta_impressions}}
-Meta clicks:       {{meta_clicks}} (inline_link_clicks)
-
-Paid leads, counted union (truth / neon / app):    {{truth_paid_leads}} / {{neon_paid_leads}} / {{app_paid_leads}}
-Paid booked, counted (truth / neon / app):         {{truth_paid_booked}} / {{neon_paid_booked}} / {{app_paid_booked}}
-
-CPL:               ${{app_cpl}}
-CPBC:              ${{app_cpbc}}
+Client:   {{client}}   Window: {{window_start_iso}} → {{window_end_iso}} ({{client_timezone}})
+Spend (Meta/Neon/App):       {{...}}
+Leads (truth/neon/app):      {{...}}
+Booked (truth/neon/app):     {{...}}
+CPL / CPBC:                  {{...}}
 ```
 
 ---
 
-## Next steps
-
-{{if blocker_count > 0}}
-1. Address the top-listed blocker first; subsequent failures may cascade from it.
-2. After fix, re-run `/andy-the-auditor {{client_slug}}` to confirm.
-3. If the blocker is a code-static violation (ORBIT-B2 or ORBIT-H1), the cited file:line IS the violator.
-{{else if warn_count > 0}}
-1. Review warnings, they signal drift that will become a blocker if ignored.
-2. No re-run required today; next scheduled run at 7am ET tomorrow via `trig_01K8mpqa8e9F2DmBRHivNNPV`.
-{{else}}
-Nothing today. Next run scheduled via `trig_01K8mpqa8e9F2DmBRHivNNPV` at 7am ET tomorrow.
-{{end}}
-
----
-
-*Generated by /andy-the-auditor. Invariants source: ~/.claude/skills/andy-the-auditor/invariants/orbit.md. Edit invariants there, not in this report.*
+*Generated by /andy-the-auditor. Invariants: ~/.claude/skills/andy-the-auditor/invariants/orbit.md. Findings ledger: ledger/findings.json (committed + pushed every vault run). Edit invariants there, not in this report.*
