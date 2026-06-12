@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T17:00:00Z",
-  "updated_by": "seed (andy revamp session, 2026-06-12)",
+  "updated_at": "2026-06-12T18:30:00Z",
+  "updated_by": "vault run 2026-06-12 (acceptance run, revamp session)",
   "baselines": {
     "i2_coverage": {
       "as_of": "2026-06-12",
@@ -68,6 +68,16 @@
           "has_ad": 3,
           "has_campaign": 3,
           "total": 3
+        },
+        "mustache-painting": {
+          "has_ad": 0,
+          "has_campaign": 0,
+          "total": 0
+        },
+        "peach-paint-co": {
+          "has_ad": 0,
+          "has_campaign": 0,
+          "total": 0
         }
       }
     }
@@ -397,9 +407,9 @@
       "title": "private byte-identical clientWindow copy in api/ads/_sources.ts (drift seed, F42)",
       "first_seen": "2026-06-10",
       "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-26",
-      "unblocking_action": "Orbit PR: delete the private copy and import clientWindow from _drilldown-sql.ts (audit F42)"
+      "status": "closed",
+      "unblocking_action": "none - fixed",
+      "note": "FIXED: Orbit PR #244 (wave-2 audit fixes, F42) removed the private copy; _sources.ts now imports clientWindow from _drilldown-sql.ts. Verified 2026-06-12 by grep of origin/main (single definition). The 06-11/06-12 morning reports carried this stale - the working tree they grepped predated the fix."
     },
     "5ba6faaef2": {
       "key": "MIRROR-PAID-FLAG-DRIFT|global|is_paid_last_touch-backfill",

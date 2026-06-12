@@ -67,7 +67,7 @@ Other columns the audit reads: `meta_secret_name`, `ghl_api_secret_name`, `hyros
 
 OBB's `ghl_location_id` is `Mns7ICmnKi3Pr4QuKmgp`. Known paid calendars as of 2026-06-10: `ClJ06JUJICgDCoELfn9A` (Home Care Hero Application: Interview Scheduling), `1FlpwUCCzC52Zt9y6cr2` (Franchise Interview), and `KtiOSC0uuSUbEyt3Ikpd` (third paid calendar, carries ~14 percent of OBB paid bookings). This list is a snapshot for orientation only - the live `ghl_paid_calendar_ids` row is authoritative. API key in `GHL_KEY_OBB`. `hyros_secret_name` is still 'HYROS_KEY_OBB' in the row but the env var is unused by the dashboard post-Part-11.
 
-Conversion source dispatch lives at [api/ads/_sources.ts:164-213](api/ads/_sources.ts#L164) (`fetchConversionCounts`): **all seven clients** route to the Neon row-counter (`fetchGhlCountsFromNeon`) - the GHL-walker clients via explicit cases, leadform/Calendly clients via the default case reading `timezone` from `ads_clients_config`. `fetchHyrosCallsCount` remains in the file as dead code pending a follow-up cleanup PR.
+Conversion source dispatch lives at [api/ads/_sources.ts](api/ads/_sources.ts) (`fetchConversionCounts`): **all seven clients** route to the Neon row-counter (`fetchGhlCountsFromNeon`) - the GHL-walker clients via explicit cases, leadform/Calendly clients via the default case reading `timezone` from `ads_clients_config`. (`fetchHyrosCallsCount` dead code was removed by PR #255, 2026-06-12.)
 
 GHL applies to 4 of 7 (caregenius-b2b, builderpro, obb, contractor-launch). ORBIT-B/C live GHL walks run for those four only; for leadform/Calendly clients, the writer-side truth checks are the raw-payload comparisons (`last_paid_opt_in_at == raw->>'created_time'` for leadforms; `booked_at == raw->'event'->>'created_at'` for Calendly).
 
@@ -87,7 +87,7 @@ days  = 3
 - Tomorrow, window auto-shifts to `2026-05-17` → `2026-05-19`.
 - Today is excluded because partial-day data skews CPL and CPBC.
 
-**Per-client timezone**: read from `ads_clients_config.timezone` and passed into [api/ads/_drilldown-sql.ts:160-166 `clientWindow()`](api/ads/_drilldown-sql.ts#L160) when computing exact timestamp boundaries. Bare `YYYY-MM-DD` strings without `clientWindow()` get parsed as UTC midnight and shift 4 to 8 hours. (Note: `_sources.ts:46-53` carries a private byte-identical copy of `clientWindow` - a known drift seed, flagged in the 2026-06-10 audit as H2-c.)
+**Per-client timezone**: read from `ads_clients_config.timezone` and passed into [api/ads/_drilldown-sql.ts `clientWindow()`](api/ads/_drilldown-sql.ts#L194) when computing exact timestamp boundaries. Bare `YYYY-MM-DD` strings without `clientWindow()` get parsed as UTC midnight and shift 4 to 8 hours. (The old private copy in `_sources.ts` was removed by PR #244, F42 - verified gone 2026-06-12; `_sources.ts` now imports the canonical export.)
 
 > **Known inconsistency**: [api/ads/audit.ts `defaultLast3Days()`](api/ads/audit.ts#L318) uses "today + 2 prior" (INCLUDES today), which disagrees with the picker. Andy matches the **picker**, not the audit endpoint's default. When the endpoint is fixed, no change to Andy.
 
