@@ -1,21 +1,21 @@
 {
   "version": 1,
-  "updated_at": "2026-06-12T19:05:00Z",
-  "updated_by": "operator decisions 2026-06-12 (CL deprioritized; mirror backfill parked)",
+  "updated_at": "2026-06-15T18:00:00Z",
+  "updated_by": "2026-06-15 vault run (Monday): 4 new B6 OBB candidates (possible PR #253 regression), 6 new J4 (3 CL + 2 OBB + 1 CG), G2 queen WARN, 10 old J4 closed as window-aged-out, I2 baselines ratcheted UP",
   "baselines": {
     "i2_coverage": {
-      "as_of": "2026-06-12",
+      "as_of": "2026-06-15",
       "warn_drop_pp": 2,
       "ads_paid_leads": {
         "builderpro": {
-          "has_ad": 164,
-          "has_campaign": 459,
-          "total": 484
+          "has_ad": 171,
+          "has_campaign": 465,
+          "total": 490
         },
         "caregenius-b2b": {
-          "has_ad": 421,
-          "has_campaign": 864,
-          "total": 1432
+          "has_ad": 427,
+          "has_campaign": 868,
+          "total": 1436
         },
         "contractor-launch": {
           "has_ad": 116,
@@ -23,19 +23,19 @@
           "total": 292
         },
         "mustache-painting": {
-          "has_ad": 171,
-          "has_campaign": 171,
-          "total": 171
+          "has_ad": 177,
+          "has_campaign": 177,
+          "total": 177
         },
         "obb": {
-          "has_ad": 2454,
-          "has_campaign": 2818,
-          "total": 2878
+          "has_ad": 2466,
+          "has_campaign": 2831,
+          "total": 2891
         },
         "peach-paint-co": {
-          "has_ad": 148,
-          "has_campaign": 148,
-          "total": 148
+          "has_ad": 151,
+          "has_campaign": 151,
+          "total": 151
         },
         "queen-consultancy": {
           "has_ad": 39,
@@ -45,24 +45,24 @@
       },
       "ads_paid_bookings": {
         "builderpro": {
-          "has_ad": 134,
-          "has_campaign": 171,
-          "total": 180
+          "has_ad": 137,
+          "has_campaign": 174,
+          "total": 183
         },
         "caregenius-b2b": {
-          "has_ad": 174,
-          "has_campaign": 228,
-          "total": 237
+          "has_ad": 180,
+          "has_campaign": 234,
+          "total": 243
         },
         "contractor-launch": {
-          "has_ad": 83,
-          "has_campaign": 102,
-          "total": 104
+          "has_ad": 89,
+          "has_campaign": 109,
+          "total": 111
         },
         "obb": {
-          "has_ad": 569,
-          "has_campaign": 596,
-          "total": 617
+          "has_ad": 573,
+          "has_campaign": 600,
+          "total": 621
         },
         "queen-consultancy": {
           "has_ad": 3,
@@ -83,7 +83,7 @@
     }
   },
   "mutations_snapshot": {
-    "as_of": "2026-06-12",
+    "as_of": "2026-06-15",
     "manual_override_leads": {},
     "manual_override_bookings": {
       "caregenius-b2b": [
@@ -117,7 +117,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-09 (IN WINDOW) with fbc click ~05-24, 16d stale",
       "first_seen": "2026-06-10",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)",
       "note": "Operator already excluded this contact from metrics (MUT-1 snapshot 2026-06-12), so the KPI is no longer affected; row still needs restamp or closure."
@@ -130,7 +130,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-04, no fbc corroboration",
       "first_seen": "2026-06-05",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -142,7 +142,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-01, no fbc corroboration",
       "first_seen": "2026-06-05",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -154,7 +154,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-10 (was in window), no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -166,7 +166,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-10 (was in window), no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -178,7 +178,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-05, no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -190,7 +190,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-04, no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "fixed_pending_verify",
       "unblocking_action": "Orbit PR #253 (F23 fresh-event corroboration) merged; verify the next ghl_conversions sync mints no new candidates, then restamp/verdict this row via the F23 cleanup apply-script (FIX-BACKLOG phase2/bulk-redate.md 2d)"
     },
@@ -202,7 +202,7 @@
       "severity": "INFO",
       "title": "meta_ad_id lead coverage below campaign coverage (URL-tag ceiling, historical)",
       "first_seen": "2026-06-01",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "none needed; floor regime active",
       "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). Rewriter re-run 2026-06-12: all 69 active ads already canonical (0 would-change, canonical since 2026-05-26)."
@@ -215,7 +215,7 @@
       "severity": "INFO",
       "title": "meta_ad_id lead coverage below campaign coverage (URL-tag ceiling, historical)",
       "first_seen": "2026-06-01",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "none needed; floor regime active",
       "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). BP active ads canonical since 2026-05-26 (62/62)."
@@ -228,7 +228,7 @@
       "severity": "INFO",
       "title": "meta_ad_id lead coverage 85.3%% (URL-tag ceiling, historical)",
       "first_seen": "2026-06-01",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "none needed; floor regime active",
       "note": "Reclassified INFO-with-floor 2026-06-12: the all-time coverage %% is historical drag, not a live regression. Root cause fixed go-forward. WARN only fires again if coverage drops >2pp below baselines.i2_coverage (see SKILL.md). OBB additive script re-run 2026-06-12: all 60 active ads already carry Hyros pair + Orbit adId (0 would-change, tagged since 2026-06-01)."
@@ -241,7 +241,7 @@
       "severity": "INFO",
       "title": "meta_ad_id lead coverage 39.7%% (URL-tag ceiling, historical)",
       "first_seen": "2026-06-01",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "superseded by the ig-asset-permission finding below; floor regime active"
     },
@@ -253,7 +253,7 @@
       "severity": "WARN",
       "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "snoozed_until",
       "unblocking_action": "Deprioritized by Zander 2026-06-12 (CL not a main client). Re-raise only if CL campaigns un-pause AND ad-level coverage matters again; then: BM-assign CL Instagram to act_626274846998122 and re-run rewrite-meta-url-tags --client contractor-launch --include-paused --apply. I2 floor regime covers any DROP meanwhile.",
       "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. All CL ads currently paused, so the re-tag is zero-risk once unblocked.",
@@ -267,10 +267,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-11 on Speech Therapy Info Call (Manual Booking), utm=facebook + fbclid",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id eFqPkq0W1nXNRAVhvkwS"
     },
     "1e564f3f5e": {
@@ -281,10 +280,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-11 on ABA Growth Engine Info Call (PAID cal), bare fbclid; live predicate verifies non-paid",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id mO4TmijObxyJwp66i9pR"
     },
     "cd18d97d7e": {
@@ -295,10 +293,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-10 on ABA Providers Onboarding, first_utm=ig",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id 9TkIGx39OGC5ZuXlux2m"
     },
     "ca0b19d5cb": {
@@ -309,10 +306,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-09 on ABA Providers Onboarding, first_utm=facebook",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id 8Iv67oTryQEjFdhhpNJE"
     },
     "47956a617e": {
@@ -323,10 +319,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-11 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook + fbclid",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id CSl1tDuM76OxPM2JNX3Q"
     },
     "3ccf3ff7a3": {
@@ -337,10 +332,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-09 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook/fb + fbclid",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id tdlIFfyvUL7RVV9psBtQ"
     },
     "c8403093f2": {
@@ -351,10 +345,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-11 on Home Care Hero Application: Interview (PAID cal), bare fbclid; live predicate verifies non-paid",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id iWCXCHohIhmPyWGTapbO"
     },
     "1a4e39666f": {
@@ -365,10 +358,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-10 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id tIzQ2J2Krpc2ZQ1ymnJc"
     },
     "cfc34b1459": {
@@ -379,10 +371,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id fwAPBpwbO5U4N0jTucE6"
     },
     "9abc6d7402": {
@@ -393,10 +384,9 @@
       "severity": "WARN",
       "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-12",
-      "status": "snoozed_until",
-      "snoozed_until": "2026-06-15",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the weekly section (promote or ignore); answered candidates drop out via review_status",
+      "last_seen": "2026-06-15",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
       "note": "contact_id FCKEWu6RqAooerAvXzVZ"
     },
     "9218578f90": {
@@ -407,7 +397,7 @@
       "severity": "WARN",
       "title": "private byte-identical clientWindow copy in api/ads/_sources.ts (drift seed, F42)",
       "first_seen": "2026-06-10",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "none - fixed",
       "note": "FIXED: Orbit PR #244 (wave-2 audit fixes, F42) removed the private copy; _sources.ts now imports clientWindow from _drilldown-sql.ts. Verified 2026-06-12 by grep of origin/main (single definition). The 06-11/06-12 morning reports carried this stale - the working tree they grepped predated the fix."
@@ -420,11 +410,155 @@
       "severity": "WARN",
       "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows (CG 1291, OBB 1229, BP 446, CL 202) + an incremental-walk miss",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
+      "last_seen": "2026-06-15",
       "status": "snoozed_until",
       "unblocking_action": "Parked 2026-06-12: no KPI impact (cosmetic Contacts-Diagnostic labels only). Run whenever Zander says 'run the mirror-flag backfill' (approved apply-script, --confirm-prod-write). If still parked at snooze expiry, extend or close as accepted-cosmetic.",
       "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are the Contacts Diagnostic verdicts + operator triage trust.",
       "snoozed_until": "2026-06-19"
+    },
+    "454cc81b50": {
+      "key": "ORBIT-B6|obb|tGhyRK16vNlpfag0UKsd",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "tGhyRK16vNlpfag0UKsd",
+      "severity": "WARN",
+      "title": "2026-06-14 21:50:22 UTC stamp, no fbc - possible PR #253 regression (resolveReOptInDate rung 2 should require fresh-event corroboration; verify deploy SHA)",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "new",
+      "unblocking_action": "Confirm whether PR #253 is in current production deploy (vercel ls --prod latest 3d ago). If yes: regression - investigate api/ads/_optin-timestamp.ts:resolveReOptInDate rung 2 fresh-event guard. If no: routine F23 candidate awaiting #253 deploy + cleanup apply-script."
+    },
+    "2c8dc985ea": {
+      "key": "ORBIT-B6|obb|qerAIBCoXjyz4QkPKv1x",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "qerAIBCoXjyz4QkPKv1x",
+      "severity": "WARN",
+      "title": "2026-06-14 04:27:04 UTC stamp, no fbc - possible PR #253 regression",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "new",
+      "unblocking_action": "Confirm whether PR #253 is in current production deploy (vercel ls --prod latest 3d ago). If yes: regression - investigate api/ads/_optin-timestamp.ts:resolveReOptInDate rung 2 fresh-event guard. If no: routine F23 candidate awaiting #253 deploy + cleanup apply-script."
+    },
+    "3ec8555fc5": {
+      "key": "ORBIT-B6|obb|CvuUo9yLVGjMLuYOIQSN",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "CvuUo9yLVGjMLuYOIQSN",
+      "severity": "WARN",
+      "title": "2026-06-13 22:08:04 UTC stamp, no fbc - possible PR #253 regression",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "new",
+      "unblocking_action": "Confirm whether PR #253 is in current production deploy (vercel ls --prod latest 3d ago). If yes: regression - investigate api/ads/_optin-timestamp.ts:resolveReOptInDate rung 2 fresh-event guard. If no: routine F23 candidate awaiting #253 deploy + cleanup apply-script."
+    },
+    "62ccb6a174": {
+      "key": "ORBIT-B6|obb|g05BiYLATCjsUQp3dLB7",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "g05BiYLATCjsUQp3dLB7",
+      "severity": "WARN",
+      "title": "2026-06-12 15:19:56 UTC stamp, no fbc - possible PR #253 regression (deploy timing ambiguous: latest production deploy 3d ago could be before/after #253 merge)",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "new",
+      "unblocking_action": "Confirm whether PR #253 is in current production deploy (vercel ls --prod latest 3d ago). If yes: regression - investigate api/ads/_optin-timestamp.ts:resolveReOptInDate rung 2 fresh-event guard. If no: routine F23 candidate awaiting #253 deploy + cleanup apply-script."
+    },
+    "539819529b": {
+      "key": "ORBIT-J4|caregenius-b2b|yF9gV3praAH3ujVKFt1W",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "yF9gV3praAH3ujVKFt1W",
+      "severity": "WARN",
+      "title": "Julia Smith booked 06-12 on Growth Engine for ABA Providers Onboarding (contact Lil6fQqlqcywNAzs0LsP already excluded_from_metrics; J4 detector doesn't filter excluded, edge case)",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id Lil6fQqlqcywNAzs0LsP"
+    },
+    "7a91d68762": {
+      "key": "ORBIT-J4|contractor-launch|u13wYjg00Pu0Xwf2k8LX",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "u13wYjg00Pu0Xwf2k8LX",
+      "severity": "WARN",
+      "title": "Hector Yanez booked 06-13 on Calendario De incorporación, fb+fbclid",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id EP3b3386isQhMou7HbkM"
+    },
+    "06634c2cc3": {
+      "key": "ORBIT-J4|contractor-launch|y4JT3n6ZG5VDP8H4nI0P",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "y4JT3n6ZG5VDP8H4nI0P",
+      "severity": "WARN",
+      "title": "Jose Trinidad booked 06-12 on Llamada De Descubrimiento (PAID cal), bare fbclid",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id o8yWRABlenDFaUGnWB3W"
+    },
+    "60b643fd40": {
+      "key": "ORBIT-J4|contractor-launch|Q1PkEO18TZiRjMv18IXI",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "Q1PkEO18TZiRjMv18IXI",
+      "severity": "WARN",
+      "title": "Josr Nino booked 06-12 on Llamada De Descubrimiento (PAID cal), bare fbclid; previously verified non-paid 2026-06-09",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id FCKEWu6RqAooerAvXzVZ"
+    },
+    "b13d82daba": {
+      "key": "ORBIT-J4|obb|aeNPdwvo2net1UF14lOV",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "aeNPdwvo2net1UF14lOV",
+      "severity": "WARN",
+      "title": "Deborah Andazola booked 06-13 on Home Care Hero Application: Franchise Interview (PAID cal), bare fbclid",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id NBVdVsFWhwBoZiGQGm01"
+    },
+    "38da64f2e1": {
+      "key": "ORBIT-J4|obb|jyYxMHXDpL72eokRTvSA",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "jyYxMHXDpL72eokRTvSA",
+      "severity": "WARN",
+      "title": "Christina Depalma booked 06-12 on Home Care Hero Application: Interview Scheduling (PAID cal), bare fbclid",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "Monday J4 triage: answer the yes/no in the 2026-06-15 _Moreway-Agency / CareGenius report (promote or ignore via review_status); answered candidates drop out of the detector via review_status",
+      "note": "contact_id cFl9ELiJAA7YaoI7ibSZ"
+    },
+    "9f6a6d0fc4": {
+      "key": "ORBIT-G2|queen-consultancy|latest_paid_event",
+      "check": "ORBIT-G2",
+      "client": "queen-consultancy",
+      "subject": "latest_paid_event",
+      "severity": "WARN",
+      "title": "latest paid event 2026-06-12 (>48h since last paid event) with window spend $29.14",
+      "first_seen": "2026-06-15",
+      "last_seen": "2026-06-15",
+      "status": "new",
+      "unblocking_action": "Likely low-traffic noise ($29 over 3 days, 6 clicks, 0 paid_leads). Sync layer is fresh and ok (calendly + leadforms both ran today 01:20-01:40 GMT). Confirm 'low traffic, not sync regression' and either snooze 7 days or investigate queen leadform inflow if leads were expected."
     }
   }
 }
