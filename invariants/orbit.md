@@ -529,7 +529,7 @@ A rung-2 stamp is a row where `last_paid_opt_in_at` equals `raw.dateUpdated` (an
 SELECT client_id, contact_id, last_paid_opt_in_at,
        raw->>'dateUpdated'                  AS date_updated,
        raw->'lastAttributionSource'->>'fbc' AS fbc,
-       CASE WHEN raw->'lastAttributionSource'->>'fbc' ~ '^fb\.\d+\.\d+\.'
+       CASE WHEN raw->'lastAttributionSource'->>'fbc' ~ '^fb\.[0-9]+\.[0-9]+\.'
             THEN to_timestamp((split_part(raw->'lastAttributionSource'->>'fbc', '.', 3))::bigint / 1000.0)
        END                                  AS fbc_click_at
 FROM ads_paid_leads
@@ -539,7 +539,7 @@ WHERE client_id = $client_id
   AND ABS(EXTRACT(EPOCH FROM (last_paid_opt_in_at - synced_at))) >= 2     -- not a B5 now()-stamp
   AND (
     raw->'lastAttributionSource'->>'fbc' IS NULL
-    OR NOT (raw->'lastAttributionSource'->>'fbc' ~ '^fb\.\d+\.\d+\.')
+    OR NOT (raw->'lastAttributionSource'->>'fbc' ~ '^fb\.[0-9]+\.[0-9]+\.')
     OR to_timestamp((split_part(raw->'lastAttributionSource'->>'fbc', '.', 3))::bigint / 1000.0)
        < last_paid_opt_in_at - interval '7 days'
   );

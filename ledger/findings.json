@@ -1,21 +1,21 @@
 {
   "version": 1,
-  "updated_at": "2026-06-19T13:00:00Z",
-  "updated_by": "2026-06-19 vault run (Friday): 1 NEW J4 CG a589A (Lianette, sister of GJ4uV B6); 4 PERMANENT-WARN escalations (OBB bVnk d9 + 3XFj d9 + jgGI d14 + CG 8vi0K d10, all fixed_pending_verify w/ no F23 cleanup); MIRROR-PAID-FLAG-DRIFT snooze expired 06-19; ANDY-INTERNAL B6 regex bug surfaced (JS \\d strip); yesterday's NEW MJYik + GJ4uV B6 + H6 split-tests + PR253-hole all decay new→known; KsRn + yA1wu J4 FIXED window-aged-out; i48ff B6 AGED OUT of detector window; I2 baselines ratcheted UP across all 7 clients; MUT-1 unchanged; ORBIT-A/E/G1/H1/H3/I1/I2/I3/J1/J2/J3/LEADFORM-1/CAL-1 all PASS; cross-client totals reconcile EXACT $3,302.06 / 62 / 30",
+  "updated_at": "2026-06-23T08:15:00Z",
+  "updated_by": "2026-06-23 vault run (Tuesday): reconciled 06-21 ledger gap (06-21 reports' 6 new findings merged in: 2f6b4dcd32, ac6e07d2c2, e37a9548fc, eecc3ce286, 7885232560, 06fa667df5); 2 NEW J4 today (OBB Levi b78ef4c1a3 + Titilia 9c2845e6f1) + 1 NEW CG J4 Cristal a7f02d4d11; ANDY-INTERNAL B6 regex bug FIXED + committed in this run (skill SHA bumped 9366d26 -> 4cd6f2d); 5 OBB B6 permanent-WARNs (bVnk d13, 3XFj d13, CvuUo9 d10, tGhyR d9, qerAI d9) all continuing; CG 8vi0K B6 day 14 permanent-WARN (rolls past detector window tomorrow); 3 J4 carry-overs from 06-21 FIXED (Trey + Olga + Gabriel window-aged-out); Hassan jones J4 FIXED (promoted naturally to PAID); Kristine J4 SNOOZE EXPIRED still reproduces (re-snoozed to 06-29); jgGI B6 already aged out 06-21 (carried as closed); peach G2 still triggers day 3; MIRROR-PAID-FLAG-DRIFT day 5 since snooze expired, PR253-CORROBORATION-HOLE day 6, H6 catalog edit pending (3 routes); I2 baselines ratcheted UP for BP+CG+Mustache+OBB, CL bookings -0.94pp within tolerance (baseline preserved); MUT-1 unchanged; ORBIT-A/E/F/G1/G4-G7/H1/H2/H3/H6/I1/I2/I3/J1/J2/J3/LEADFORM-1/CAL-1 all PASS; cross-client totals reconcile EXACT $2,868.39 / 58 / 32",
   "baselines": {
     "i2_coverage": {
-      "as_of": "2026-06-19",
+      "as_of": "2026-06-23",
       "warn_drop_pp": 2,
       "ads_paid_leads": {
         "builderpro": {
-          "has_ad": 188,
-          "has_campaign": 478,
-          "total": 503
+          "has_ad": 196,
+          "has_campaign": 485,
+          "total": 510
         },
         "caregenius-b2b": {
-          "has_ad": 435,
-          "has_campaign": 876,
-          "total": 1445
+          "has_ad": 443,
+          "has_campaign": 884,
+          "total": 1452
         },
         "contractor-launch": {
           "has_ad": 116,
@@ -23,14 +23,14 @@
           "total": 292
         },
         "mustache-painting": {
-          "has_ad": 185,
-          "has_campaign": 185,
-          "total": 185
+          "has_ad": 188,
+          "has_campaign": 188,
+          "total": 188
         },
         "obb": {
-          "has_ad": 2492,
-          "has_campaign": 2855,
-          "total": 2915
+          "has_ad": 2532,
+          "has_campaign": 2891,
+          "total": 2951
         },
         "peach-paint-co": {
           "has_ad": 154,
@@ -45,14 +45,14 @@
       },
       "ads_paid_bookings": {
         "builderpro": {
-          "has_ad": 152,
-          "has_campaign": 189,
-          "total": 198
+          "has_ad": 160,
+          "has_campaign": 197,
+          "total": 206
         },
         "caregenius-b2b": {
-          "has_ad": 192,
-          "has_campaign": 246,
-          "total": 256
+          "has_ad": 203,
+          "has_campaign": 258,
+          "total": 268
         },
         "contractor-launch": {
           "has_ad": 93,
@@ -60,9 +60,9 @@
           "total": 120
         },
         "obb": {
-          "has_ad": 594,
-          "has_campaign": 621,
-          "total": 642
+          "has_ad": 619,
+          "has_campaign": 646,
+          "total": 667
         },
         "queen-consultancy": {
           "has_ad": 3,
@@ -83,7 +83,7 @@
     }
   },
   "mutations_snapshot": {
-    "as_of": "2026-06-19",
+    "as_of": "2026-06-23",
     "manual_override_leads": {},
     "manual_override_bookings": {
       "caregenius-b2b": [
@@ -117,10 +117,10 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-09, fbc click 2026-05-24 (16d stale)",
       "first_seen": "2026-06-10",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "permanent_warn_escalated",
-      "unblocking_action": "PERMANENT-WARN ESCALATED 2026-06-19 (day 10). Decide: (a) run the F23 cleanup apply-script `scripts/backfill-reoptin-timestamp.ts` to restamp, (b) accept-and-close (contact already excluded_from_metrics so KPI impact = 0), or (c) snooze with a concrete date + named unblocking event. Rule forbids printing again tomorrow without a decision.",
-      "note": "Operator already excluded this contact from metrics (MUT-1 snapshot), so the KPI is no longer affected; row still needs restamp or closure. With the regex bug fixed, the fbc click time now correctly parses to 2026-05-24 13:30 UTC, confirming this is a real (not false-positive) stale-fbc B6 candidate."
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 14. Stamp 2026-06-09 rolls past the 14-day B6 detector lookback tomorrow morning (will silently AGE OUT 2026-06-24). Decide today: (a) run scripts/backfill-reoptin-timestamp.ts to restamp, (b) accept-and-close (contact already excluded_from_metrics so KPI impact = 0), or (c) snooze with a concrete date + named unblocking event.",
+      "note": "Confirmed 2026-06-23 with corrected B6 regex: fbc parses to 2026-05-24 13:30 UTC, genuinely 16d stale."
     },
     "58c2c36a19": {
       "key": "ORBIT-B6|caregenius-b2b|i48ffD7iccyplMSkznQx",
@@ -155,9 +155,9 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-10, no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "permanent_warn_escalated",
-      "unblocking_action": "PERMANENT-WARN ESCALATED 2026-06-19 (day 9). Same OBB F23-pre-fix cleanup needed as bVnk class. Decide: (a) run scripts/backfill-reoptin-timestamp.ts, (b) accept-and-close as known historical misdate, or (c) snooze with concrete date + named unblocker."
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 13. Same OBB pre-#253 cleanup needed. Decide: (a) run scripts/backfill-reoptin-timestamp.ts, (b) accept-and-close as known historical misdate, or (c) snooze with concrete date + named unblocker."
     },
     "fd59415980": {
       "key": "ORBIT-B6|obb|3XFjrVPShKaJrVHPEFaT",
@@ -167,9 +167,9 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-10, no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "permanent_warn_escalated",
-      "unblocking_action": "PERMANENT-WARN ESCALATED 2026-06-19 (day 9). Same as bVnk. Decide: cleanup, accept-and-close, or snooze."
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 13. Same as bVnk. Decide: cleanup, accept-and-close, or snooze."
     },
     "7ef2f1f0a9": {
       "key": "ORBIT-B6|obb|jgGIugJgG6MZKKHviqnW",
@@ -179,9 +179,9 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-06-05, no fbc corroboration",
       "first_seen": "2026-06-11",
-      "last_seen": "2026-06-19",
-      "status": "permanent_warn_escalated",
-      "unblocking_action": "PERMANENT-WARN ESCALATED 2026-06-19 (day 14). Stamp 06-05 still inside the 14-day detector window today; will AGE OUT 2026-06-20 if no cleanup. Decide today: cleanup, accept-and-close before age-out, or snooze."
+      "last_seen": "2026-06-20",
+      "status": "aged_out_of_detector_window",
+      "unblocking_action": "AGED OUT 2026-06-21: stamp 2026-06-05 rolled past the 14-day B6 detector lookback. Underlying row still misdated; alert dormant. Run F23 cleanup apply-script or accept-and-close."
     },
     "d2bf8ebbf8": {
       "key": "ORBIT-B6|obb|D4P9ZyhWvQVRDxolJzdg",
@@ -254,7 +254,7 @@
       "severity": "WARN",
       "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "snoozed_until",
       "unblocking_action": "Deprioritized by Zander 2026-06-12 (CL not a main client). Re-raise only if CL campaigns un-pause AND ad-level coverage matters again; then: BM-assign CL Instagram to act_626274846998122 and re-run rewrite-meta-url-tags --client contractor-launch --include-paused --apply. I2 floor regime covers any DROP meanwhile.",
       "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. All CL ads currently paused, so the re-tag is zero-risk once unblocked.",
@@ -270,8 +270,7 @@
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id eFqPkq0W1nXNRAVhvkwS"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "1e564f3f5e": {
       "key": "ORBIT-J4|caregenius-b2b|a22DBoSyDXAv8A2Nmrbo",
@@ -283,8 +282,7 @@
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id mO4TmijObxyJwp66i9pR"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "cd18d97d7e": {
       "key": "ORBIT-J4|caregenius-b2b|HuJWO9LwnwAbnkD4x6cH",
@@ -296,8 +294,7 @@
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id 9TkIGx39OGC5ZuXlux2m"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "ca0b19d5cb": {
       "key": "ORBIT-J4|caregenius-b2b|7QRbSztTXJrV7v2opEy3",
@@ -309,8 +306,7 @@
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id 8Iv67oTryQEjFdhhpNJE"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "47956a617e": {
       "key": "ORBIT-J4|builderpro|qg5emxNC5ofDVDYxG71K",
@@ -318,12 +314,11 @@
       "client": "builderpro",
       "subject": "qg5emxNC5ofDVDYxG71K",
       "severity": "WARN",
-      "title": "OTHER booking 06-11 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook + fbclid",
+      "title": "OTHER booking 06-11 on Rescheduling Calendar, utm=facebook + fbclid",
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id CSl1tDuM76OxPM2JNX3Q"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "3ccf3ff7a3": {
       "key": "ORBIT-J4|builderpro|nGfGCkDPu4hSSSGdp346",
@@ -331,12 +326,11 @@
       "client": "builderpro",
       "subject": "nGfGCkDPu4hSSSGdp346",
       "severity": "WARN",
-      "title": "OTHER booking 06-09 on Rescheduling Calendar (likely reschedule of a counted booking), utm=facebook/fb + fbclid",
+      "title": "OTHER booking 06-09 on Rescheduling Calendar, utm=facebook/fb + fbclid",
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id tdlIFfyvUL7RVV9psBtQ"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "c8403093f2": {
       "key": "ORBIT-J4|obb|xMK3Ss3rUxCyEa5snxxS",
@@ -348,8 +342,7 @@
       "first_seen": "2026-06-12",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id iWCXCHohIhmPyWGTapbO"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "1a4e39666f": {
       "key": "ORBIT-J4|contractor-launch|YeJsiJt2FmPinjSQzIJi",
@@ -357,12 +350,11 @@
       "client": "contractor-launch",
       "subject": "YeJsiJt2FmPinjSQzIJi",
       "severity": "WARN",
-      "title": "OTHER booking 06-10 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "title": "OTHER booking 06-10 on Llamada De Descubrimiento (PAID cal), bare fbclid",
       "first_seen": "2026-06-11",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id tIzQ2J2Krpc2ZQ1ymnJc"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "cfc34b1459": {
       "key": "ORBIT-J4|contractor-launch|cjDEtMnFBYMpjBbw3dFG",
@@ -370,12 +362,11 @@
       "client": "contractor-launch",
       "subject": "cjDEtMnFBYMpjBbw3dFG",
       "severity": "WARN",
-      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid",
       "first_seen": "2026-06-11",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id fwAPBpwbO5U4N0jTucE6"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "9abc6d7402": {
       "key": "ORBIT-J4|contractor-launch|DLDCW2C81S7FuirUpd39",
@@ -383,12 +374,11 @@
       "client": "contractor-launch",
       "subject": "DLDCW2C81S7FuirUpd39",
       "severity": "WARN",
-      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid; verified non-paid",
+      "title": "OTHER booking 06-09 on Llamada De Descubrimiento (PAID cal), bare fbclid",
       "first_seen": "2026-06-11",
       "last_seen": "2026-06-15",
       "status": "closed",
-      "unblocking_action": "CLOSED 2026-06-15: window-aged-out (booked_at 06-09 to 06-11 no longer in current window 06-12 to 06-14); J4 detector no longer surfaces these",
-      "note": "contact_id FCKEWu6RqAooerAvXzVZ"
+      "unblocking_action": "CLOSED 2026-06-15: window-aged-out"
     },
     "9218578f90": {
       "key": "ORBIT-H2|global|_sources.ts:clientWindow",
@@ -401,7 +391,7 @@
       "last_seen": "2026-06-15",
       "status": "closed",
       "unblocking_action": "none - fixed",
-      "note": "FIXED: Orbit PR #244 (wave-2 audit fixes, F42) removed the private copy; _sources.ts now imports clientWindow from _drilldown-sql.ts. Verified 2026-06-12 by grep of origin/main (single definition). The 06-11/06-12 morning reports carried this stale - the working tree they grepped predated the fix."
+      "note": "FIXED: Orbit PR #244 (wave-2 audit fixes, F42) removed the private copy; _sources.ts now imports clientWindow from _drilldown-sql.ts."
     },
     "5ba6faaef2": {
       "key": "MIRROR-PAID-FLAG-DRIFT|global|is_paid_last_touch-backfill",
@@ -409,12 +399,12 @@
       "client": "global",
       "subject": "is_paid_last_touch-backfill",
       "severity": "WARN",
-      "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows (CG 1291, OBB 1229, BP 446, CL 202) + an incremental-walk miss",
+      "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "snooze_expired",
-      "unblocking_action": "SNOOZE EXPIRED 2026-06-19. Decide today: (a) extend the snooze with a concrete date + named unblocking event, (b) run the approved mirror-flag backfill apply-script (--confirm-prod-write), or (c) close as accepted-cosmetic (no KPI impact; live predicate is correct everywhere it counts).",
-      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are the Contacts Diagnostic verdicts + operator triage trust. Original snoozed_until 2026-06-19 expired today; status flipped to snooze_expired pending decision."
+      "unblocking_action": "SNOOZE EXPIRED 2026-06-19, day 5 today. Still no decision. Decide: (a) extend snooze with concrete date + named unblocker, (b) run the approved mirror-flag backfill apply-script (--confirm-prod-write), or (c) close as accepted-cosmetic (no KPI impact; live predicate is correct everywhere it counts).",
+      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are Contacts Diagnostic verdicts + operator triage trust."
     },
     "454cc81b50": {
       "key": "ORBIT-B6|obb|tGhyRK16vNlpfag0UKsd",
@@ -424,9 +414,9 @@
       "severity": "WARN",
       "title": "2026-06-14 21:50:22 UTC stamp, no fbc - PR #253 corroboration hole class",
       "first_seen": "2026-06-15",
-      "last_seen": "2026-06-19",
-      "status": "known",
-      "unblocking_action": "Same #253 corroboration-hole class as MJYik/GJ4uV. Watch for the follow-up PR; pre-#253 cleanup via F23 apply-script. Carry as `known` until (a) cleanup script runs (b) a #253-tightening PR ships. Day 5 today; will hit permanent-WARN 2026-06-21 if still open."
+      "last_seen": "2026-06-23",
+      "status": "permanent_warn_escalated",
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 9. Decide: cleanup, accept-and-close, or snooze. Will age out 2026-06-28 if no action."
     },
     "2c8dc985ea": {
       "key": "ORBIT-B6|obb|qerAIBCoXjyz4QkPKv1x",
@@ -436,9 +426,9 @@
       "severity": "WARN",
       "title": "2026-06-14 04:27:04 UTC stamp, no fbc - PR #253 corroboration hole class",
       "first_seen": "2026-06-15",
-      "last_seen": "2026-06-19",
-      "status": "known",
-      "unblocking_action": "Same #253 corroboration-hole class as tGhyR. Watch follow-up PR; pre-#253 cleanup via F23 apply-script. Day 5; hits permanent-WARN 2026-06-21."
+      "last_seen": "2026-06-23",
+      "status": "permanent_warn_escalated",
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 9. Same as tGhyR. Will age out 2026-06-28."
     },
     "3ec8555fc5": {
       "key": "ORBIT-B6|obb|CvuUo9yLVGjMLuYOIQSN",
@@ -448,9 +438,9 @@
       "severity": "WARN",
       "title": "2026-06-13 22:08:04 UTC stamp, no fbc - PR #253 corroboration hole class",
       "first_seen": "2026-06-15",
-      "last_seen": "2026-06-19",
-      "status": "known",
-      "unblocking_action": "Same class. Day 6 today; hits permanent-WARN 2026-06-20 (tomorrow)."
+      "last_seen": "2026-06-23",
+      "status": "permanent_warn_escalated",
+      "unblocking_action": "PERMANENT-WARN ESCALATED day 10. Same class. Will age out 2026-06-27."
     },
     "62ccb6a174": {
       "key": "ORBIT-B6|obb|g05BiYLATCjsUQp3dLB7",
@@ -458,12 +448,12 @@
       "client": "obb",
       "subject": "g05BiYLATCjsUQp3dLB7",
       "severity": "WARN",
-      "title": "2026-06-12 15:19:56 UTC stamp, no fbc - possible PR #253 regression (deploy timing ambiguous: latest production deploy 3d ago could be before/after #253 merge)",
+      "title": "2026-06-12 15:19:56 UTC stamp, no fbc - possible PR #253 regression",
       "first_seen": "2026-06-15",
       "last_seen": "2026-06-18",
       "status": "closed",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: verified gone - row no longer matches B6 detector (last_paid_opt_in_at 2026-06-12 15:19 no longer equals dateUpdated 2026-06-15 13:03). Effectively restamped between vault runs."
+      "note": "CLOSED 2026-06-18: verified gone - row no longer matches B6 detector. Effectively restamped between vault runs."
     },
     "539819529b": {
       "key": "ORBIT-J4|caregenius-b2b|yF9gV3praAH3ujVKFt1W",
@@ -471,13 +461,13 @@
       "client": "caregenius-b2b",
       "subject": "yF9gV3praAH3ujVKFt1W",
       "severity": "WARN",
-      "title": "Julia Smith booked 06-12 on Growth Engine for ABA Providers Onboarding (contact Lil6fQqlqcywNAzs0LsP already excluded_from_metrics; J4 detector doesn't filter excluded, edge case)",
+      "title": "Julia Smith booked 06-12 on Growth Engine for ABA Providers Onboarding (contact Lil6f already excluded_from_metrics; J4 edge case)",
       "first_seen": "2026-06-15",
       "last_seen": "2026-06-18",
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-12 no longer in window 06-15→06-17). Contact already excluded_from_metrics so KPI impact = 0."
+      "note": "CLOSED 2026-06-18: window-aged-out. Contact already excluded_from_metrics so KPI impact = 0."
     },
     "7a91d68762": {
       "key": "ORBIT-J4|contractor-launch|u13wYjg00Pu0Xwf2k8LX",
@@ -491,7 +481,7 @@
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-13 no longer in window 06-15→06-17)."
+      "note": "CLOSED 2026-06-18: window-aged-out."
     },
     "06634c2cc3": {
       "key": "ORBIT-J4|contractor-launch|y4JT3n6ZG5VDP8H4nI0P",
@@ -505,7 +495,7 @@
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-12 no longer in window 06-15→06-17)."
+      "note": "CLOSED 2026-06-18: window-aged-out."
     },
     "60b643fd40": {
       "key": "ORBIT-J4|contractor-launch|Q1PkEO18TZiRjMv18IXI",
@@ -513,13 +503,13 @@
       "client": "contractor-launch",
       "subject": "Q1PkEO18TZiRjMv18IXI",
       "severity": "WARN",
-      "title": "Josr Nino booked 06-12 on Llamada De Descubrimiento (PAID cal), bare fbclid; previously verified non-paid 2026-06-09",
+      "title": "Josr Nino booked 06-12 on Llamada De Descubrimiento (PAID cal), bare fbclid",
       "first_seen": "2026-06-15",
       "last_seen": "2026-06-18",
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-12 no longer in window 06-15→06-17). Same contact (Josr Nino, FCKEWu6) had two previous J4 entries also closed."
+      "note": "CLOSED 2026-06-18: window-aged-out."
     },
     "b13d82daba": {
       "key": "ORBIT-J4|obb|aeNPdwvo2net1UF14lOV",
@@ -533,7 +523,7 @@
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-13 no longer in window 06-15→06-17)."
+      "note": "CLOSED 2026-06-18: window-aged-out."
     },
     "38da64f2e1": {
       "key": "ORBIT-J4|obb|jyYxMHXDpL72eokRTvSA",
@@ -547,7 +537,7 @@
       "status": "closed",
       "snoozed_until": "2026-06-22",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out (booked 06-12 no longer in window 06-15→06-17)."
+      "note": "CLOSED 2026-06-18: window-aged-out."
     },
     "9f6a6d0fc4": {
       "key": "ORBIT-G2|queen-consultancy|latest_paid_event",
@@ -560,7 +550,7 @@
       "last_seen": "2026-06-18",
       "status": "closed",
       "unblocking_action": "none needed; closed",
-      "note": "CLOSED 2026-06-18: window-aged-out + window spend now $0 (was $29.14 in the 06-12→06-14 window). G2 only triggers when window spend > 0; trigger condition is gone."
+      "note": "CLOSED 2026-06-18: window-aged-out + window spend now $0. G2 only triggers when window spend > 0."
     },
     "99378eb57e": {
       "key": "ORBIT-B6|caregenius-b2b|GJ4uVVUWKyyHfJrJdxQu",
@@ -570,10 +560,10 @@
       "severity": "WARN",
       "title": "POST-#253-deploy phantom: stamp 2026-06-17 00:23 UTC, NULL fbc, last_session=Referral, first_session=Paid Social (exposes #253 corroboration hole)",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "known",
-      "unblocking_action": "PR #253 has a corroboration hole: bare first-touch session_source label 'Paid Social' (from contact arrival weeks ago) corroborates a fresh dateUpdated bump today. Suggested follow-up PR: tighten api/ads/_optin-timestamp.ts:66-69 to require fbc click within 7d OR a stored paid_session_at recency check, not the bare label. Same contact also triggers a J4 (Lianette booking on non-paid cal at same timestamp); resolving the #253 hole fixes both classes.",
-      "note": "contact_id GJ4uVVUWKyyHfJrJdxQu (Lianette Texidor Basterrechea, lianette164@gmail.com). The booking creation at 06-17 00:23 UTC bumped dateUpdated; the writer dated the lead as a re-opt-in at the booking time despite no new paid event. Day 2 today (was new yesterday)."
+      "unblocking_action": "PR #253 corroboration hole: bare first-touch session_source label 'Paid Social' corroborates a fresh dateUpdated bump. Suggested follow-up PR: tighten api/ads/_optin-timestamp.ts:66-69 to require fbc click within 7d OR a stored paid_session_at recency check, not the bare label. Day 6 today; will hit permanent-WARN tomorrow.",
+      "note": "contact_id GJ4uVVUWKyyHfJrJdxQu (Lianette Texidor Basterrechea, lianette164@gmail.com). The booking creation at 06-17 00:23 UTC bumped dateUpdated; the writer dated the lead as a re-opt-in at the booking time despite no new paid event."
     },
     "7327b84907": {
       "key": "ORBIT-B6|obb|MJYikqRBZNz9k2nWtliY",
@@ -583,10 +573,9 @@
       "severity": "WARN",
       "title": "POST-#253-deploy phantom: stamp 2026-06-15 19:24 UTC, NULL fbc, last_session=Direct traffic, first_session=Paid Social (exposes #253 corroboration hole)",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "known",
-      "unblocking_action": "Same as the CG GJ4uV finding: PR #253 corroboration hole on the bare paid-social label. See the agency report ACTION #1 for the suggested fix.",
-      "note": "contact_id MJYikqRBZNz9k2nWtliY. Day 2 today (was new yesterday)."
+      "unblocking_action": "Same PR #253 corroboration hole class as CG GJ4uV. Day 8 today, hits permanent-WARN 2026-06-25 if still unresolved."
     },
     "b41bdc00f1": {
       "key": "ORBIT-J4|caregenius-b2b|FC82qpkcpAq0TUDdsfwe",
@@ -596,11 +585,11 @@
       "severity": "WARN",
       "title": "Simmy Kaur booked 06-17 22:49 on Growth Engine for ABA Providers Onboarding (NOT a paid cal), first_utm=ig",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
-      "status": "snoozed_until",
+      "last_seen": "2026-06-21",
+      "status": "closed",
       "snoozed_until": "2026-06-22",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the next Monday vault report (promote or ignore via review_status). Contact EBLyPGRIPpfBC3DWxmEX.",
-      "note": "contact_id EBLyPGRIPpfBC3DWxmEX (simmy@successonthespectrum.com). Day 2 today; still in window 06-16+."
+      "unblocking_action": "CLOSED 2026-06-21: window-aged-out (booked 06-17 no longer in window 06-20→06-22).",
+      "note": "contact_id EBLyPGRIPpfBC3DWxmEX (simmy@successonthespectrum.com)."
     },
     "a7bafb4fb2": {
       "key": "ORBIT-J4|obb|oyY0XdNizkQAzCz4BNVK",
@@ -608,13 +597,13 @@
       "client": "obb",
       "subject": "oyY0XdNizkQAzCz4BNVK",
       "severity": "WARN",
-      "title": "Eduardo Ramirez booked 06-16 17:17 on Home Care Hero Application: Franchise Interview (PAID cal), bare fbclid only; #147 narrowed predicate correctly fails",
+      "title": "Eduardo Ramirez booked 06-16 17:17 on Home Care Hero Application: Franchise Interview (PAID cal), bare fbclid only",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
-      "status": "snoozed_until",
+      "last_seen": "2026-06-21",
+      "status": "closed",
       "snoozed_until": "2026-06-22",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the next Monday vault report. Contact JBW3GVeFMIvBPZzhpqja.",
-      "note": "contact_id JBW3GVeFMIvBPZzhpqja (rodrimike91@gmail.com). Day 2 today; still in window."
+      "unblocking_action": "CLOSED 2026-06-21: window-aged-out (booked 06-16 no longer in window).",
+      "note": "contact_id JBW3GVeFMIvBPZzhpqja (rodrimike91@gmail.com)."
     },
     "49235f281c": {
       "key": "ORBIT-J4|obb|KsRniD3qsOGfjAKKbZDz",
@@ -627,8 +616,7 @@
       "last_seen": "2026-06-18",
       "status": "closed",
       "snoozed_until": "2026-06-22",
-      "unblocking_action": "CLOSED 2026-06-19: window-aged-out (booked 06-15 no longer in window 06-16→06-18). Per #147 narrowed predicate, the bare fbclid correctly does not pass touchIsPaidMeta; no KPI impact.",
-      "note": "contact_id NCztJEZL5NJjIyddHjWt (abbey@homecarematters.com)."
+      "unblocking_action": "CLOSED 2026-06-19: window-aged-out."
     },
     "959d9fa021": {
       "key": "ORBIT-J4|obb|yA1wuI1OUU8OJYithxWJ",
@@ -641,8 +629,7 @@
       "last_seen": "2026-06-18",
       "status": "closed",
       "snoozed_until": "2026-06-22",
-      "unblocking_action": "CLOSED 2026-06-19: window-aged-out (booked 06-15 no longer in window 06-16→06-18).",
-      "note": "contact_id 1bZDOV35dfWDL2FE0eu7 (admin@aidedlivinglife.org)."
+      "unblocking_action": "CLOSED 2026-06-19: window-aged-out."
     },
     "e23e7aea30": {
       "key": "ORBIT-H6|global|split-tests-routes-uncatalogued",
@@ -652,10 +639,10 @@
       "severity": "WARN",
       "title": "api/ads/split-tests.ts + api/ads/split-tests-ingest.ts added (PRs #273/#275) not in known_endpoints catalog",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "known",
-      "unblocking_action": "Update ~/.claude/skills/andy-the-auditor/invariants/orbit.md `known_endpoints` with explicit entries for split-tests.ts + split-tests-ingest.ts. Decide scope: likely SKIPPED (split-test events live in split_test_events table, no ads_paid_* writes), but confirm by reading the new route handlers before marking skipped. Day 2 today.",
-      "note": "Two new underscore helpers (_contacts-cohorts.ts, _sync-lock.ts) also appeared since the 2026-06-10 catalog list of 16; they're exempt from H6 but should be added to the helpers list when the catalog is next updated."
+      "unblocking_action": "Update ~/.claude/skills/andy-the-auditor/invariants/orbit.md `known_endpoints` with explicit entries for split-tests.ts + split-tests-ingest.ts + cron-bp-spend-controller.ts. Likely all SKIPPED. Day 6 today; needs decision.",
+      "note": "Also two new underscore helpers (_contacts-cohorts.ts, _sync-lock.ts) appeared since the 2026-06-10 catalog list of 16; add to helpers list."
     },
     "f5497be771": {
       "key": "PR253-CORROBORATION-HOLE|global|optin-timestamp-paid-social-label",
@@ -665,10 +652,10 @@
       "severity": "WARN",
       "title": "PR #253 corroboration accepts bare first-touch 'Paid Social' label without timestamp recency (api/ads/_optin-timestamp.ts:66-69)",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
       "status": "known",
-      "unblocking_action": "File a follow-up PR that requires either (a) fbc click within 7d of dateUpdated, OR (b) a stored paid_session_at field with same recency check - not the bare session_source string label. The GJ4uV/MJYik B6 findings (still reproducing today) are the proof-of-class. Day 2 today; this finding will keep generating new B6 candidates until shipped.",
-      "note": "Verified 2026-06-19 via git log + Read: _optin-timestamp.ts:66-69 in origin/main still contains the bare-label corroboration branch as shipped in 64d8958. No follow-up PR yet."
+      "unblocking_action": "File a follow-up PR that requires either (a) fbc click within 7d of dateUpdated, OR (b) a stored paid_session_at field with same recency check - not the bare session_source string label. The 5wtRn/GJ4uV/MJYik B6 findings (still reproducing today) are the proof-of-class. Day 6 today; this finding keeps generating new B6 candidates until shipped.",
+      "note": "Verified 2026-06-23 via Read: _optin-timestamp.ts:66-69 in origin/main still contains the bare-label corroboration branch."
     },
     "b6a3e2c5d0": {
       "key": "ORBIT-J4|caregenius-b2b|a589Acys8KiRamoEpiVH",
@@ -676,13 +663,13 @@
       "client": "caregenius-b2b",
       "subject": "a589Acys8KiRamoEpiVH",
       "severity": "WARN",
-      "title": "Lianette Texidor Basterrechea booked 06-17 00:23 on Growth Engine for ABA Providers Onboarding (NOT a paid cal), first_utm=Facebook; sister of GJ4uV B6 finding (same contact, same timestamp)",
+      "title": "Lianette Texidor Basterrechea booked 06-17 00:23 on Growth Engine for ABA Providers Onboarding (NOT a paid cal), first_utm=Facebook; sister of GJ4uV B6 finding",
       "first_seen": "2026-06-19",
-      "last_seen": "2026-06-19",
-      "status": "snoozed_until",
+      "last_seen": "2026-06-21",
+      "status": "closed",
       "snoozed_until": "2026-06-22",
-      "unblocking_action": "Monday J4 triage: answer the yes/no in the next Monday vault report. Contact GJ4uVVUWKyyHfJrJdxQu. The booking timestamp matches the B6 stamp exactly; resolving the PR253-CORROBORATION-HOLE fix likely makes this J4 disappear too.",
-      "note": "contact_id GJ4uVVUWKyyHfJrJdxQu (Lianette Texidor Basterrechea, lianette164@gmail.com). The same contact whose paid-lead stamp was minted by the booking event."
+      "unblocking_action": "CLOSED 2026-06-21: window-aged-out (booked 06-17 no longer in window 06-20→06-22).",
+      "note": "contact_id GJ4uVVUWKyyHfJrJdxQu (Lianette Texidor Basterrechea)."
     },
     "ce4a1b8f72": {
       "key": "ANDY-INTERNAL-B6-REGEX|global|js-escape-strips-backslash-d",
@@ -692,10 +679,155 @@
       "severity": "WARN",
       "title": "B6 detector SQL in invariants/orbit.md uses `\\d` which JavaScript strips to `d` before SQL sees it",
       "first_seen": "2026-06-19",
-      "last_seen": "2026-06-19",
+      "last_seen": "2026-06-23",
+      "status": "closed",
+      "unblocking_action": "none needed; FIXED 2026-06-23",
+      "note": "FIXED 2026-06-23: replaced `\\d+` with `[0-9]+` in the two regex literals in invariants/orbit.md ORBIT-B6 SQL block (lines 532 + 542). Committed with the ledger update this run. Skill SHA bumped 9366d26 -> 4cd6f2d. B6 detector now works correctly out-of-the-box without manual rewrite."
+    },
+    "2f6b4dcd32": {
+      "key": "ORBIT-B6|obb|5wtRn4E4wK9SskWdYxE3",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "5wtRn4E4wK9SskWdYxE3",
+      "severity": "WARN",
+      "title": "POST-#253 phantom: stamp 2026-06-20 16:56 UTC, ls=Paid Social, fs=Paid Social, NULL fbc - PR253 corroboration hole live",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-23",
+      "status": "known",
+      "unblocking_action": "Same PR253-CORROBORATION-HOLE class as GJ4uV/MJYik. Day 3 today; will hit permanent-WARN 2026-06-28 if PR253 follow-up doesn't ship. Watch the PR253-CORROBORATION-HOLE finding for the actual fix."
+    },
+    "ac6e07d2c2": {
+      "key": "ORBIT-J4|contractor-launch|xSdXpKzmR5Cq38kJjJvA",
+      "check": "ORBIT-J4",
+      "client": "contractor-launch",
+      "subject": "xSdXpKzmR5Cq38kJjJvA",
+      "severity": "WARN",
+      "title": "Gabriel Bahena booked 2026-06-20 01:48 UTC on Calendario De incorporación, first=last=facebook + fbclid",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-21",
+      "status": "closed",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "CLOSED 2026-06-23: window-aged-out (booked 06-20 01:48 UTC = Chicago-date 06-19, out of current window 06-20+).",
+      "note": "Gabriel has a separate older PAID booking on Llamada De Descubrimiento; this J4 was specifically the new incorporación booking."
+    },
+    "e37a9548fc": {
+      "key": "ORBIT-J4|obb|B3OlQEC8wCG91xngYuue",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "B3OlQEC8wCG91xngYuue",
+      "severity": "WARN",
+      "title": "Olga Botezat booked 2026-06-20 01:56 UTC on Home Care Hero Application: Interview Scheduling (PAID cal), last=Facebook + fbclid",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-21",
+      "status": "closed",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "CLOSED 2026-06-23: window-aged-out (booked 06-20 01:56 UTC = NY-date 06-19, out of window)."
+    },
+    "eecc3ce286": {
+      "key": "ORBIT-J4|obb|O97CVeqg9AzFl11zE2OY",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "O97CVeqg9AzFl11zE2OY",
+      "severity": "WARN",
+      "title": "Trey More booked 2026-06-19 22:01 UTC on Home Care Hero Application: Interview Scheduling (PAID cal), first=last=Facebook + fbclid",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-21",
+      "status": "closed",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "CLOSED 2026-06-23: window-aged-out (NY-date 06-19, out of window) AND naturally promoted to PAID bucket between 06-21 and 06-23 (booking N8DxlNY10v8leNWI2ib8 now exists in ads_paid_bookings via GHL walker re-attribution, no _manual_override)."
+    },
+    "7885232560": {
+      "key": "ORBIT-G2|peach-paint-co|latest_paid_event",
+      "check": "ORBIT-G2",
+      "client": "peach-paint-co",
+      "subject": "latest_paid_event",
+      "severity": "WARN",
+      "title": "latest paid event 2026-06-18T20:21 UTC (>48h ago) with window spend > 0",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-23",
+      "status": "known",
+      "unblocking_action": "Day 3 today, ~107h since last paid event, window spend $65.15 still triggers G2. Likely owner: api/ads/sync-meta-leadforms.ts (no GHL path on this client). Sync log shows meta_leadforms running OK every ~6h; low conversion volume on this client. Decide whether to (a) accept as low-volume gap (no writer failure), (b) snooze with concrete unblocker date, or (c) escalate if continues."
+    },
+    "06fa667df5": {
+      "key": "ORBIT-H6|global|cron-bp-spend-controller-uncatalogued",
+      "check": "ORBIT-H6",
+      "client": "global",
+      "subject": "cron-bp-spend-controller-uncatalogued",
+      "severity": "WARN",
+      "title": "api/ads/cron-bp-spend-controller.ts added by PR #282 (7760165) not in known_endpoints catalog",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-23",
+      "status": "known",
+      "unblocking_action": "Add catalog entry to ~/.claude/skills/andy-the-auditor/invariants/orbit.md known_endpoints under the cron-obb-spend-controller.ts line; likely SKIPPED (CBO-aware clone of OBB spend controller, no Neon ads_paid_* writes). Day 3 today; can combine with the split-tests catalog edit from e23e7aea30."
+    },
+    "d6cc6cf0ff": {
+      "key": "ORBIT-J4|caregenius-b2b|J1fczsRQKsfLdw9KUxLD",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "J1fczsRQKsfLdw9KUxLD",
+      "severity": "WARN",
+      "title": "Kristine booked 2026-06-21 03:52 UTC on CareGenius ABA Growth Engine Info Call, fbclid-only",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-23",
+      "status": "snoozed_until",
+      "snoozed_until": "2026-06-29",
+      "unblocking_action": "SNOOZE EXPIRED 2026-06-22 and still reproduces (NY-date 06-20 still in current window). Re-snoozed to 2026-06-29 (next Monday triage). Monday triage: promote (real paid) or ignore (organic). Triage now via /api/ads/contacts/review if Zander prefers.",
+      "note": "contact_id J1fczsRQKsfLdw9KUxLD, appt X8XWlf2reJHXwn6hVOnq."
+    },
+    "81af42a4b7": {
+      "key": "ORBIT-J4|caregenius-b2b|fesNl7i5h0suggIqlRf4",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "fesNl7i5h0suggIqlRf4",
+      "severity": "WARN",
+      "title": "Hassan jones booked 2026-06-20 19:20 UTC on CareGenius ABA Growth Engine Info Call (Manual Booking), first_utm=fb",
+      "first_seen": "2026-06-21",
+      "last_seen": "2026-06-21",
+      "status": "closed",
+      "snoozed_until": "2026-06-22",
+      "unblocking_action": "CLOSED 2026-06-23: FIXED naturally - appointment 7VI1ZJ4oQ1SFkZdnsm89 now exists in ads_paid_bookings (GHL walker re-attribution between 06-21 and 06-23). No _manual_override, no MUT-1 diff. J4 detector no longer surfaces."
+    },
+    "a7f02d4d11": {
+      "key": "ORBIT-J4|caregenius-b2b|CoboMWKa0B4HzCO6WJHp",
+      "check": "ORBIT-J4",
+      "client": "caregenius-b2b",
+      "subject": "CoboMWKa0B4HzCO6WJHp",
+      "severity": "WARN",
+      "title": "Cristal Vargas booked 2026-06-22 15:33 UTC on Growth Engine for ABA Providers Onboarding (NOT a paid cal), first_utm=ig",
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
       "status": "new",
-      "unblocking_action": "Edit ~/.claude/skills/andy-the-auditor/invariants/orbit.md: replace `\\d+` with `[0-9]+` (or `\\\\d+`) in the two regex literals in the ORBIT-B6 SQL block (~lines 528-545). Same change required wherever the SQL is copied (the audit-script template). One commit.",
-      "note": "Caused 1 false positive today (QHBI5LNs6ZW5QNHXg17U, OBB, fbc click ~12h before stamp - genuinely fresh). Verified by re-running the B6 query with the corrected POSIX bracket; QHBI5L dropped out cleanly and 8vi0K's fbc_click_at now resolves to 2026-05-24 13:30 UTC (confirming it as a real stale-fbc B6 candidate). Until fixed, B6 over-reports any rung-2 stamp with a non-null fbc string."
+      "snoozed_until": "2026-06-29",
+      "unblocking_action": "Monday J4 triage 2026-06-29: answer the yes/no - promote via /api/ads/bookings/promote (real paid) or mark review_status=ignored via /api/ads/contacts/review (organic).",
+      "note": "contact_id cox0kXME4mHzd9HF3Cky (cvargas@harmonybridgeaba.com)."
+    },
+    "b78ef4c1a3": {
+      "key": "ORBIT-J4|obb|AM83Wd6bDRILGPDfVT9a",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "AM83Wd6bDRILGPDfVT9a",
+      "severity": "WARN",
+      "title": "Levi Bristow booked 2026-06-22 13:39 UTC on Home Care Hero Application: Interview (PAID cal), bare fbclid only",
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
+      "status": "new",
+      "snoozed_until": "2026-06-29",
+      "unblocking_action": "Monday J4 triage 2026-06-29: answer the yes/no. Live narrowed predicate (#147) correctly does not pass (bare fbclid only).",
+      "note": "contact_id cqpSRXdZDR6caAFLOtB8 (levi@tampabayhh.com)."
+    },
+    "9c2845e6f1": {
+      "key": "ORBIT-J4|obb|W052ZhbuuBlNTNbac76y",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "W052ZhbuuBlNTNbac76y",
+      "severity": "WARN",
+      "title": "Titilia Ledua booked 2026-06-22 09:25 UTC on Home Care Hero Application: Interview Scheduling (PAID cal), bare fbclid only",
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
+      "status": "new",
+      "snoozed_until": "2026-06-29",
+      "unblocking_action": "Monday J4 triage 2026-06-29: answer the yes/no.",
+      "note": "contact_id VBCgSdaHDU1oYtXYGP7i (info@fijiprimein-homecare.com)."
     }
   }
 }
