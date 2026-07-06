@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated_at": "2026-06-11T22:42:33Z",
-  "source_ref": "origin/main@13cfe9b",
+  "generated_at": "2026-07-06T18:18:26Z",
+  "source_ref": "origin/main@e8a980d",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
@@ -94,8 +94,8 @@
     {
       "id": "requireSession-audit-bypass",
       "file": "api/_db.ts",
-      "line_start": 150,
-      "line_end": 160,
+      "line_start": 161,
+      "line_end": 171,
       "start_pattern": "const auditToken = process.env.AUDIT_TOKEN",
       "end_spec": "until@expiresAt: new Date@2",
       "hash": "sha256:cea83287ad1a8321ed69f6a6ed5bb5917a8a2d194f45d3e00ffd2b7ccae4a456",

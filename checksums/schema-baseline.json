@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generated_at": "2026-06-11T22:42:33Z",
+  "generated_at": "2026-07-06T18:18:26Z",
   "source": "drizzle/schema.ts",
-  "source_ref": "origin/main@13cfe9b",
+  "source_ref": "origin/main@e8a980d",
   "tables": {
     "ads_clients_config": {
       "line_start": 198,
@@ -59,14 +59,14 @@
       "columns": "appointmentDate,appointmentId,bookedAt,calendarId,calendarName,clientId,contactId,raw,status,syncedAt"
     },
     "fmt_catalog": {
-      "line_start": 1297,
-      "line_end": 1314,
+      "line_start": 1354,
+      "line_end": 1371,
       "hash": "sha256:6a89d1ea5950fdf8e97572f423422b43eece783c325090f5284647d8d994e1e2",
       "columns": "anchor,aspectRatios,brandInjection,displayName,effortTier,formatId,formatType,funnelStageBias,meta,name,origin,provenForClients,specFile,syncedAt,vertical,visualSignature"
     },
     "fmt_usage": {
-      "line_start": 1319,
-      "line_end": 1342,
+      "line_start": 1376,
+      "line_end": 1399,
       "hash": "sha256:f4f325f7de9010824cc41b2b16e45a7993f23db224c99c2c836575772d7f188a",
       "columns": "adId,batchId,clientId,createdAt,formatId,formatType,funnelStage,meta,ratio,slotId,source,uploadedAt"
     }
