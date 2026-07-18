@@ -1,21 +1,21 @@
 {
   "version": 1,
-  "updated_at": "2026-07-17T22:30:00Z",
-  "updated_by": "2026-07-17 vault run (Friday, manual full triangulation): 2 NEW - 669725d939 B6 CG Vk6mGQ (07-17 04:31 NULL fbc ls/fs=Paid Social, PR253 hole, AFTER-window no KPI impact); e1111671f2 J4 OP CYNTHA OVERTON A1oxiTxQ (07-16 on PAID cal 2oOJbh but bare fbclid -> live predicate non-paid -> correctly OTHER, WARN not J1, first OP J4). STATE: ae7c96975f q1KvMFYZ new->known; i1_peach_14 FIXED->fixed_pending_verify (best-ads peach 4==4 reconciles, no-repro). MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 RATCHETED UP: BP leads 262/543 + book 224/262; CG leads 538/972 + book 301/356; mustache 240/240; OBB leads 2707/3057 + book 723/752; peach 181/181; queen 59/59; CL frozen (snoozed). Added OP baselines (leads 11/11/172, book 2/2/83; majority 0-campaign INFO ramping). PASS: ORBIT-A Meta=Neon EXACT 0.00% (BP 244/3806/29, OBB 599.12/24824/185, queen 287.71/6346/49, mustache 486.04/29708/139, peach 582.81/8859/108; CL $0; CG+OP credential-blind local, attested via E1). E1/E2/E3/E4 EXACT (totals $3931.29/102800impr/938clk/72leads/22booked). Counted semantics verified: CG 16raw->17union leads + 12raw->11counted book; OBB 31->33 + 12->8. F1 Meta adset spend exact (BP 244.00, OBB 599.12), F2/F3 0 orphans all clients (adsets-all: BP38/2/1 CG131/17/11 OBB137/30+unattr/7 OP8/10/2 mustache99/4 peach67/4 queen31/2). I1 BP2/CG16(17th union booker)/OP10/peach4/queen2 reconcile; OBB 25v28 + mustache 3v4 known 50-cap. I3 all 8 live-vs-live exact (yes/any: BP1/2 CG11/17 OBB8/33 OP2/10 mustache0/4 peach0/4 queen0/2 CL0/0). J1 0 missing (BP/CG/OBB/OP/CL); J2 endpoint==Neon (BP2/1/1/0 CG17/12/5/0 OBB14/10/4/0 OP5/2/3/0 CL0); J3 counted==KPI (BP1/CG11/OBB8/OP2); J5 backlog BP2/CG17[o5]/OBB14[o2]/OP5[o3]. B2/H1 golden-rule grep clean (0 first_paid_opt_in_at, 37 last_paid_opt_in_at); B3 re-opt-ins survive (BP bi6TwVAZ da07-01 optin07-16, CG rWQFLI da07-04 optin07-15, OBB K3nwJQ da06-04 optin07-14); B5 clean all; B6 12 candidates all CG (1 new + 11 known, PR253-hole); LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup); CAL-1 clean (queen 0 drift/0 cancel-counted/0 synthetic); G1 all 8 fresh+ok ~22:00Z; G2 all fresh <48h spending clients (BP 24h/mustache 23h/CG+OBB+OP+peach+queen fresh; CL $0 N/A); G4-G7 ok (overview 0.86s/best-ads 1.56s/audit 1.11s/bookings+adsets-all<1.24s no timeouts); H3 single-def (_ghl-direct.ts:165); H6 8 uncatalogued (known). CG money note: 6 of 17 in-window CG leads carry uncorroborated B6 stamps (0OJIS/6icn1fm/QTjd3C2/kLqUC7/TBD8Zo/q1KvMFYZ) - CPL 79.95 vs 123.57 CAD bound. ACTION (aged/permanent-WARN): PR253-hole f5497be771 day29 (root cause of 12 B6 candidates), MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day28, H6 catalog backlog (8 routes). rost_occupancy known: OP live but local .env lacks OP+CG Meta creds. B1/C1 attested via E2-exact + counted-union + G1 ghl_conversions ok + B5-clean + J1/J3 (no live GHL harness). G3 token_expires_at NULL all. H4/H5 DEFERRED (local repo on feat/vice-zander-chamber@bf54852, not origin/main@0bc3cca). Friday so J4 list not rendered (CYNTHA new once; Omar/Wills/Adam known count-only). Window 2026-07-14->2026-07-16. Skill sha (prev)pending. PRIOR: 2026-07-16 vault run 2 (Thursday evening, manual full triangulation): 1 NEW - ae7c96975f B6 CG q1KvMFYZ (07-16 15:15 NULL fbc ls/fs=Paid Social, PR253 hole, after-window). STATE: g2_builderpro_12 FIXED->closed (BP lead 07-16 17:47 ~4h); 7885232560 peach G2 FIXED->closed (lead 07-16 18:01); 23376d08b8 CG B6 no-repro->closed; c6fb10c24d OP B6 no-repro->closed; b6_6icn1fm_06 RE-STAMPED 07-05->07-15 14:26 (in-window, note added). MUT-1 UNCHANGED. I2 ratcheted: CG book 297/352, OBB leads 2701/3051 + book 717/745, mustache 239/239, peach 178/178. PASS: ORBIT-A EXACT 0.00% all 7 mandate clients (Meta fully aggregated: CG 1334.03/20196/195, BP 246.80/4098/37, OBB 856.35/30290/279, mustache 493.64/31390/154, peach 612.81/10098/125, queen 421.00/9470/76, CL $0); E1/E2/E3/E4 EXACT (totals $4052.80/107946/925/80 leads/21 booked); F1 0.00% worst adset delta CG+OBB, F2/F3 exact (OBB 47 adset + 1 fully-unattributed p9MYPl = 48), 0 orphans; I1 BP1/CG17(union booker excluded by design)/queen5/OP1 reconcile, OBB 39v47 + mustache 2v3 + peach 3v4 = known 50-cap; I3 all 8 live-vs-live exact; J1 0 missing, J2 endpoint==Neon (BP2/1/1/0 CG20/13/7/0 OBB16/10/6/0 OP2/0/2/0), J3 counted==KPI (1/12/8), J5 backlog BP2/CG20[o7]/OBB16[o2]/OP2; B2/H1 grep clean, B3 re-opt-ins survive (BP zDXJA054, CG rWQFLI, OBB Ojf9bUCj), B5 clean, LEADFORM-1 + CAL-1 clean, G1 all 8 fresh+ok, G2 all fresh (both morning regressions cleared), G4-G7 ok (overview 0.90s, best-ads 1.69s, audit 1.39s), H3 single-def, H6 same 8 uncatalogued. H4/H5 DEFERRED (repo on fix/post-action-sync-orphans@cb68d75, origin/main@8feef308). B1/C1 attested via E2-exact + counted-union + G1 + B5-clean + J1/J3 (no live GHL harness). CG money note: 6 of 18 in-window leads carry uncorroborated B6 stamps (0OJIS/rWQFLI/6icn1fm/QTjd3C2/kLqUC7/TBD8Zo) - CPL 74.11 vs 111.17 CAD bound. Window 2026-07-13->2026-07-15. Reports: 2026-07-16-run2.md x3. PRIOR: 2026-07-16 vault run (Thursday): 7 NEW - 11dd413336 B6 CG TBD8Zo (07-16 02:34 NULL fbc ls/fs=Paid Social, PR253 hole); c6fb10c24d B6 OP y29Uln (07-16 02:24, FIRST OP phantom, PR253 hole); 1fa6846016 B6 CG kLqUC7 (07-15 23:22 in-window); 2cae9a3730 B6 CG QTjd3C2 (07-15 18:19 in-window); 658e406c51 B6 CG rWQFLI (07-15 12:26 in-window); ca4b31b9a3 I1 mustache best-ads 2 vs 3 ad-attr (global-50 cap, same class as OBB/peach); 594cabd98b J4 OBB Wills Nwajei vHiuHi (PAID cal Interview Scheduling, ls=Social media/no adId -> live predicate non-paid -> correctly OTHER, WARN not J1). STATE: G2 REGRESSED builderpro g2_builderpro_12 (latest lead 07-13 20:16 ~60h, spend $243.75, marginal low-vol, ghl_conversions ok 7.1h) + peach 7885232560 (latest 07-14 03:46 ~52h, spend $612.63, leadform sync ok 6.7h low-vol); 69da0039c8 B6 0OJIS new->known; dd8b131f13 OBB I1 new->known (38 vs 46); 385e777dde Omar + c7adbc2408 Adam J4 new->known. MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 baselines RATCHETED UP: CG leads 535/969 + book 296/351; OBB leads 2699/3049 + book 714/742; mustache leads 237/237; queen leads 56/56; BP/peach held; CL frozen. PASS: ORBIT-A (Meta~Neon <5%: BP sp0.99%/impr0.73%, CG 0.13%/0.12%, OBB 0.06%/0.03%, mustache 0.02%, peach 0.006%, queen 1.87%/1.83% clk76v75 last-day backfill; CL $0; OP blind local attest via E1), E1/E2/E3/E4 EXACT (totals $4036.61/107573impr/924clk/80leads/21booked), F1/F2/F3 (BP1/1 CG19/12 mustache3/0 peach4/0 queen5/0 OP1/0 exact 0 orphans; OBB adsetLeads46+1 fully-unattributed=47, book8=8), I1 (BP/CG/OP/queen reconcile; OBB 38v46 + peach 3v4 + mustache 2v3 global-50 cap), I2 (no live drop; OP 161/162 leads 0-campaign INFO), I3 (list==KPI live-vs-live all 8: BP1&1/CG12&19/OBB8&47/mustache0&3/peach0&4/queen0&5/OP0&1/CL0&0), J1 (0 missing BP/CG/OBB/OP/CL), J2 (endpoint==Neon BP2/1/1/0 CG20/13/7/0 OBB16/10/6/0 OP2/0/2/0), J3 (counted==KPI BP1/CG12/OBB8), J5 (backlog BP2/CG20[o7]/OBB16[o6]/OP2), B3 (re-opt-in survives qZ3HdY2 dateAdded 06-27 stamp 07-13 in-window), B5 clean all, B2/H1 golden-rule grep clean (0 first_paid_opt_in_at, 24 last_paid_opt_in_at; dateAdded/created_at hits comments+walker pagination), H3 single-def, LEADFORM-1 clean (mustache/peach/queen 0 drift), CAL-1 clean (queen 0/0/0 synthetic), G1 all 8 fresh+ok (incl OP ghl_conversions), G4-G7 latency ok (overview 0.99s/best-ads 1.70s/bookings 0.67s ea/adsets-all 0.87s ea). ACTION (aged/permanent-WARN): PR253-hole f5497be771 day28 (root cause of 11 B6 candidates: 5 new + 6 known), MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day28, H6 catalog backlog (e23e7aea30/06fa667df5 + ~8 uncatalogued routes). G2 regressed BP+peach (marginal low-vol, not sync break). rost_occupancy_14 known: OP now LIVE ($87.70 spend + 1 lead first conversions) but local .env still lacks OP creds. Thursday so J4 list not rendered (Wills NEW once; Omar/Adam known; Arie snoozed 07-21). B1/C1 attested via E2-exact + counted-union + G1 ok + B5-clean + J1/J3. G3 token_expires_at NULL all. H4/H5 DEFERRED (local repo on fix/post-action-sync-orphans@cb68d75, not origin/main). CL window spend $0. Window 2026-07-13->2026-07-15. Skill sha db41436. PRIOR: 2026-07-15 vault run (Wednesday): 4 NEW - 69da0039c8 B6 CG 0OJISwAJGpKKHa4vAHN1 (stamp 07-15 01:26, NULL fbc, ls=Paid Social, in-window, PR253 hole); dd8b131f13 I1 OBB best-ads sums 56 vs 61 ad-attributed (global 50-row cap sort=cpbc drops 5 converting ads, same class as i1_peach_14); 385e777dde J4 CG Omar Eleye (fbclid-only, non-paid Info Call); c7adbc2408 J4 OBB Adam Burdick (PAID cal but bare fbclid -> live predicate non-paid -> correctly OTHER, WARN not J1). STATE: i1_peach_14 + rost_occupancy_14 new->known; rost_occupancy STATE CHANGE (OP conversion source now wired GHL, but local .env lacks OP creds -> credential-blind locally). MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 baselines RATCHETED UP: CG leads 526/960 + book 290/345; OBB leads 2693/3043 + book 713/741; queen 55/55; BP/mustache/peach/CL held. PASS: ORBIT-A (Meta~Neon all within 5%: CG sp0.11%/impr0.12%, BP sp1.11%/impr0.58%, mustache/OBB/peach <0.05%, queen sp3.03%/impr1.87%/clk56v54 last-day backfill; CL $0 both), E1/E2/E3/E4 EXACT (totals $4279.18/109603impr/881clk/98leads/28booked), F1/F2/F3 (BP7/7 OBB61/11 mustache4/0 peach6/0 queen4/0 exact 0 orphans; CG adsetLeads15+1 union booker=16, book10=10), I2 (no live drop; OP 161 leads 0-campaign INFO), I3 (list==KPI live-vs-live BP7&7/CG10&16/OBB11&61/mustache0&4/peach0&6/queen0&4), J1 (0 missing BP/CG/OBB), J2 (endpoint==Neon BP7/7/0/0 CG19/12/7/0 OBB18/14/4/0), J3 (counted==KPI BP7/CG10/OBB11), J5 (backlog BP7/CG19[o7]/OBB18[o1]), B3 (re-opt-in survives: CG b02tm 06-25, OBB 1pWN7P 2025-10-20), B5 clean all, B2/H1 golden-rule grep clean (hits are comments + ads_spend_proposals.created_at, 0 first_paid_opt_in_at), H3 single-def, LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup), CAL-1 clean (queen 0/0/0 synthetic), G1 all 8 fresh+ok, G2 fresh (<48h all spending: BP 35h/mustache 35h/peach 28h/queen 16h/CG+OBB fresh), G4-G7 latency ok (overview 0.87s/best-ads 1.54s/adsets-all+contacts+bookings<1.6s). ACTION (aged un-snoozed / permanent-WARN): MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day27, PR253-hole f5497be771 day27 (root cause of B6 CG stream: 8 candidates today, 7 known + 1 NEW 0OJIS), H6 catalog backlog (8 uncatalogued routes: split-tests x2/cron-bp/cron-cg/creative-audit x2/health-overview/watch-nudge - all ledgered, need 1 catalog PR). B6 CG 7 known carry-overs reproduce (qZ3HdY2/YkoVmKsV/6icn1fm/WVvr/HSxp0/ANTWM/6nUZwW). Wednesday so J4 list not rendered (Omar+Adam surfaced NEW once; Arie known). B1/C1 NOT independently GHL-walked (no live harness) - attested via E2-exact + counted-union + G1 ghl_conversions ok + B5-clean + J1/J3. G3 token_expires_at NULL all. H4/H5 hash-drift DEFERRED (local repo on feat/tasks-pwa-mobile, not origin/main). CL+OP window spend $0. Window 2026-07-12->2026-07-14. Skill sha f7231f0. 2026-07-14 vault run (Tuesday): ROSTER CHANGE - occupancy-partners now enabled=true (8 clients, was 7; act_842942565363464, meta+structure syncing, no conversion source, $0 activity) -> NEW rost_occupancy_14. NEW ORBIT-I1 peach-paint-co: best-ads omits converting ad 120248523780150692 ($8.57/1 lead), sums 5 vs 6 ad-attributed (adsets-all=6, so best-ads-only; owner best-ads.ts rank cap) -> i1_peach_14. NEW ORBIT-J4 CG Arie Tanguma Fk6yB81DZiiggImL3bSr (fbclid-only, non-paid Info Call cal). STATE: 9a0ef14a8f J4 CG CLOSED (snooze reached 07-14, window-aged-out). de3f7e9804+3466ff7335 B6 CG new->known. MUT-1 UNCHANGED (0 mo-lead, 1 mo-booking CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 baselines RATCHETED UP: CG leads 523/958 + book 289/344; OBB leads 2686/3037 + book 710/738; mustache 236/236; peach 177/177; queen 54/54; BP held 261/542 + 223/261; CL frozen. PASS: ORBIT-A (Meta~Neon all 8 within 0.02%: BP/OBB/peach/queen exact, CG sp0.02%/impr0.01%, mustache sp0.02%; CL+OP $0), E1/E2/E3/E4 EXACT (totals $3841.72/99206impr/820clk/91leads/29booked), F1/F2/F3 (BP7/7 OBB52/11 mustache6/0 peach6/0 queen3/0 exact 0 orphans; CG adsetLeads16+1 union booker=17, book11=11), I1 (best-ads non-zero all spending clients; BP/OBB/CG/mustache/queen reconcile to ad-attributed subset; peach short 1 = NEW i1_peach_14), I2 (no live drop), I3 (list==KPI live-vs-live BP7&7/CG17&11/OBB52&11/mustache6/peach6/queen3), J1 (0 missing all), J2 (endpoint==Neon BP8/8/0/0/7 CG18/14/4/0/11 OBB16/14/2/0/11), J3 (counted==KPI BP7/CG11/OBB11), J5 (backlog BP8/CG18[o4]/OBB16/CL0), B3 (re-opt-in survives CG 2025-04-19 7YnvJN, OBB 2025-04-04 0Expw), B5 clean all, B2/H1 golden-rule grep clean (2 benign hits: comment + doc-string), H3 single-def, LEADFORM-1 clean (mustache/peach/queen/OP 0 drift 0 dup), CAL-1 clean (queen 0/0/0), G1 all fresh+ok (incl OP structure/insights), G2 fresh (<48h spending clients), G4-G7 latency ok (overview 0.97s/best-ads 1.62s/audit 1.83s/drilldowns<1.3s). ACTION (aged un-snoozed / permanent-WARN): MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day26, PR253-hole f5497be771 day25 (root cause of B6 CG stream, 7 candidates all carry-over/known: 6icn1fm ANTWM 6nUZwW HSxp0 WVvr qZ3HdY2 YkoVmKsV), H6 catalog backlog (e23e7aea30/06fa667df5/creative-audit x2/cron-cg-spend/health-overview/watch-nudge - 8 uncatalogued routes, all ledgered). Tuesday so J4 list not rendered (Arie surfaced NEW once). B1/C1 NOT independently GHL-walked (no live GHL harness) - attested via E2-exact + counted-union + G1 ghl_conversions ok + B5-clean + J1/J3. G3 token_expires_at NULL all. H4/H5 hash-drift DEFERRED (local repo on feat/obb-client-spend-notify, 16 dirty, baselines target origin/main). CL+OP window spend $0. Window 2026-07-11->2026-07-13. Skill sha f108a1f.",
+  "updated_at": "2026-07-18T22:00:00Z",
+  "updated_by": "2026-07-18 vault run (Saturday, MANUAL catch-up - launchd andy-morning-run.sh skipped 07-18 05:00 \"past 5:00 cutoff, on battery after 10800s\"; last auto run 07-17). 1 NEW: 36c938083a B6 OBB lWy9q5Gw (07-18 03:25 NULL fbc ls/fs=Paid Social, PR253 hole, AFTER-window no KPI impact; first OBB B6 since June batch aged out). STATE: i1_peach_14 FIXED->closed (best-ads peach 4==4 ad-attributed, rank-cap no-repro); 669725d939 Vk6mGQ new->known. MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 RATCHETED UP: BP leads 263/544; CG leads 541/973; OBB leads 2716/3066 + book 730/759; OP leads 17/17/178 + book 3/3/84; mustache 240/240 peach 181/181 queen 59/59 flat; CL frozen (snoozed 07-19). PASS: ORBIT-A Meta=Neon EXACT 0.00% (OBB 413.01/21214/168, mustache 481.45/27536/126, peach 568.19/8635/101, queen 232.63/4388/34, BP 232.44/3680/38; CG+OP credential-blind local attest via E1; CL $0). E1/E2/E3/E4 EXACT (totals $3772.21/97752impr/930clk/72leads/21booked). Counted semantics: CG 16raw->17union leads + 11raw->9counted book; OBB 26->30 + 15->9; OP 12/2 flat. F1 adset spend exact, F2/F3 0 orphans all (adsets-all BP38 CG131 CL28 mustache99 OBB137[27adset+3noadset=30;8+1=9] OP8 peach67 queen31). I1 BP2/CG16/OP12/peach4/queen3 reconcile; OBB 24v23 + mustache 3v4 known global-50-cap. I3 all 8 live-vs-live EXACT (yes/any: BP1/2 CG9/17 OBB9/30 OP2/12 mustache0/4 peach0/4 queen0/3 CL0/0). J1 0 missing (BP/CG/OBB/OP/CL); J2 endpoint==Neon (BP2/1/1/0 CG12/11/1/0 OBB17/11/6/0 OP3/2/1/0 counted 1/9/9/2); J3 counted==KPI (BP1/CG9/OBB9/OP2); J5 backlog BP2[o1] CG12[o1] OBB17[o2] OP3[o1]. B2/H1 golden-rule grep clean (0 first_paid_opt_in_at, 37 last_paid_opt_in_at); B3 re-opt-ins survive (BP bi6TwVAZ da07-01 optin07-16, CG mINnpwoP da04-15 optin07-17, OBB KjXBRbOf da2025-10-01 optin07-17); B5 clean all; B6 13 total (12 CG all known + 1 NEW OBB lWy9q5Gw); LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup); CAL-1 clean (queen 0 drift/0 cancel-counted/0 synthetic); G1 all 8 fresh+ok (167 sync rows; 130+ stale are null-client agency slack/triage jobs out of scope); G2 all <48h spending clients (OBB 0.6h OP 0.4h mustache 44.2h peach 39.7h queen 23.5h BP 4.6h CG 16.2h; CL $0 N/A); G3 token_expires_at NULL all; G4-G7 ok (overview 0.84s/best-ads 1.54s/adsets-all 1.11s/audit 1.19s no timeouts); H3 single-def (_ghl-direct.ts:165); H6 catalog backlog known. CG money note: 6 of 16 in-window CG raw leads carry uncorroborated in-window B6 stamps (6icn1fm/QTjd3C2/kLqUC7/TBD8Zo/q1KvMFYZ/Vk6mGQ) - CPL 77.98 vs 120.51 CAD bound. ACTION (aged/permanent-WARN): PR253-hole f5497be771 day30 (root of CG B6 stream + NEW OBB), MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day29, H6 catalog backlog e23e7aea30 day30. rost_occupancy known: OP live but local .env lacks OP+CG Meta creds. B1/C1 attested via E2-exact + counted-union + G1 ghl_conversions ok + B5-clean + J1/J3 (no live GHL harness). H4/H5 DEFERRED (local repo feat/vice-zander-chamber@bf54852, not origin/main@0bc3cca, 5 dirty). Saturday so J4 list not rendered (Wills+CYNTHA known count-only). Window 2026-07-15->2026-07-17. Reports: 2026-07-18.md x3. 2026-07-17 vault run (Friday, manual full triangulation): 2 NEW - 669725d939 B6 CG Vk6mGQ (07-17 04:31 NULL fbc ls/fs=Paid Social, PR253 hole, AFTER-window no KPI impact); e1111671f2 J4 OP CYNTHA OVERTON A1oxiTxQ (07-16 on PAID cal 2oOJbh but bare fbclid -> live predicate non-paid -> correctly OTHER, WARN not J1, first OP J4). STATE: ae7c96975f q1KvMFYZ new->known; i1_peach_14 FIXED->fixed_pending_verify (best-ads peach 4==4 reconciles, no-repro). MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 RATCHETED UP: BP leads 262/543 + book 224/262; CG leads 538/972 + book 301/356; mustache 240/240; OBB leads 2707/3057 + book 723/752; peach 181/181; queen 59/59; CL frozen (snoozed). Added OP baselines (leads 11/11/172, book 2/2/83; majority 0-campaign INFO ramping). PASS: ORBIT-A Meta=Neon EXACT 0.00% (BP 244/3806/29, OBB 599.12/24824/185, queen 287.71/6346/49, mustache 486.04/29708/139, peach 582.81/8859/108; CL $0; CG+OP credential-blind local, attested via E1). E1/E2/E3/E4 EXACT (totals $3931.29/102800impr/938clk/72leads/22booked). Counted semantics verified: CG 16raw->17union leads + 12raw->11counted book; OBB 31->33 + 12->8. F1 Meta adset spend exact (BP 244.00, OBB 599.12), F2/F3 0 orphans all clients (adsets-all: BP38/2/1 CG131/17/11 OBB137/30+unattr/7 OP8/10/2 mustache99/4 peach67/4 queen31/2). I1 BP2/CG16(17th union booker)/OP10/peach4/queen2 reconcile; OBB 25v28 + mustache 3v4 known 50-cap. I3 all 8 live-vs-live exact (yes/any: BP1/2 CG11/17 OBB8/33 OP2/10 mustache0/4 peach0/4 queen0/2 CL0/0). J1 0 missing (BP/CG/OBB/OP/CL); J2 endpoint==Neon (BP2/1/1/0 CG17/12/5/0 OBB14/10/4/0 OP5/2/3/0 CL0); J3 counted==KPI (BP1/CG11/OBB8/OP2); J5 backlog BP2/CG17[o5]/OBB14[o2]/OP5[o3]. B2/H1 golden-rule grep clean (0 first_paid_opt_in_at, 37 last_paid_opt_in_at); B3 re-opt-ins survive (BP bi6TwVAZ da07-01 optin07-16, CG rWQFLI da07-04 optin07-15, OBB K3nwJQ da06-04 optin07-14); B5 clean all; B6 12 candidates all CG (1 new + 11 known, PR253-hole); LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup); CAL-1 clean (queen 0 drift/0 cancel-counted/0 synthetic); G1 all 8 fresh+ok ~22:00Z; G2 all fresh <48h spending clients (BP 24h/mustache 23h/CG+OBB+OP+peach+queen fresh; CL $0 N/A); G4-G7 ok (overview 0.86s/best-ads 1.56s/audit 1.11s/bookings+adsets-all<1.24s no timeouts); H3 single-def (_ghl-direct.ts:165); H6 8 uncatalogued (known). CG money note: 6 of 17 in-window CG leads carry uncorroborated B6 stamps (0OJIS/6icn1fm/QTjd3C2/kLqUC7/TBD8Zo/q1KvMFYZ) - CPL 79.95 vs 123.57 CAD bound. ACTION (aged/permanent-WARN): PR253-hole f5497be771 day29 (root cause of 12 B6 candidates), MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day28, H6 catalog backlog (8 routes). rost_occupancy known: OP live but local .env lacks OP+CG Meta creds. B1/C1 attested via E2-exact + counted-union + G1 ghl_conversions ok + B5-clean + J1/J3 (no live GHL harness). G3 token_expires_at NULL all. H4/H5 DEFERRED (local repo on feat/vice-zander-chamber@bf54852, not origin/main@0bc3cca). Friday so J4 list not rendered (CYNTHA new once; Omar/Wills/Adam known count-only). Window 2026-07-14->2026-07-16. Skill sha (prev)pending. PRIOR: 2026-07-16 vault run 2 (Thursday evening, manual full triangulation): 1 NEW - ae7c96975f B6 CG q1KvMFYZ (07-16 15:15 NULL fbc ls/fs=Paid Social, PR253 hole, after-window). STATE: g2_builderpro_12 FIXED->closed (BP lead 07-16 17:47 ~4h); 7885232560 peach G2 FIXED->closed (lead 07-16 18:01); 23376d08b8 CG B6 no-repro->closed; c6fb10c24d OP B6 no-repro->closed; b6_6icn1fm_06 RE-STAMPED 07-05->07-15 14:26 (in-window, note added). MUT-1 UNCHANGED. I2 ratcheted: CG book 297/352, OBB leads 2701/3051 + book 717/745, mustache 239/239, peach 178/178. PASS: ORBIT-A EXACT 0.00% all 7 mandate clients (Meta fully aggregated: CG 1334.03/20196/195, BP 246.80/4098/37, OBB 856.35/30290/279, mustache 493.64/31390/154, peach 612.81/10098/125, queen 421.00/9470/76, CL $0); E1/E2/E3/E4 EXACT (totals $4052.80/107946/925/80 leads/21 booked); F1 0.00% worst adset delta CG+OBB, F2/F3 exact (OBB 47 adset + 1 fully-unattributed p9MYPl = 48), 0 orphans; I1 BP1/CG17(union booker excluded by design)/queen5/OP1 reconcile, OBB 39v47 + mustache 2v3 + peach 3v4 = known 50-cap; I3 all 8 live-vs-live exact; J1 0 missing, J2 endpoint==Neon (BP2/1/1/0 CG20/13/7/0 OBB16/10/6/0 OP2/0/2/0), J3 counted==KPI (1/12/8), J5 backlog BP2/CG20[o7]/OBB16[o2]/OP2; B2/H1 grep clean, B3 re-opt-ins survive (BP zDXJA054, CG rWQFLI, OBB Ojf9bUCj), B5 clean, LEADFORM-1 + CAL-1 clean, G1 all 8 fresh+ok, G2 all fresh (both morning regressions cleared), G4-G7 ok (overview 0.90s, best-ads 1.69s, audit 1.39s), H3 single-def, H6 same 8 uncatalogued. H4/H5 DEFERRED (repo on fix/post-action-sync-orphans@cb68d75, origin/main@8feef308). B1/C1 attested via E2-exact + counted-union + G1 + B5-clean + J1/J3 (no live GHL harness). CG money note: 6 of 18 in-window leads carry uncorroborated B6 stamps (0OJIS/rWQFLI/6icn1fm/QTjd3C2/kLqUC7/TBD8Zo) - CPL 74.11 vs 111.17 CAD bound. Window 2026-07-13->2026-07-15. Reports: 2026-07-16-run2.md x3. PRIOR: 2026-07-16 vault run (Thursday): 7 NEW - 11dd413336 B6 CG TBD8Zo (07-16 02:34 NULL fbc ls/fs=Paid Social, PR253 hole); c6fb10c24d B6 OP y29Uln (07-16 02:24, FIRST OP phantom, PR253 hole); 1fa6846016 B6 CG kLqUC7 (07-15 23:22 in-window); 2cae9a3730 B6 CG QTjd3C2 (07-15 18:19 in-window); 658e406c51 B6 CG rWQFLI (07-15 12:26 in-window); ca4b31b9a3 I1 mustache best-ads 2 vs 3 ad-attr (global-50 cap, same class as OBB/peach); 594cabd98b J4 OBB Wills Nwajei vHiuHi (PAID cal Interview Scheduling, ls=Social media/no adId -> live predicate non-paid -> correctly OTHER, WARN not J1). STATE: G2 REGRESSED builderpro g2_builderpro_12 (latest lead 07-13 20:16 ~60h, spend $243.75, marginal low-vol, ghl_conversions ok 7.1h) + peach 7885232560 (latest 07-14 03:46 ~52h, spend $612.63, leadform sync ok 6.7h low-vol); 69da0039c8 B6 0OJIS new->known; dd8b131f13 OBB I1 new->known (38 vs 46); 385e777dde Omar + c7adbc2408 Adam J4 new->known. MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 excl [2BP+5CG], 2 cas [BP abkII+CG 3aZm5]). I2 baselines RATCHETED UP: CG leads 535/969 + book 296/351; OBB leads 2699/3049 + book 714/742; mustache leads 237/237; queen leads 56/56; BP/peach held; CL frozen. PASS: ORBIT-A (Meta~Neon <5%: BP sp0.99%/impr0.73%, CG 0.13%/0.12%, OBB 0.06%/0.03%, mustache 0.02%, peach 0.006%, queen 1.87%/1.83% clk76v75 last-day backfill; CL $0; OP blind local attest via E1), E1/E2/E3/E4 EXACT (totals $4036.61/107573impr/924clk/80leads/21booked), F1/F2/F3 (BP1/1 CG19/12 mustache3/0 peach4/0 queen5/0 OP1/0 exact 0 orphans; OBB adsetLeads46+1 fully-unattributed=47, book8=8), I1 (BP/CG/OP/queen reconcile; OBB 38v46 + peach 3v4 + mustache 2v3 global-50 cap), I2 (no live drop; OP 161/162 leads 0-campaign INFO), I3 (list==KPI live-vs-live all 8: BP1&1/CG12&19/OBB8&47/mustache0&3/peach0&4/queen0&5/OP0&1/CL0&0), J1 (0 missing BP/CG/OBB/OP/CL), J2 (endpoint==Neon BP2/1/1/0 CG20/13/7/0 OBB16/10/6/0 OP2/0/2/0), J3 (counted==KPI BP1/CG12/OBB8), J5 (backlog BP2/CG20[o7]/OBB16[o6]/OP2), B3 (re-opt-in survives qZ3HdY2 dateAdded 06-27 stamp 07-13 in-window), B5 clean all, B2/H1 golden-rule grep clean (0 first_paid_opt_in_at, 24 last_paid_opt_in_at; dateAdded/created_at hits comments+walker pagination), H3 single-def, LEADFORM-1 clean (mustache/peach/queen 0 drift), CAL-1 clean (queen 0/0/0 synthetic), G1 all 8 fresh+ok (incl OP ghl_conversions), G4-G7 latency ok (overview 0.99s/best-ads 1.70s/bookings 0.67s ea/adsets-all 0.87s ea). ACTION (aged/permanent-WARN): PR253-hole f5497be771 day28 (root cause of 11 B6 candidates: 5 new + 6 known), MIRROR-PAID-FLAG-DRIFT 5ba6faaef2 snooze_expired day28, H6 catalog backlog (e23e7aea30/06fa667df5 + ~8 uncatalogued routes). G2 regressed BP+peach (marginal low-vol, not sync break). rost_occupancy_14 known: OP now LIVE ($87.70 spend + 1 lead first conversions) but local .env still lacks OP creds. Thursday so J4 list not rendered (Wills NEW once; Omar/Adam known; Arie snoozed 07-21). B1/C1 attested via E2-exact + counted-union + G1 ok + B5-clean + J1/J3. G3 token_expires_at NULL all. H4/H5 DEFERRED (local repo on fix/post-action-sync-orphans@cb68d75, not origin/main). CL window spend $0. Window 2026-07-13->2026-07-15. Skill sha db41436. PRIOR: 2026-07-15 vault run (Wednesday): 4 NEW - 69da0039c8 B6 CG 0OJISwAJGpKKHa4vAHN1 (stamp 07-15 01:26, NULL fbc, ls=Paid Social, in-window, PR253 hole); dd8b131f13 I1 OBB best-ads sums 56 vs 61 ad-attributed (global 50-row cap sort=cpbc drops 5 converting ads, same class as i1_peach_14); 385e777dde J4 CG Omar Eleye (fbclid-only, non-paid Info Call); c7adbc2408 J4 OBB Adam Burdick (PAID cal but bare fbclid -> live predicate non-paid -> correctly OTHER, WARN not J1). STATE: i1_peach_14 + rost_occupancy_14 new->known; rost_occupancy STATE CHANGE (OP conversion source now wired GHL, but local .env lacks OP creds -> credential-blind locally). MUT-1 UNCHANGED (0 mo-lead, 1 mo-book CG l7MhLl, 7 ",
   "baselines": {
     "i2_coverage": {
-      "as_of": "2026-07-17",
+      "as_of": "2026-07-18",
       "warn_drop_pp": 2,
       "ads_paid_leads": {
         "builderpro": {
-          "has_ad": 262,
-          "has_campaign": 543,
-          "total": 568
+          "has_ad": 263,
+          "has_campaign": 544,
+          "total": 569
         },
         "caregenius-b2b": {
-          "has_ad": 538,
-          "has_campaign": 972,
-          "total": 1542
+          "has_ad": 541,
+          "has_campaign": 973,
+          "total": 1543
         },
         "contractor-launch": {
           "has_ad": 116,
@@ -29,9 +29,9 @@
           "total": 240
         },
         "obb": {
-          "has_ad": 2707,
-          "has_campaign": 3057,
-          "total": 3119
+          "has_ad": 2716,
+          "has_campaign": 3066,
+          "total": 3129
         },
         "peach-paint-co": {
           "has_ad": 181,
@@ -44,9 +44,9 @@
           "total": 61
         },
         "occupancy-partners": {
-          "has_ad": 11,
-          "has_campaign": 11,
-          "total": 172,
+          "has_ad": 17,
+          "has_campaign": 17,
+          "total": 178,
           "note": "Majority (161/172) 0-campaign = OP GHL rows without UTM (attribution ramping, INFO). has_ad==has_campaign so no coverage drop."
         }
       },
@@ -68,9 +68,9 @@
           "note": "Baseline frozen at 2026-06-26 level. Today 102/154 = 66.2% reflects same ig-asset-permission downstream effect. Not ratcheted down."
         },
         "obb": {
-          "has_ad": 723,
-          "has_campaign": 752,
-          "total": 774
+          "has_ad": 730,
+          "has_campaign": 759,
+          "total": 781
         },
         "queen-consultancy": {
           "has_ad": 3,
@@ -88,16 +88,16 @@
           "total": 0
         },
         "occupancy-partners": {
-          "has_ad": 2,
-          "has_campaign": 2,
-          "total": 83,
+          "has_ad": 3,
+          "has_campaign": 3,
+          "total": 84,
           "note": "81/83 0-campaign, INFO (ramping)."
         }
       }
     }
   },
   "mutations_snapshot": {
-    "as_of": "2026-07-17",
+    "as_of": "2026-07-18",
     "manual_override_leads": {},
     "manual_override_bookings": {
       "caregenius-b2b": [
@@ -274,7 +274,7 @@
       "severity": "WARN",
       "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "snoozed_until",
       "unblocking_action": "Deprioritized by Zander 2026-06-12 (CL not a main client). Re-raise only if CL campaigns un-pause AND ad-level coverage matters again; then: BM-assign CL Instagram to act_626274846998122 and re-run rewrite-meta-url-tags --client contractor-launch --include-paused --apply. I2 floor regime covers any DROP meanwhile.",
       "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. 2026-07-03: CL had 29+ in-window leads (live ads had been running), only 7 carry meta_ad_id. Live coverage 16.5% vs baseline floor 40.4% (-23.9pp DROP). Bookings 66.2% vs baseline 77.9% (-11.6pp). Baseline NOT ratcheted down; drop stays visible until unsnooze. 2026-07-06: CL window spend $0, no in-window drop; still snoozed. 2026-07-07: CL window spend $0 (adsets paused), no in-window drop; still snoozed until 07-12. 2026-07-12: snooze date reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop. Re-snoozed to 07-19. Baseline still frozen at 40.4%/77.9%. 2026-07-13: snooze active (until 07-19); CL window spend $0 (adsets paused), no in-window ad-coverage drop.",
@@ -434,7 +434,7 @@
       "severity": "WARN",
       "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "snooze_expired",
       "unblocking_action": "SNOOZE EXPIRED 2026-06-19, day 26 since expiry today. Still no decision. Decide: (a) extend snooze with concrete date + named unblocker, (b) run the approved mirror-flag backfill apply-script (--confirm-prod-write), or (c) close as accepted-cosmetic (no KPI impact; live predicate correct everywhere it counts).",
       "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are Contacts Diagnostic verdicts + operator triage trust."
@@ -676,7 +676,7 @@
       "severity": "WARN",
       "title": "api/ads/split-tests.ts + api/ads/split-tests-ingest.ts added (PRs #273/#275) not in known_endpoints catalog",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Update ~/.claude/skills/andy-the-auditor/invariants/orbit.md `known_endpoints` with explicit entries for split-tests.ts + split-tests-ingest.ts + cron-bp-spend-controller.ts + cron-caregenius-spend-controller.ts + creative-audit-ingest.ts + creative-audit-migrate.ts + _ads-manager-url.ts + _spend-controller-run.ts helpers. Likely all SKIPPED. Day 18 today, permanent-WARN.",
       "note": "Also additional helpers (_ads-manager-url.ts, _contacts-cohorts.ts, _spend-controller-run.ts, _sync-lock.ts) since the 2026-06-10 helper list of 16; add to helpers list. Consolidate with 06fa667df5 + 07-03 NEW entries in one catalog PR."
@@ -689,7 +689,7 @@
       "severity": "WARN",
       "title": "PR #253 corroboration accepts bare first-touch 'Paid Social' label without timestamp recency (api/ads/_optin-timestamp.ts:66-69)",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "File a follow-up PR requiring either (a) fbc click within 7d of dateUpdated, OR (b) a stored paid_session_at field with same recency check - not the bare session_source label. Proof-of-class B6 findings: 5wtRn/ijR6FL/GqIKu/zBzrv/B6yhFN/6nUZwW/4fi9PJ/6icn1fm/ANTWM (1 NEW 07-07: ANTWMRkvggmwVsm7tyPq). Day 19; keeps generating candidates until shipped. Owner api/ads/_optin-timestamp.ts:66-69.",
       "note": "Verified 2026-06-29 via Read: _optin-timestamp.ts:66-69 in origin/main still contains the bare-label corroboration branch. Not re-verified 2026-07-06; still open by inference from ongoing candidate generation. 2026-07-13: 2 NEW proof-class B6 candidates (qZ3HdY2tnbtSbXEojvT7 has stale fbc click ~06-27 vs 07-13 stamp; YkoVmKsVcyskLIpLWr5Z NULL fbc, fs=Paid Social). Day 25; still open by inference from ongoing candidate generation."
@@ -1012,7 +1012,7 @@
       "severity": "WARN",
       "title": "POST-#253 phantom: stamp updated 2026-07-05 13:52:45 UTC (was 2026-07-01), NULL fbc - PR253 corroboration hole class",
       "first_seen": "2026-07-03",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class. Day 4 today, still reproduces (new re-opt-in event 07-05 bumped stamp). Ledger-once. Owner: api/ads/_optin-timestamp.ts:66-69. Will age out 2026-07-19 (new stamp 07-05 + 14d).",
       "note": "Stamp updated between 07-03 and 07-06 runs (from 07-01 21:47 UTC to 07-05 13:52 UTC) - repeated re-opt-in workflow touch. Same contact, same class."
@@ -1184,7 +1184,7 @@
       "severity": "WARN",
       "title": "POST-#253 phantom: stamp 2026-07-05 02:21:14 UTC, NULL fbc, session_source=Paid Social - PR253 corroboration hole class",
       "first_seen": "2026-07-06",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class. Day 2, decayed to known. Ledger-once. Owner: api/ads/_optin-timestamp.ts:66-69. Ages out 2026-07-19 (stamp 07-05 + 14d).",
       "note": "Rung-2 dateUpdated delta 1.774s (right at threshold). session_source='Paid Social' bare-label branch let it through. RE-STAMPED observed 2026-07-16 run2: last_paid_opt_in_at moved 2026-07-05 -> 2026-07-15 14:26:57 UTC, still NULL fbc; now an in-window lead for 07-13->07-15 on an uncorroborated stamp."
@@ -1211,7 +1211,7 @@
       "severity": "WARN",
       "title": "POST-#253 phantom: stamp 2026-07-06 22:21:30 UTC, NULL fbc, ls=Paid Social fs=Paid Social - PR253 corroboration hole class",
       "first_seen": "2026-07-07",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class as 6icn1fm/6nUZwW/B6yhFN/4fi9PJ/ijR6FL. Day 1. Ledger-once: appears NEW today, collapses to known tomorrow. Owner: api/ads/_optin-timestamp.ts:66-69. Ages out 2026-07-20 (stamp 07-06 + 14d).",
       "note": "Rung-2 dateUpdated delta 1.81s. Bare session_source='Paid Social' label let it through the #253 corroboration branch. In-window (07-06), contributes to CG's 21 window paid_leads."
@@ -1224,7 +1224,7 @@
       "severity": "WARN",
       "title": "POST-#253 phantom: stamp 2026-07-07 20:41:07 UTC, NULL fbc, ls=Referral fs=Paid Social - PR253 corroboration hole; same contact as J4 P73z1d (Parvati Badoni)",
       "first_seen": "2026-07-08",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class as 6icn1fm/ANTWM/6nUZw. Day 1. Ledger-once: NEW today, collapses to known tomorrow. Owner: api/ads/_optin-timestamp.ts:66-69. Ages out 2026-07-21 (stamp 07-07 + 14d). In-window (07-07), contributes to CG 22 window paid_leads.",
       "note": "Bare fs=Paid Social label with NULL fbc let it through the #253 corroboration branch. Contact also booked on non-paid Growth Engine Onboarding cal at same time (J4 P73z1dOvltyHhKIMmJdG)."
@@ -1355,7 +1355,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-13 01:09 UTC; fbc click ~2026-06-27 (16d stale) - PR#253 corroboration hole class",
       "first_seen": "2026-07-13",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Review contact in GHL: genuine re-opt-in via UTM-less path, or phantom re-date by a workflow touch? Rolls under PR253-CORROBORATION-HOLE f5497be771. If phantom, F23 cleanup restamp. Ledger-once: collapses to carry-over next run.",
       "note": "date_added 2026-06-27; ls=Paid Social fs=Paid Social. GHL: https://app.gohighlevel.com/v2/location/WeM2Q8a9HEKqtg7CBrJv/contacts/detail/qZ3HdY2tnbtSbXEojvT7 2026-07-14: still reproduces (14d detector window); decayed new->known."
@@ -1368,7 +1368,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-13 02:05 UTC, NULL fbc, fs=Paid Social - PR#253 corroboration hole class",
       "first_seen": "2026-07-13",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Review contact in GHL: bare Paid-Social label without fresh fbc is exactly the PR253 hole. Rolls under f5497be771. If phantom, F23 cleanup restamp. Ledger-once: collapses next run.",
       "note": "date_added 2026-06-15; ls=Paid Social fs=Paid Social. GHL: https://app.gohighlevel.com/v2/location/WeM2Q8a9HEKqtg7CBrJv/contacts/detail/YkoVmKsVcyskLIpLWr5Z 2026-07-14: still reproduces (14d detector window); decayed new->known."
@@ -1394,9 +1394,9 @@
       "severity": "WARN",
       "title": "best-ads omits converting ad 120248523780150692 ($8.57/1 lead); Best Ads sums 5 vs 6 ad-attributed leads",
       "first_seen": "2026-07-14",
-      "last_seen": "2026-07-17",
-      "status": "fixed_pending_verify",
-      "unblocking_action": "Owner api/ads/best-ads.ts: the ad-selection / sort=cpbc + row cap ranked a lead-producing ad (0 booked -> null cpbc) out of the returned set (10 of 24 spending ads), silently dropping its conversion from the sum. Fix: ensure any ad with an in-window conversion is always returned, or stop treating best-ads as a complete per-ad ledger. Not a writer bug (I2 peach 100%, adsets-all sums 6).",
+      "last_seen": "2026-07-18",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-07-18: best-ads returns all 4 peach ad-attributed leads (4==4), rank-cap omission no longer reproduces.",
       "note": "WARN not BLOCKER: surface not all-zero (shows 5), underlying Neon data correct. drilldown/adsets-all correctly sums peach to 6. | 2026-07-17: best-ads reconciles peach 4==4 ad-attributed in-window; no-repro this run, pending confirm-close."
     },
     "j4_arie_14": {
@@ -1421,7 +1421,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-15 01:26 UTC (in-window, NY 07-14 21:26), NULL fbc, ls=Paid Social - PR#253 corroboration hole class",
       "first_seen": "2026-07-15",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class as 6icn1fm/ANTWM/HSxp0. Bare fs/ls=Paid Social label + NULL fbc let it through the #253 corroboration branch (api/ads/_optin-timestamp.ts:66-69). Ledger-once: NEW today, collapses to known tomorrow. In-window (NY 07-14) so contributes to CG 16 window paid_leads. Ages out 2026-07-29. Review contact in GHL or accept-and-close per row.",
       "note": "Latest CG lead (matches MAX(last_paid_opt_in_at)). Rolls under f5497be771."
@@ -1434,7 +1434,7 @@
       "severity": "WARN",
       "title": "best-ads sums 38 vs 46 ad-attributed OBB leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OBB ads",
       "first_seen": "2026-07-15",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same class as i1_peach_14. best-ads.ts returns a GLOBAL top-50 ad set ranked by cpbc; today total returned=50 (BP3+CG12+mustache7+OBB14+peach9+queen5), so OBB's 5 lowest-cpbc converting ads fall below the cut and their leads vanish from the per-ad sum. Fix: always return any ad with an in-window conversion, or stop treating best-ads as a complete per-ad ledger. Not a writer bug (I2 OBB 88.5%/96.2%; adsets-all sums OBB to 61).",
       "note": "WARN not BLOCKER: surface not all-zero, underlying Neon correct, drilldown/adsets-all reconciles. Cap became binding for OBB today (07-14 OBB reconciled); peach still short 1 (i1_peach_14)."
@@ -1475,7 +1475,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-16 02:34 UTC, NULL fbc, ls/fs=Paid Social - PR#253 corroboration hole class",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class (f5497be771). Bare Paid-Social label + NULL fbc passes the #253 corroboration branch (api/ads/_optin-timestamp.ts:66-69). Ledger-once: NEW today, collapses to known tomorrow. Review contact in GHL or accept-and-close.",
       "note": "After-window (today). Rolls under f5497be771."
@@ -1501,7 +1501,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-15 23:22 UTC, NULL fbc, ls/fs=Paid Social - PR#253 corroboration hole class",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class (f5497be771). Bare Paid-Social label + NULL fbc passes the #253 corroboration branch (api/ads/_optin-timestamp.ts:66-69). Ledger-once: NEW today, collapses to known tomorrow. Review contact in GHL or accept-and-close.",
       "note": "In-window (07-15). Rolls under f5497be771."
@@ -1514,7 +1514,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-15 18:19 UTC, NULL fbc, ls/fs=Paid Social - PR#253 corroboration hole class",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same PR253-CORROBORATION-HOLE class (f5497be771). Bare Paid-Social label + NULL fbc passes the #253 corroboration branch (api/ads/_optin-timestamp.ts:66-69). Ledger-once: NEW today, collapses to known tomorrow. Review contact in GHL or accept-and-close.",
       "note": "In-window (07-15). Rolls under f5497be771."
@@ -1540,7 +1540,7 @@
       "severity": "WARN",
       "title": "best-ads sums 2 vs 3 ad-attributed mustache leads; global 50-row cap (sort=cpbc) drops 1 converting ad",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "Same class as i1_peach_14 + dd8b131f13. best-ads.ts returns GLOBAL top-50 by cpbc; today exactly 50 rows returned so mustache lowest-cpbc converter falls below the cut. Fix: always return any ad with an in-window conversion. Not a writer bug (I2 mustache 100%; adsets-all sums 3).",
       "note": "WARN not BLOCKER: surface not all-zero (shows 2), Neon correct, adsets-all reconciles to 3."
@@ -1553,7 +1553,7 @@
       "severity": "WARN",
       "title": "Wills Nwajei booked 2026-07-15 21:41 on Home Care Hero Application: Interview Scheduling (PAID cal), ls=Social media/bare fbclid",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "snoozed_until": "2026-07-22",
       "unblocking_action": "Review yes/no (appt vHiuHiT2iVA8R900gHNW, contact gABGTxEuR0mFrEHKaK5a). On a PAID cal but ls=Social media/fs=Other, no adId, bare fbclid => live predicate correctly rejects (#147) => correctly OTHER. NOT a J1 escalation (verified no meta entity id / paid medium). Same precedent as Adam Burdick c7adbc2408. Thursday: count-only.",
@@ -1567,7 +1567,7 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-16 15:15:08 UTC, NULL fbc, ls/fs=Paid Social - PR#253 corroboration hole class (found by evening run 2)",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-07-17",
+      "last_seen": "2026-07-18",
       "status": "known",
       "unblocking_action": "GHL-review or accept; durable fix = PR253 follow-up f5497be771 (_optin-timestamp.ts:66-69). Stamp after-window 07-16; affects tomorrow's window."
     },
@@ -1579,8 +1579,8 @@
       "severity": "WARN",
       "title": "rung-2 re-opt-in stamp 2026-07-17 04:31 UTC == dateUpdated, NULL fbc, ls/fs=Paid Social (PR253 corroboration-hole class; stamp AFTER window, no KPI impact 07-14->07-16)",
       "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "status": "new",
+      "last_seen": "2026-07-18",
+      "status": "known",
       "unblocking_action": "Review in GHL or accept; durable fix rolls under f5497be771 (require fbc within 7d OR stored paid_session_at, not the bare Paid-Social label). Ledger-once; collapses next run."
     },
     "e1111671f2": {
@@ -1591,10 +1591,23 @@
       "severity": "WARN",
       "title": "CYNTHA OVERTON booked 2026-07-16 on OP PAID cal [Video Meeting] - Introductory Call (2oOJbhE0x01KXYKI1Fbs) but in OTHER; contact carries bare fbclid only -> live predicate correctly non-paid (#147). First OP J4 candidate. WARN not J1-escalation.",
       "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "status": "new",
+      "last_seen": "2026-07-18",
+      "status": "known",
       "snoozed_until": "2026-07-21",
       "unblocking_action": "Verify in GHL (bceTRUhrY1E2JDWMJP46 / A1oxiTxQvst3hMM27VgF). If genuinely paid, promote; else ignore. Bare fbclid alone is not paid by design, so default is leave-in-OTHER. Window-ages-out ~07-19."
+    },
+    "36c938083a": {
+      "key": "ORBIT-B6|obb|lWy9q5GwNCGxfKpwA9aQ",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "lWy9q5GwNCGxfKpwA9aQ",
+      "severity": "WARN",
+      "title": "POST-#253 phantom: stamp 2026-07-18 03:25 UTC, NULL fbc, last/first session=Paid Social (PR253 corroboration hole); AFTER window, no KPI impact",
+      "first_seen": "2026-07-18",
+      "last_seen": "2026-07-18",
+      "status": "new",
+      "unblocking_action": "Fold into f5497be771 (PR253-hole) decision. First OBB B6 since June batch aged out; fresh proof #253 still emits phantoms on a live client. Live predicate correct where it counts; stamp 07-18 is after the audit window so this window is unaffected.",
+      "note": "ls=fs=Paid Social, NULL fbc. Ledger-once; collapses to known-carry-over next run."
     }
   }
 }
