@@ -1,72 +1,72 @@
 {
   "version": 2,
-  "generated_at": "2026-07-06T18:18:26Z",
+  "generated_at": "2026-08-06T08:18:49Z",
   "source": "drizzle/schema.ts",
-  "source_ref": "origin/main@e8a980d",
+  "source_ref": "origin/main@e155d52",
   "tables": {
     "ads_clients_config": {
-      "line_start": 198,
-      "line_end": 225,
-      "hash": "sha256:3f9399778d1995fda26e4578f7e6783e4039ce92841d496662d687124ebea427",
-      "columns": "createdAt,currency,currencyToUsd,enabled,ghlApiSecretName,ghlLocationId,ghlPaidCalendarIds,hyrosSecretName,id,label,metaAccountId,metaLeadsPageId,metaSecretName,repSignupCode,timezone,tokenExpiresAt,updatedAt"
+      "line_start": 219,
+      "line_end": 262,
+      "hash": "sha256:0bff64c356c9a8cc1193c4a0399577acc02a7f335502892d4b3e37733d0501ec",
+      "columns": "calendarTiers,countAllBookings,createdAt,currency,currencyToUsd,enabled,ghlApiSecretName,ghlLocationId,ghlPaidCalendarIds,hyrosSecretName,id,label,metaAccountId,metaLeadsPageId,metaSecretName,repSignupCode,timezone,tokenExpiresAt,updatedAt"
     },
     "ads_meta_structure": {
-      "line_start": 456,
-      "line_end": 498,
+      "line_start": 504,
+      "line_end": 546,
       "hash": "sha256:ba77d34a958efcdf2da58206e81aca2db6d3fec313f27beaecf6ece2d17d667f",
       "columns": "campaignId,clientId,creativeBody,creativeThumbnailUrl,creativeTitle,currency,dailyBudgetCents,effectiveStatus,id,lastKnownEffectiveStatus,level,lifetimeBudgetCents,name,objective,optimizationGoal,parentId,pausedAt,raw,status,syncedAt"
     },
     "ads_meta_insights": {
-      "line_start": 573,
-      "line_end": 602,
-      "hash": "sha256:42708fd423da3990f621d28c010abaa4e8efb806f8e61dc809d1c523596d358d",
-      "columns": "adId,adName,adsetId,adsetName,campaignId,campaignName,clicks,clientId,cpc,cpm,createdAt,ctr,dateStart,frequency,impressions,level,objectId,objectName,reach,spend"
+      "line_start": 621,
+      "line_end": 660,
+      "hash": "sha256:994c123bff49c13d3deebb8b7155e085b09c72067c2465ba04109c6cd5fca166",
+      "columns": "adId,adName,adsetId,adsetName,campaignId,campaignName,clicks,clientId,cpc,cpm,createdAt,ctr,dateStart,frequency,impressions,level,objectId,objectName,reach,sPlays,spend"
     },
     "ads_sync_log": {
-      "line_start": 604,
-      "line_end": 620,
+      "line_start": 662,
+      "line_end": 678,
       "hash": "sha256:43749a97c1df540ba922fbf8643bf9aba66cb3e12b020af77293cff89f674082",
       "columns": "clientId,errorMessage,finishedAt,id,ok,rowsSynced,source,startedAt"
     },
     "ads_paid_leads": {
-      "line_start": 684,
-      "line_end": 726,
+      "line_start": 742,
+      "line_end": 784,
       "hash": "sha256:7e5f243138c68e48fd8c43b3d560d41bed4c29282aba6197b44937a5f4bb9d52",
       "columns": "adName,campaignName,clientId,contactId,fbclid,lastPaidOptInAt,metaAdId,metaAdsetId,metaCampaignId,raw,syncedAt,utmCampaign,utmContent,utmMedium,utmSignature,utmSource"
     },
     "ads_paid_bookings": {
-      "line_start": 731,
-      "line_end": 781,
+      "line_start": 789,
+      "line_end": 839,
       "hash": "sha256:adddb698f4d6ef2dee655030afede5ce268ad7fc7e47310aa5fafe9d5a988d67",
       "columns": "adName,appointmentDate,appointmentId,bookedAt,calendarId,campaignName,clickAt,clientId,contactId,countsAsSeparate,metaAdId,metaAdsetId,metaCampaignId,raw,status,syncedAt"
     },
     "ads_command_center_audit": {
-      "line_start": 819,
-      "line_end": 840,
+      "line_start": 877,
+      "line_end": 898,
       "hash": "sha256:00d253d00ee9bf295e17e84c213891e4da1b8a5d3e4e5ec438dda7a011908e21",
       "columns": "action,clientId,errorMessage,id,metaResponse,objectId,objectType,payloadAfter,payloadBefore,ranAt,status,userIdentity"
     },
     "ads_ghl_contacts": {
-      "line_start": 512,
-      "line_end": 571,
+      "line_start": 560,
+      "line_end": 619,
       "hash": "sha256:e8a3498aa0c0a1efd2872e3a589f82f62d8fd5c6b61e1f4b7ebf7441f4758f17",
       "columns": "clientId,contactId,dateAdded,dateUpdated,email,excludedAt,excludedBy,excludedFromMetrics,excludedReason,firstAttributionAt,firstUtmCampaign,firstUtmContent,firstUtmSource,fullName,isPaidLastTouch,lastAttributionAt,lastFbclid,lastUtmCampaign,lastUtmContent,lastUtmMedium,lastUtmSource,lastUtmTerm,phone,raw,reviewStatus,reviewedAt,reviewedBy,reviewerNote,syncedAt"
     },
     "ads_all_bookings": {
-      "line_start": 791,
-      "line_end": 810,
+      "line_start": 849,
+      "line_end": 868,
       "hash": "sha256:244b9ebdd7be72023ced4c331c427a647681c36178415db8665f92b762d6de2d",
       "columns": "appointmentDate,appointmentId,bookedAt,calendarId,calendarName,clientId,contactId,raw,status,syncedAt"
     },
     "fmt_catalog": {
-      "line_start": 1354,
-      "line_end": 1371,
+      "line_start": 1433,
+      "line_end": 1450,
       "hash": "sha256:6a89d1ea5950fdf8e97572f423422b43eece783c325090f5284647d8d994e1e2",
       "columns": "anchor,aspectRatios,brandInjection,displayName,effortTier,formatId,formatType,funnelStageBias,meta,name,origin,provenForClients,specFile,syncedAt,vertical,visualSignature"
     },
     "fmt_usage": {
-      "line_start": 1376,
-      "line_end": 1399,
+      "line_start": 1455,
+      "line_end": 1478,
       "hash": "sha256:f4f325f7de9010824cc41b2b16e45a7993f23db224c99c2c836575772d7f188a",
       "columns": "adId,batchId,clientId,createdAt,formatId,formatType,funnelStage,meta,ratio,slotId,source,uploadedAt"
     }
