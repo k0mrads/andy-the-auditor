@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "updated_at": "2026-08-07T09:00:00Z",
-  "updated_by": "2026-08-07 vault run (FRIDAY, MANUAL full triangulation; roster 8 live). Window 2026-08-04->08-06. 0 BLOCKERS. Status ACTION. NEW: 58afb54c64 ORBIT-I1 caregenius-b2b best-ads global-50-cap (11 vs 13 ad-attributed, same class as OBB dd8b131f13/mustache ca4b31b9a3); 8 J4 candidates (BP4 Shant/Stephen/Jorge/Rodney all Rescheduling Calendar utm=fb+fbclid; CG2 Kara/Matt; OBB1 Sam Bhagwat Interview Scheduling PAID-cal but bare fbclid+Social-media session=verified-non-paid NOT J1-escalation; OP1 Katie) ledgered, Friday=count-only list defers to Monday. STATE CHANGES: MUT-1 +172 occupancy-partners excluded_from_metrics (operator-intentional apply-op-exclude-nonclient-contacts @ 2026-08-06 21:39 UTC: 161 Plumbers-Collective-era legacy + 11 internal test, 0 in-window KPI impact, INFO); 12 B6 phantoms aged out of 14d detector (stamps <=07-24); 4630b8a7ad CG B6 closed (dateUpdated moved 08-04, no longer matches detector, lead correctly kept 07-30 date=PR253 held); prior 5 J4 window-aged->closed; aged permanent-WARN escalations 5ba6faaef2 (mirror-flag snooze_expired day51), e23e7aea30 (H6 catalog day50, 11 uncatalogued 0 NEW), f5497be771 (PR253-hole day51), 53b718d82a (OP bare meta_insights day9 ok=false). fd66928d02 BP Rafael STILL missing from ads_paid_bookings (day3, in-window, BP paid_booked 9 vs upstream 10, needs FULL BP re-walk). PASS all: A Meta=Neon 8 clients (worst BP spend -0.95%/impr -0.81%/ilc 0%, all<5%; CL/queen $0); E1 App=Neon exact; E2 counted leads/booked=Neon=App EXACT (BP14/9 CG13/6 OBB38/7 OP5/5 mustache5/0 peach2/0 CL0/0 queen0/0); E3 cpl/cpbc; E4 totals=SUM exact ($4760.97/107029impr/1047clk/77leads/27booked). F1 per-adset spend sums exact all 6 spenders; F2/F3 conversion sums EXACT all, 0 orphans. J1 missing=0 all; J2 endpoint==Neon exact+sum (BP19=15+4 CG15=10+5 OBB14=9+5 OP10=5+5); J3 counted==KPI (BP9 CG6 OBB7 OP5). I1 best-ads non-zero+reconciles BP/OP/peach/queen; short OBB37/38 mustache3/5 CG11/13 (50-cap). I2 RATCHETED UP no drops (BP lead292/570 book258/295, CG lead589/1021 book376/433, OBB lead2930/3273 book850/880, OP lead102/102 book64/64, peach209, mustache271, queen73/3; CL FROZEN snoozed 08-09 $0 spend). I3 all 6 live-vs-live EXACT (yes==paid_booked, any==paid_leads). B5 0 all; B6 1 candidate (OP D6uw6) 0 NEW 0 in-window pre-ledgered 43f5036e51. LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup); CAL-1 clean (queen 0/0/0). G1 all expected per-client sources fresh<7h ok=true (OP residual dead bare meta_insights 222.8h ok=false = 53b718d82a); orchestrator 3.2h ok. G2 fresh where spend>0 (<24h all); G3 n/a NULL all. G4-G7 healthy (overview 3.27s best-ads 1.56s drilldown<1.4s, no timeouts). H1/B2 golden-rule clean (first_paid_opt_in_at 0 refs; dateAdded write-side only); H3 single def _ghl-direct.ts:165; H4 0 drift (10/10 anchors match); H5 0 drift (11/11 tables); H6 11 uncatalogued 0 NEW. B1/C1 live GHL full re-walk NOT performed EXCEPT targeted Rafael verification (evidence chain: ghl_conversions fresh ok, E2 exact, counted honored, J1 no orphans). J5 backlog BP19/4 CG15/3 OBB14/5 OP10/5. Skill sha 5379d4f.",
+  "updated_at": "2026-08-10T18:00:00Z",
+  "updated_by": "2026-08-10 vault run (MONDAY, MANUAL full triangulation; roster 8 live). Window 2026-08-07->08-09. 0 BLOCKERS. Status ACTION. NEW(11): 3 in-window B6 phantoms (CG wnwF, OBB llfE, OP m61t - all NULL fbc + Paid Social = PR253 corroboration-hole class f5497be771); ORBIT-I1 OP best-ads 8 vs 9 (global-50-cap, same class as dd8b131f13); H6 calendar-tiers.ts + sync-ghl-dispositions.ts uncatalogued; 5 J4 Monday-triage (OBB Anita+Victoria on Interview Scheduling PAID cal but bare-fbclid session=Social-media = verified NON-paid, correctly OTHER, NOT J1 escalations; OP Jessica+Bobby+Katie on non-paid cals first_utm=facebook). STATE CHANGES: 58afb54c64 CG I1 CLOSED (best-ads 10=10 no cap loss this window); ca4b31b9a3 mustache I1 CLOSED (8=8); 8210914f85 queen I1 CLOSED (0 leads); dd8b131f13 OBB I1 reproduces 44/45 -> SNOOZED 08-17 w/ shared-cap-fix unblocker; 8547bf03b9 CL I2 snooze 08-09 expired -> re-snoozed 08-16 (CL $0 spend, frozen baseline); 43f5036e51 OP B6 aged out (stamp 07-24 >14d); 8 J4 08-07 batch window-aged-out->closed; aged permanent-WARN escalations 5ba6faaef2 (mirror-flag snooze_expired day52), f5497be771 (PR253 hole), 53b718d82a (OP bare meta_insights day15), e23e7aea30 + H6 backlog (day53). fd66928d02 BP Rafael STILL reproduces (day5): verified paid contact (is_paid_last_touch=true, paid_social, ad BP|S05, paid cal h7zd) in ads_all_bookings 08-04 but STILL absent from ads_paid_bookings; booked 08-04 OUT of window so 0 current KPI break, needs BP re-walk. PASS all: A Meta=Neon 7 token clients (worst mustache spend +0.02%; OP Meta-direct skipped no local token=53b718d82a, verified via E1+granular); E1 App=Neon EXACT; E2 counted leads/booked=Neon=App EXACT (BP4/4 CG10/7 OBB45/18 OP9/9 mustache8/0 peach0/0 CL0/0 queen0/0); E3 cpl/cpbc; E4 totals=SUM exact ($4372.31/103922impr/1044clk/76leads/38booked). F1 adset spend sums exact all 6 spenders; F2/F3 conversion sums EXACT, 0 orphans. J1 missing=0 all; J2 endpoint==Neon exact+sum (BP5=4+1 CG10=8+2 OBB27=22+5 OP13=9+4); J3 counted==KPI (BP4 CG7 OBB18 OP9). I1 best-ads non-zero+reconciles BP/CG/mustache/peach; short OBB44/45 OP8/9 (50-cap). I2 RATCHETED UP no drops (BP lead295/572 book262/299, CG lead598/1028 book386/444, OBB lead2970/3313 book877/907, OP lead111/111 book73/73, mustache279, peach210, queen73/3; CL FROZEN snoozed). I3 all live-vs-live EXACT (yes==paid_booked, any==paid_leads). B5 0 all; B6 3 NEW in-window (ledgered). LEADFORM-1 clean (mustache/peach/queen 0 drift 0 dup); CAL-1 clean (queen 0/0/0). G1 all expected per-client granular sources fresh<12h ok=true (OP dead bare meta_insights 301.9h ok=false = 53b718d82a); orchestrator 0.3h. G2 all spenders <48h. G3 n/a NULL all. G4-G7 healthy (overview 0.97s best-ads 1.42s drilldown 1.36s, no timeouts). H1/B2 golden-rule clean (first_paid_opt_in_at 0 refs; date_added walker-scope only sync-conversions:1489; created_at 0 count-window); H3 single def _ghl-direct.ts:165; H2 clientWindow canonical; H5 no BLOCKER (all referenced columns present); H4/H5 hash re-check deferred (local repo 1-ahead/5-behind origin/main). MUT-1 NO changes since 08-07 (override_leads {} override_bookings CG l7MhLl, excluded BP2/CG5/OP172=179, counts_as_separate BP+CG). J5 backlog BP5/1 CG10/1 OBB27/5 OP13/4. B1/C1 live GHL full re-walk NOT performed EXCEPT targeted Rafael verification (evidence chain: ghl_conversions fresh ok, E2 exact, counted honored, J1 no orphans). Skill sha bc1c874(local).",
   "baselines": {
     "i2_coverage": {
-      "as_of": "2026-08-07",
+      "as_of": "2026-08-10",
       "warn_drop_pp": 2,
       "ads_paid_leads": {
         "builderpro": {
-          "has_ad": 292,
-          "has_campaign": 570,
+          "has_ad": 295,
+          "has_campaign": 572,
           "total": 595
         },
         "caregenius-b2b": {
-          "has_ad": 589,
-          "has_campaign": 1021,
+          "has_ad": 598,
+          "has_campaign": 1028,
           "total": 1591
         },
         "contractor-launch": {
@@ -24,19 +24,19 @@
           "note": "Baseline frozen at 2026-06-26 level (40.4% has_ad/has_campaign). Today 56/339 = 16.5% reflects downstream snoozed ig-asset-permission finding 8547bf03b9. Not ratcheted down."
         },
         "mustache-painting": {
-          "has_ad": 271,
-          "has_campaign": 271,
-          "total": 271
+          "has_ad": 279,
+          "has_campaign": 279,
+          "total": 279
         },
         "obb": {
-          "has_ad": 2930,
-          "has_campaign": 3273,
+          "has_ad": 2970,
+          "has_campaign": 3313,
           "total": 3344
         },
         "peach-paint-co": {
-          "has_ad": 209,
-          "has_campaign": 209,
-          "total": 209
+          "has_ad": 210,
+          "has_campaign": 210,
+          "total": 210
         },
         "queen-consultancy": {
           "has_ad": 73,
@@ -44,21 +44,21 @@
           "total": 75
         },
         "occupancy-partners": {
-          "has_ad": 102,
-          "has_campaign": 102,
+          "has_ad": 111,
+          "has_campaign": 111,
           "total": 264,
           "note": "161/172-ish 0-campaign = OP GHL rows without UTM (attribution ramping, INFO). has_ad==has_campaign so no coverage drop."
         }
       },
       "ads_paid_bookings": {
         "builderpro": {
-          "has_ad": 258,
-          "has_campaign": 295,
+          "has_ad": 262,
+          "has_campaign": 299,
           "total": 303
         },
         "caregenius-b2b": {
-          "has_ad": 376,
-          "has_campaign": 433,
+          "has_ad": 386,
+          "has_campaign": 444,
           "total": 444
         },
         "contractor-launch": {
@@ -68,9 +68,9 @@
           "note": "Baseline frozen at 2026-06-26 level. Today 102/154 = 66.2% reflects same ig-asset-permission downstream effect. Not ratcheted down."
         },
         "obb": {
-          "has_ad": 850,
-          "has_campaign": 880,
-          "total": 906
+          "has_ad": 877,
+          "has_campaign": 907,
+          "total": 907
         },
         "queen-consultancy": {
           "has_ad": 3,
@@ -88,8 +88,8 @@
           "total": 0
         },
         "occupancy-partners": {
-          "has_ad": 64,
-          "has_campaign": 64,
+          "has_ad": 73,
+          "has_campaign": 73,
           "total": 146,
           "note": "0-campaign rows INFO (ramping)."
         }
@@ -97,7 +97,7 @@
     }
   },
   "mutations_snapshot": {
-    "as_of": "2026-08-07",
+    "as_of": "2026-08-10",
     "manual_override_leads": {},
     "manual_override_bookings": {
       "caregenius-b2b": [
@@ -448,11 +448,11 @@
       "severity": "WARN",
       "title": "CL URL-tag re-tag BLOCKED: ad account has no access to the Instagram account (Meta subcode 1815199 on every adcreatives clone, 74/78 ads pending)",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "snoozed_until",
       "unblocking_action": "Deprioritized by Zander 2026-06-12 (CL not a main client). Re-raise only if CL campaigns un-pause AND ad-level coverage matters again; then: BM-assign CL Instagram to act_626274846998122 and re-run rewrite-meta-url-tags --client contractor-launch --include-paused --apply. I2 floor regime covers any DROP meanwhile.",
-      "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. 2026-07-03: CL had 29+ in-window leads (live ads had been running), only 7 carry meta_ad_id. Live coverage 16.5% vs baseline floor 40.4% (-23.9pp DROP). Bookings 66.2% vs baseline 77.9% (-11.6pp). Baseline NOT ratcheted down; drop stays visible until unsnooze. 2026-07-06: CL window spend $0, no in-window drop; still snoozed. 2026-07-07: CL window spend $0 (adsets paused), no in-window drop; still snoozed until 07-12. 2026-07-12: snooze date reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop. Re-snoozed to 07-19. Baseline still frozen at 40.4%/77.9%. 2026-07-13: snooze active (until 07-19); CL window spend $0 (adsets paused), no in-window ad-coverage drop. 2026-07-20: snooze date 07-19 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop. Re-snoozed to 07-26. Baseline still frozen at 40.4%/77.9%. 2026-07-23: snooze active (until 07-26); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-24: snooze active (until 07-26); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-27: snooze 07-26 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop (live 16.5%/66.2% vs frozen baseline 40.4%/77.9%). Re-snoozed to 08-02. Baseline still frozen. 2026-07-28: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-29: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-30: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 16/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-07-31: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-02: snooze date 08-02 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Re-snoozed to 08-09. Baseline still frozen. 2026-08-03: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-05: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-06: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-07: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen.",
-      "snoozed_until": "2026-08-09"
+      "note": "Attempted 2026-06-12: dry-run 74 would-change, apply 0 succeeded, all blocked by IG asset permission. 2026-07-03: CL had 29+ in-window leads (live ads had been running), only 7 carry meta_ad_id. Live coverage 16.5% vs baseline floor 40.4% (-23.9pp DROP). Bookings 66.2% vs baseline 77.9% (-11.6pp). Baseline NOT ratcheted down; drop stays visible until unsnooze. 2026-07-06: CL window spend $0, no in-window drop; still snoozed. 2026-07-07: CL window spend $0 (adsets paused), no in-window drop; still snoozed until 07-12. 2026-07-12: snooze date reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop. Re-snoozed to 07-19. Baseline still frozen at 40.4%/77.9%. 2026-07-13: snooze active (until 07-19); CL window spend $0 (adsets paused), no in-window ad-coverage drop. 2026-07-20: snooze date 07-19 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop. Re-snoozed to 07-26. Baseline still frozen at 40.4%/77.9%. 2026-07-23: snooze active (until 07-26); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-24: snooze active (until 07-26); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-27: snooze 07-26 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop (live 16.5%/66.2% vs frozen baseline 40.4%/77.9%). Re-snoozed to 08-02. Baseline still frozen. 2026-07-28: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-29: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop. Baseline still frozen at 40.4%/77.9%. 2026-07-30: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 16/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-07-31: snooze active (until 08-02); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-02: snooze date 08-02 reached; CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Re-snoozed to 08-09. Baseline still frozen. 2026-08-03: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-05: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-06: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-07: snooze active (until 08-09); CL window spend $0 (adsets paused), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Baseline still frozen. 2026-08-10: snooze date 08-09 reached; CL window spend $0 (adsets paused, 0/6 active), no in-window ad-coverage drop (live leads 56/339=16.5%, book 102/154=66.2% vs frozen baseline 40.4%/77.9%). Re-snoozed to 08-16. Baseline still frozen.",
+      "snoozed_until": "2026-08-16"
     },
     "d12355cf14": {
       "key": "ORBIT-J4|caregenius-b2b|t9tZmCw8iX7s9CvJgTg2",
@@ -608,10 +608,10 @@
       "severity": "WARN",
       "title": "ads_ghl_contacts.is_paid_last_touch never recomputed after #147: ~3,168 stale paid-true rows",
       "first_seen": "2026-06-12",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "snooze_expired",
       "unblocking_action": "SNOOZE EXPIRED 2026-06-19, day 45 since expiry today. Still no decision. Decide: (a) extend snooze with concrete date + named unblocker, (b) run the approved mirror-flag backfill apply-script (--confirm-prod-write), or (c) close as accepted-cosmetic (no KPI impact; live predicate correct everywhere it counts).",
-      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are Contacts Diagnostic verdicts + operator triage trust. 2026-07-30: snooze still expired, day 41 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill, or (c) close as accepted-cosmetic. 2026-07-31: snooze still expired, day 42 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-02: snooze still expired, day 44 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-03: snooze still expired, day 45 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-05: snooze still expired, day 47 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-06: snooze still expired, day 49 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-07: snooze still expired, day 51 since expiry (2026-06-19); no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic."
+      "note": "No KPI impact (live predicate is correct everywhere that counts); affected surfaces are Contacts Diagnostic verdicts + operator triage trust. 2026-07-30: snooze still expired, day 41 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill, or (c) close as accepted-cosmetic. 2026-07-31: snooze still expired, day 42 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-02: snooze still expired, day 44 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-03: snooze still expired, day 45 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-05: snooze still expired, day 47 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-06: snooze still expired, day 49 since expiry; no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-07: snooze still expired, day 51 since expiry (2026-06-19); no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic. 2026-08-10: snooze still expired, day 52 since expiry (2026-06-19); no decision. No KPI impact (live predicate correct where it counts). Needs (a) extend-snooze+date, (b) run mirror-flag backfill --confirm-prod-write, or (c) close as accepted-cosmetic."
     },
     "454cc81b50": {
       "key": "ORBIT-B6|obb|tGhyRK16vNlpfag0UKsd",
@@ -850,7 +850,7 @@
       "severity": "WARN",
       "title": "api/ads/split-tests.ts + api/ads/split-tests-ingest.ts added (PRs #273/#275) not in known_endpoints catalog",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Update ~/.claude/skills/andy-the-auditor/invariants/orbit.md `known_endpoints` with explicit entries for split-tests.ts + split-tests-ingest.ts + cron-bp-spend-controller.ts + cron-caregenius-spend-controller.ts + creative-audit-ingest.ts + creative-audit-migrate.ts + _ads-manager-url.ts + _spend-controller-run.ts helpers. Likely all SKIPPED. Day 18 today, permanent-WARN.",
       "note": "Also additional helpers (_ads-manager-url.ts, _contacts-cohorts.ts, _spend-controller-run.ts, _sync-lock.ts) since the 2026-06-10 helper list of 16; add to helpers list. Consolidate with 06fa667df5 + 07-03 NEW entries in one catalog PR. 2026-07-27: 42 route files on feat/op-tier branch; NEW uncatalogued since last catalog: calendar-tiers.ts + sync-ghl-dispositions.ts (add to the consolidated catalog PR alongside split-tests + spend-controllers + creative-audit + health-overview + watch-nudge). Day 39. 2026-07-29: still uncatalogued (day 41); 42 route files on feat/video-metrics-info branch. Consolidated catalog PR still pending. 2026-07-30: still uncatalogued (day 42); 42 route files on feat/video-metrics-info (api/ads identical to origin/main). No NEW uncatalogued route since last run. Consolidated catalog PR still pending. 2026-07-31: still uncatalogued (day 43); 43 route files on feat/jarvis-spend-anywhere (d0e213f). No NEW uncatalogued route since last run (calendar-tiers/creative-audit/spend-controllers/health-overview/split-tests/sync-ghl-dispositions/watch-nudge still pending). Consolidated catalog PR still pending. 2026-08-02: still uncatalogued (day 45); NEW route api/ads/spend-command.ts appeared on origin/main (ledgered separately bb5f090dc5, classify SKIPPED write-bridge). Fold into the consolidated catalog PR. 11 uncatalogued total now. 2026-08-03: still uncatalogued (day 46); 43 route files on feat/jarvis-spend-anywhere (d0e213f), api/ads differs from origin/main only in slack-weekly-sales.ts. No NEW uncatalogued route since last run (spend-command bb5f090dc5 + split-tests + calendar-tiers + creative-audit + spend-controllers + health-overview + sync-ghl-dispositions + watch-nudge still pending). Consolidated catalog PR still pending. 2026-08-05: still uncatalogued (day 48); 43 route files on fix/reminder-ping-thread-context (1c9a79e), api/ads differs from origin/main only in _spend-controller.ts. No NEW uncatalogued route since last run (11 pending: calendar-tiers, creative-audit-ingest/migrate, cron-bp/caregenius-spend-controller, health-overview, spend-command, split-tests(-ingest), sync-ghl-dispositions, watch-nudge). Consolidated catalog PR still pending. Permanent-WARN -> ACTION. 2026-08-06: still uncatalogued (day 51); 43 route files on origin/main (local api/ads == origin/main this run). 11 uncatalogued pending (calendar-tiers, creative-audit-ingest/migrate, cron-bp/caregenius-spend-controller, health-overview, spend-command, split-tests(-ingest), sync-ghl-dispositions, watch-nudge), 0 NEW. Consolidated catalog PR still pending. Permanent-WARN -> ACTION. 2026-08-07: still uncatalogued (day 50). 43 route files on origin/main@674668d (local feat/ads-cc-frequency-column api/ads==origin/main). 11 uncatalogued pending (calendar-tiers, creative-audit-ingest/migrate, cron-bp/caregenius-spend-controller, health-overview, spend-command, split-tests(-ingest), sync-ghl-dispositions, watch-nudge), 0 NEW. Consolidated catalog PR still pending. Permanent-WARN -> ACTION."
@@ -863,10 +863,10 @@
       "severity": "WARN",
       "title": "PR #253 corroboration accepts bare first-touch 'Paid Social' label without timestamp recency (api/ads/_optin-timestamp.ts:66-69)",
       "first_seen": "2026-06-18",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "File a follow-up PR requiring either (a) fbc click within 7d of dateUpdated, OR (b) a stored paid_session_at field with same recency check - not the bare session_source label. Day 40; owner api/ads/_optin-timestamp.ts:66-69.",
-      "note": "Verified 2026-06-29 via Read: _optin-timestamp.ts:66-69 in origin/main still contains the bare-label corroboration branch. Not re-verified 2026-07-06; still open by inference from ongoing candidate generation. 2026-07-13: 2 NEW proof-class B6 candidates (qZ3HdY2tnbtSbXEojvT7 has stale fbc click ~06-27 vs 07-13 stamp; YkoVmKsVcyskLIpLWr5Z NULL fbc, fs=Paid Social). Day 25; still open by inference from ongoing candidate generation. 2026-07-20: 5 NEW proof-class B6 candidates (CG 5MfCD9 in-window; OP Psbe/ewXG/3FZD/OLshr - FIRST OP batch). Day 32; still open by inference from ongoing candidate generation. 2026-07-21: 3 NEW proof-class B6 (OBB paNCvNq in-window + SX2rMiq; OP blf4TR) + CG EnSwP0st in-window. Day 33; still open by inference from ongoing candidate generation. 2026-07-22: 2 NEW proof-class B6 (OBB ebkI4fe in-window 07-20; OP 6501eISG in-window 07-21), both NULL fbc + fs=Paid Social. Day 34; still open by inference from ongoing candidate generation. 2026-07-23: 2 NEW proof-class B6 (OBB a8xF5IJfStbHdJg6IYDR in-window 07-22; OP UAv8LM0V4wFaS4DfUuxR 07-23), both NULL fbc + fs=Paid Social. Day 35; still open by inference from ongoing candidate generation. 2026-07-24: 7 NEW proof-class B6 (CG qi2O0i8+GJn479K in-window; OBB vp13uU7J in-window; OP K7NKZ0S in-window + 3YmXQfg/D6uw6iy/dsnQmEs 07-24). Day 36; still open by inference from ongoing candidate generation. 2026-07-27: 8 NEW proof-class B6, ALL occupancy-partners weekend leads (QuPR6OhU/8aSSZEq/rq4ifof/neUF9If/cwdrGj6/oUInCcI/jalHEAF in-window + z9JTLJz 07-27), all NULL fbc + Paid Social. Day 39; still open by inference from ongoing candidate generation. 2026-07-28: 18 B6 candidates today (CG 10 + OBB 6 + OP 2), ALL already ledgered (0 NEW). None in-window (stamps 07-15..07-24, outside the 07-25..07-27 window). Yesterday's 8 OP new batch + CG TBD8ZoGz no longer reproduce (9 resolved). Day 40; still open by inference from ongoing candidate generation. 2026-07-29: 17 B6 candidates today (CG 9 + OBB 6 + OP 2), ALL pre-ledgered (0 NEW), none in-window (stamps 07-15..07-24). Day 41; still open by inference from ongoing candidate generation. 2026-07-30: 16 B6 candidates today (CG8+OBB6+OP2); 1 NEW in-window proof-class (CG PJgPP4l9 4630b8a7ad, first_session=Paid Social + NULL fbc = the bare-label acceptance hole). Day 42; still open by inference from ongoing candidate generation. 2026-07-31: 14 B6 candidates today (CG6+OBB6+OP2), 0 NEW (all pre-ledgered), none in-window (window 07-28..07-30; nearest stamps QTjd3C2/PJgPP4l9 re-bumped forward but not in-window). Day 43; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-02: 13 B6 candidates today (CG6+OBB5+OP2), 0 NEW (all pre-ledgered), 1 in-window (CG PJgPP4l9 4630b8a7ad, stamp 07-30, NULL fbc + first_session=Paid Social = the bare-label acceptance hole). Day 45; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-03: 12 B6 candidates today (CG5+OBB5+OP2), 0 NEW (all pre-ledgered), 0 in-window (nearest CG PJgPP4l9 stamp 07-30 now out-of-window; all stamps 07-20..07-30). Day 46; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-05: 6 B6 candidates today (CG3 qi2O0i82/QTjd3C2B/GJn479KA + OBB1 vp13uU7J + OP2 D6uw6iy/3YmXQfg), 0 NEW (all pre-ledgered), 0 in-window (stamps 07-23/07-24, window 08-02..08-04). Day 48; still open by inference. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION. 2026-08-06: 5 B6 candidates today (CG2 qi2O0i82/QTjd3C2B + OBB1 vp13uU7J + OP2 3YmXQfg/D6uw6iy), 0 NEW (all pre-ledgered), 0 in-window (stamps 07-23/07-24; window 08-03..08-05). Day 51; still open by inference. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION. 2026-08-07: 1 B6 candidate today (OP D6uw6 pre-ledgered 43f5036e51), 0 NEW, 0 in-window; 12 prior B6 phantoms aged out of detector this run. Day 51+. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION."
+      "note": "Verified 2026-06-29 via Read: _optin-timestamp.ts:66-69 in origin/main still contains the bare-label corroboration branch. Not re-verified 2026-07-06; still open by inference from ongoing candidate generation. 2026-07-13: 2 NEW proof-class B6 candidates (qZ3HdY2tnbtSbXEojvT7 has stale fbc click ~06-27 vs 07-13 stamp; YkoVmKsVcyskLIpLWr5Z NULL fbc, fs=Paid Social). Day 25; still open by inference from ongoing candidate generation. 2026-07-20: 5 NEW proof-class B6 candidates (CG 5MfCD9 in-window; OP Psbe/ewXG/3FZD/OLshr - FIRST OP batch). Day 32; still open by inference from ongoing candidate generation. 2026-07-21: 3 NEW proof-class B6 (OBB paNCvNq in-window + SX2rMiq; OP blf4TR) + CG EnSwP0st in-window. Day 33; still open by inference from ongoing candidate generation. 2026-07-22: 2 NEW proof-class B6 (OBB ebkI4fe in-window 07-20; OP 6501eISG in-window 07-21), both NULL fbc + fs=Paid Social. Day 34; still open by inference from ongoing candidate generation. 2026-07-23: 2 NEW proof-class B6 (OBB a8xF5IJfStbHdJg6IYDR in-window 07-22; OP UAv8LM0V4wFaS4DfUuxR 07-23), both NULL fbc + fs=Paid Social. Day 35; still open by inference from ongoing candidate generation. 2026-07-24: 7 NEW proof-class B6 (CG qi2O0i8+GJn479K in-window; OBB vp13uU7J in-window; OP K7NKZ0S in-window + 3YmXQfg/D6uw6iy/dsnQmEs 07-24). Day 36; still open by inference from ongoing candidate generation. 2026-07-27: 8 NEW proof-class B6, ALL occupancy-partners weekend leads (QuPR6OhU/8aSSZEq/rq4ifof/neUF9If/cwdrGj6/oUInCcI/jalHEAF in-window + z9JTLJz 07-27), all NULL fbc + Paid Social. Day 39; still open by inference from ongoing candidate generation. 2026-07-28: 18 B6 candidates today (CG 10 + OBB 6 + OP 2), ALL already ledgered (0 NEW). None in-window (stamps 07-15..07-24, outside the 07-25..07-27 window). Yesterday's 8 OP new batch + CG TBD8ZoGz no longer reproduce (9 resolved). Day 40; still open by inference from ongoing candidate generation. 2026-07-29: 17 B6 candidates today (CG 9 + OBB 6 + OP 2), ALL pre-ledgered (0 NEW), none in-window (stamps 07-15..07-24). Day 41; still open by inference from ongoing candidate generation. 2026-07-30: 16 B6 candidates today (CG8+OBB6+OP2); 1 NEW in-window proof-class (CG PJgPP4l9 4630b8a7ad, first_session=Paid Social + NULL fbc = the bare-label acceptance hole). Day 42; still open by inference from ongoing candidate generation. 2026-07-31: 14 B6 candidates today (CG6+OBB6+OP2), 0 NEW (all pre-ledgered), none in-window (window 07-28..07-30; nearest stamps QTjd3C2/PJgPP4l9 re-bumped forward but not in-window). Day 43; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-02: 13 B6 candidates today (CG6+OBB5+OP2), 0 NEW (all pre-ledgered), 1 in-window (CG PJgPP4l9 4630b8a7ad, stamp 07-30, NULL fbc + first_session=Paid Social = the bare-label acceptance hole). Day 45; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-03: 12 B6 candidates today (CG5+OBB5+OP2), 0 NEW (all pre-ledgered), 0 in-window (nearest CG PJgPP4l9 stamp 07-30 now out-of-window; all stamps 07-20..07-30). Day 46; still open by inference from ongoing candidate generation. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. 2026-08-05: 6 B6 candidates today (CG3 qi2O0i82/QTjd3C2B/GJn479KA + OBB1 vp13uU7J + OP2 D6uw6iy/3YmXQfg), 0 NEW (all pre-ledgered), 0 in-window (stamps 07-23/07-24, window 08-02..08-04). Day 48; still open by inference. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION. 2026-08-06: 5 B6 candidates today (CG2 qi2O0i82/QTjd3C2B + OBB1 vp13uU7J + OP2 3YmXQfg/D6uw6iy), 0 NEW (all pre-ledgered), 0 in-window (stamps 07-23/07-24; window 08-03..08-05). Day 51; still open by inference. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION. 2026-08-07: 1 B6 candidate today (OP D6uw6 pre-ledgered 43f5036e51), 0 NEW, 0 in-window; 12 prior B6 phantoms aged out of detector this run. Day 51+. Owner api/ads/_optin-timestamp.ts:66-69 bare-label branch. Permanent-WARN -> ACTION. 2026-08-10: still the root cause of the in-window B6 phantoms (3 NEW today: CG wnwF, OBB llfE, OP m61t). Owner api/ads/_optin-timestamp.ts:66-69. File the fbc-recency follow-up PR or snooze with a date."
     },
     "b6a3e2c5d0": {
       "key": "ORBIT-J4|caregenius-b2b|a589Acys8KiRamoEpiVH",
@@ -970,7 +970,7 @@
       "severity": "WARN",
       "title": "api/ads/cron-bp-spend-controller.ts added by PR #282 (7760165) not in known_endpoints catalog",
       "first_seen": "2026-06-21",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add catalog entry to ~/.claude/skills/andy-the-auditor/invariants/orbit.md known_endpoints under the cron-obb-spend-controller.ts line; likely SKIPPED (CBO-aware clone of OBB spend controller, no Neon ads_paid_* writes). Day 15 today; combine with e23e7aea30 + h6_*_03 in one catalog PR.",
       "note": "2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1310,7 +1310,7 @@
       "severity": "WARN",
       "title": "api/ads/creative-audit-ingest.ts present in repo, not in known_endpoints catalog",
       "first_seen": "2026-07-03",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add catalog entry to ~/.claude/skills/andy-the-auditor/invariants/orbit.md known_endpoints; likely SKIPPED (creative-audit ingest is Format Lab-adjacent, no ads_paid_* writes). Bundle with e23e7aea30 + 06fa667df5 + h6_*_03 in a single catalog PR. Day 3 today.",
       "note": "2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1323,7 +1323,7 @@
       "severity": "WARN",
       "title": "api/ads/creative-audit-migrate.ts present in repo, not in known_endpoints catalog",
       "first_seen": "2026-07-03",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add catalog entry as SKIPPED (one-off migration script). Day 3 today.",
       "note": "2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1336,7 +1336,7 @@
       "severity": "WARN",
       "title": "api/ads/cron-caregenius-spend-controller.ts present in repo, not in known_endpoints catalog",
       "first_seen": "2026-07-03",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add catalog entry as SKIPPED (per-client clone of cron-obb-spend-controller.ts; no ads_paid_* writes). Day 3 today.",
       "note": "2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1479,7 +1479,7 @@
       "severity": "WARN",
       "title": "api/ads/health-overview.ts (PR #315, 3ac7f3d) uncatalogued cross-client Ads Health roll-up",
       "first_seen": "2026-07-10",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add to invariants/orbit.md known_endpoints as SKIPPED: reuses canonical fetchAdsetsAll()+classifyAd() (metrics covered by ORBIT-F), red/yellow health verdicts are marketing-performance (out of scope). Bundle with the H6 backlog (e23e7aea30/06fa667df5/h6_creative_audit_*/h6_cron_cg_*) in one catalog PR.",
       "note": "On origin/main, served by prod HTTP 200. Detected 2026-07-10 (07-09 run was on a feature branch, missed it). 2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1506,7 +1506,7 @@
       "severity": "WARN",
       "title": "api/ads/watch-nudge.ts (ads-triage 👀 nudge route) not in known_endpoints catalog",
       "first_seen": "2026-07-12",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add api/ads/watch-nudge.ts to known_endpoints in invariants/orbit.md as SKIPPED (ads-triage nudge: reads ad_triage, drives Meta pause/keep via Slack reactions; 0 writes to ads_paid_leads/ads_paid_bookings/last_paid_opt_in_at). Bundle into the same catalog PR as e23e7aea30 + 06fa667df5 + the creative-audit / spend-controller / health-overview entries.",
       "note": "Classified 2026-07-12: grep found 0 conversion-table write refs; header describes the daily watched-ad nudge (pause/keep). Skipped-class like actions/meta.ts. 2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -1610,12 +1610,13 @@
       "client": "obb",
       "subject": "best-ads-drops-converting-ad",
       "severity": "WARN",
-      "title": "best-ads sums 38 vs 46 ad-attributed OBB leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OBB ads",
+      "title": "best-ads sums 44 vs 45 ad-attributed OBB leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OBB ad",
       "first_seen": "2026-07-15",
-      "last_seen": "2026-08-07",
-      "status": "known",
-      "unblocking_action": "Same class as i1_peach_14. best-ads.ts returns a GLOBAL top-50 ad set ranked by cpbc; today total returned=50 (BP3+CG12+mustache7+OBB14+peach9+queen5), so OBB's 5 lowest-cpbc converting ads fall below the cut and their leads vanish from the per-ad sum. Fix: always return any ad with an in-window conversion, or stop treating best-ads as a complete per-ad ledger. Not a writer bug (I2 OBB 88.5%/96.2%; adsets-all sums OBB to 61).",
-      "note": "WARN not BLOCKER: surface not all-zero, underlying Neon correct, drilldown/adsets-all reconciles. Cap became binding for OBB today (07-14 OBB reconciled); peach still short 1 (i1_peach_14). 2026-08-07: best-ads sum OBB leads=37 vs 38 ad-attributed (short 1). Global 50-cap; underlying Neon correct (drilldown adsets-all sums OBB=38). Known."
+      "last_seen": "2026-08-10",
+      "status": "snoozed_until",
+      "unblocking_action": "Systemic best-ads global-50-cap. Ship shared fix: guarantee any ad with an in-window conversion is returned (or stop treating best-ads as a complete per-ad ledger). Headline KPI exact (E2 OBB 45/18). Snoozed to 2026-08-17 pending the cap PR; OP now hits the same class (ORBIT-I1|occupancy-partners|best-ads-50-cap).",
+      "note": "WARN not BLOCKER: surface not all-zero, underlying Neon correct, drilldown/adsets-all reconciles. Cap became binding for OBB today (07-14 OBB reconciled); peach still short 1 (i1_peach_14). 2026-08-07: best-ads sum OBB leads=37 vs 38 ad-attributed (short 1). Global 50-cap; underlying Neon correct (drilldown adsets-all sums OBB=38). Known. 2026-08-10: still short (44/45). Snoozed to 08-17 with shared-fix unblocker (was chronic-known without snooze, permanent-WARN).",
+      "snoozed_until": "2026-08-17"
     },
     "385e777dde": {
       "key": "ORBIT-J4|caregenius-b2b|SB3DJtc5NzH7bDGBHvxM",
@@ -1718,9 +1719,9 @@
       "severity": "WARN",
       "title": "best-ads sums 2 vs 3 ad-attributed mustache leads; global 50-row cap (sort=cpbc) drops 1 converting ad",
       "first_seen": "2026-07-16",
-      "last_seen": "2026-08-07",
-      "status": "known",
-      "unblocking_action": "Same class as i1_peach_14 + dd8b131f13. best-ads.ts returns GLOBAL top-50 by cpbc; today exactly 50 rows returned so mustache lowest-cpbc converter falls below the cut. Fix: always return any ad with an in-window conversion. Not a writer bug (I2 mustache 100%; adsets-all sums 3).",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: not reproducing (mustache best-ads sum 8 == overview 8 this window). Systemic cap class tracked under dd8b131f13.",
       "note": "WARN not BLOCKER: surface not all-zero (shows 2), Neon correct, adsets-all reconciles to 3. 2026-08-07: best-ads sum mustache leads=3 vs 5 ad-attributed (short 2). Global 50-cap. Known."
     },
     "594cabd98b": {
@@ -1862,9 +1863,9 @@
       "severity": "INFO",
       "title": "best-ads shows 2 of 3 ad-attributed queen leads (global 50-row cap drops lowest-ranked converting ad; same class as dd8b131f13/ca4b31b9a3)",
       "first_seen": "2026-07-20",
-      "last_seen": "2026-07-27",
-      "status": "known",
-      "unblocking_action": "Cosmetic ranking-surface ceiling, not a KPI defect. Raise best-ads row cap or make it per-client if ad-level ranking completeness matters. I1 FAILs only on all-zero-with-leads, which did not occur."
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: queen 0 in-window leads, best-ads n/a. Systemic cap class tracked under dd8b131f13."
     },
     "cf3a577a86": {
       "key": "ORBIT-B6|obb|paNCvNqRohI44e6gEQtq",
@@ -2030,10 +2031,10 @@
       "severity": "WARN",
       "title": "POST-#253 phantom: stamp 2026-07-24 11:19:29 UTC, NULL fbc, ls=Paid Social fs=Paid Social - PR253 corroboration hole (after window)",
       "first_seen": "2026-07-24",
-      "last_seen": "2026-08-07",
-      "status": "known",
-      "unblocking_action": "Proof-of-class of open f5497be771 (PR253 accepts bare Paid Social first-touch label without timestamp recency, api/ads/_optin-timestamp.ts:66-69). No standalone fix; retires when the f5497be771 follow-up PR ships. Review in GHL or restamp via scripts/backfill-reoptin-timestamp.ts; no count impact (re-opt-in-date question). Ledger-once: NEW today, collapses to known next run.",
-      "note": "After-window (07-24). NULL fbc, session_source=Paid Social. GHL: https://app.gohighlevel.com/v2/location/bceTRUhrY1E2JDWMJP46/contacts/detail/D6uw6iybwJAJ37RDEOHJ 2026-08-07: still surfaces (D6uw6, stamp 07-24 11:19 barely within 14d), 0 in-window (window 08-04..08-06). Last B6 candidate before full age-out ~tomorrow. Known."
+      "last_seen": "2026-08-10",
+      "status": "aged_out_of_detector_window",
+      "unblocking_action": "AGED OUT 2026-08-10: stamp 2026-07-24 now >14d old, B6 detector no longer surfaces. Underlying row still misdated; alert dormant. Run scripts/backfill-reoptin-timestamp.ts or accept-and-close.",
+      "note": "After-window (07-24). NULL fbc, session_source=Paid Social. GHL: https://app.gohighlevel.com/v2/location/bceTRUhrY1E2JDWMJP46/contacts/detail/D6uw6iybwJAJ37RDEOHJ 2026-08-07: still surfaces (D6uw6, stamp 07-24 11:19 barely within 14d), 0 in-window (window 08-04..08-06). Last B6 candidate before full age-out ~tomorrow. Known. Flipped known -> aged_out_of_detector_window on 2026-08-10 (day 17)."
     },
     "81800adefe": {
       "key": "ORBIT-B6|occupancy-partners|dsnQmEsmz3zWf2y3NfFI",
@@ -2186,10 +2187,10 @@
       "severity": "WARN",
       "title": "OP bare meta_insights sync source failing daily (ok=false) while granular :campaign/:adset/:ad succeed and spend reconciles",
       "first_seen": "2026-07-29",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Identify whether the bare meta_insights source key is a live OP-tier cost/per-call insights sync needing a permission/query fix, or a legacy/duplicate key to retire so it stops flapping ok=false. No KPI impact (granular insights ok, spend reconciles via E1).",
-      "note": "Latest (occupancy-partners, meta_insights) ads_sync_log row 2026-07-29 01:26:46 UTC ok=false. meta_insights:campaign/:adset/:ad all ok=true 2026-07-29 05:00. OP token absent locally; attested via E1. Likely feat/op-tier cost-sync path. 2026-07-30: still ok=false + stale (last 07-29 01:26, ~30.7h); OP leveled meta_insights:campaign/adset/ad fresh+ok=true (3.1h) so no KPI impact. Decayed NEW->known. 2026-07-31: bare meta_insights latest row still 2026-07-29 01:26 UTC ok=false, not re-run since (~43h dormant). Granular meta_insights:campaign/adset/ad fresh+ok (0.7h); OP spend reconciles E1 0% delta. No KPI impact; day 2, still known. 2026-08-02: still ok=false, dormant ~111h; granular meta_insights:campaign/adset/ad all fresh 0.2h ok=true; OP spend reconciles A/E1 0%. No KPI impact. Day 4. 2026-08-03: still ok=false, dormant ~135h (last 07-29 01:26); granular meta_insights:campaign/adset/ad fresh 3.2h ok=true; OP spend reconciles A/E1 0.08%. No KPI impact. Day 5. 2026-08-07: OP bare meta_insights source latest row 222.8h ok=false (dormant, last ~07-29 01:26); granular meta_insights:campaign/adset/ad fresh 3.2h ok=true; OP spend reconciles A/E1 0.00%. No KPI impact. Day 9, aged permanent-WARN -> ACTION: retire dead source key or fix."
+      "note": "Latest (occupancy-partners, meta_insights) ads_sync_log row 2026-07-29 01:26:46 UTC ok=false. meta_insights:campaign/:adset/:ad all ok=true 2026-07-29 05:00. OP token absent locally; attested via E1. Likely feat/op-tier cost-sync path. 2026-07-30: still ok=false + stale (last 07-29 01:26, ~30.7h); OP leveled meta_insights:campaign/adset/ad fresh+ok=true (3.1h) so no KPI impact. Decayed NEW->known. 2026-07-31: bare meta_insights latest row still 2026-07-29 01:26 UTC ok=false, not re-run since (~43h dormant). Granular meta_insights:campaign/adset/ad fresh+ok (0.7h); OP spend reconciles E1 0% delta. No KPI impact; day 2, still known. 2026-08-02: still ok=false, dormant ~111h; granular meta_insights:campaign/adset/ad all fresh 0.2h ok=true; OP spend reconciles A/E1 0%. No KPI impact. Day 4. 2026-08-03: still ok=false, dormant ~135h (last 07-29 01:26); granular meta_insights:campaign/adset/ad fresh 3.2h ok=true; OP spend reconciles A/E1 0.08%. No KPI impact. Day 5. 2026-08-07: OP bare meta_insights source latest row 222.8h ok=false (dormant, last ~07-29 01:26); granular meta_insights:campaign/adset/ad fresh 3.2h ok=true; OP spend reconciles A/E1 0.00%. No KPI impact. Day 9, aged permanent-WARN -> ACTION: retire dead source key or fix. 2026-08-10: OP bare meta_insights still ok=false @ 301.9h (\"Missing env var META_TOKEN_OCCUPANCY_PARTNERS\"); granular :campaign/:adset/:ad all 0.3h ok=true, spend reconciles (A skipped Meta-direct for OP - token absent locally too). 0 KPI impact. Retire the dead source key or fix."
     },
     "4630b8a7ad": {
       "key": "ORBIT-B6|caregenius-b2b|PJgPP4l9Nfaj306uMSSa",
@@ -2212,7 +2213,7 @@
       "severity": "WARN",
       "title": "api/ads/spend-command.ts (SPEND-FROM-ANYWHERE budget-command write bridge) on origin/main not in known_endpoints catalog",
       "first_seen": "2026-08-02",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Add api/ads/spend-command.ts to invariants/orbit.md known_endpoints as SKIPPED (write path, approver-gated Meta budget commands; does NOT touch ads_paid_leads/ads_paid_bookings, does NOT compute CPL/CPBC - grep clean). Fold into the consolidated e23e7aea30 catalog PR.",
       "note": "POST /api/ads/spend-command - the Moreway Brain stages an approver-gated confirm-first Meta budget proposal from any channel/DM; same category as actions/meta.ts (out-of-scope write path). Not conversion-bearing. Likely THE feature of the local feat/jarvis-spend-anywhere branch, now merged to origin/main. 2026-08-03: day 2, decayed new->known. Still uncatalogued; fold into consolidated e23e7aea30 catalog PR. api/ads on feat/jarvis-spend-anywhere differs from origin/main only in slack-weekly-sales.ts. 2026-08-07: still uncatalogued, 0 NEW; folded into the consolidated catalog PR (see e23e7aea30)."
@@ -2290,10 +2291,10 @@
       "severity": "WARN",
       "title": "Rafael Martinez paid booking (appt 5070MiX7DHGA5pRMAJz0, contact XpJFMQtZkvGBsyZQLSCC) present in ads_all_bookings but never written to ads_paid_bookings; BP paid_booked app=10 vs GHL upstream=11",
       "first_seen": "2026-08-05",
-      "last_seen": "2026-08-07",
+      "last_seen": "2026-08-10",
       "status": "known",
       "unblocking_action": "Config+code fix (Strategy Session calendar now paid, #385-388 on main) has landed but the pre-existing Rafael booking was never backfilled. Trigger a FULL BuilderPro ghl_conversions re-walk (not incremental) so the writer re-scans paid-calendar events and writes the confirmed Rafael booking (appt 5070MiX7DHGA5pRMAJz0) into ads_paid_bookings. If still missing after next overnight full sweep, inspect sync-conversions.ts booking-write path for newly-wired-calendar backfill of pre-existing confirmed events.",
-      "note": "Contact is a paid lead (opt-in 2026-08-04 03:44:02Z, meta_adset_id 120251749310810127, is_paid_last_touch=true) and passes the predicate on both touches (sessionSource=Paid Social, utm_medium=paid_social, utm_term=120251749310810127 Meta adset id). Booked 2026-08-04 03:46:11Z on paid calendar Service Area & Strategy Session (h7zdcLFdsWVoLZGG8Rmg) via booking_widget, confirmed. 0 rows in ads_paid_bookings; sits in OTHER bucket. 1 true miss / ~375 paid-contact-on-paid-cal bookings over 30d (OBB 0/161; CG/OP other-not-in-paid are reschedules). App==Neon==Andy ground truth all =10 (internally consistent); gap is app-vs-GHL-upstream. Owner api/ads/sync-conversions.ts. 2026-08-06: STILL reproduces. Live GHL re-verified GENUINE PAID: attributionSource.sessionSource='Paid Social', utmMedium='paid_social', utmTerm='120251749310810127' (18-digit Meta entity id) on BOTH touches; booking status=confirmed on calendar h7zdcLFdsWVoLZGG8Rmg ('Service Area & Strategy Session') which is NOW in BP ghl_paid_calendar_ids; fbc click 2026-08-04 03:42:57Z (3min pre-booking, within 28d). Calendar-wiring fix (PRs #385/#386/#387/#388 'wire BPC Strategy Session calendar into bookings') IS on origin/main and config updated, YET Rafael's already-booked row is still absent from ads_paid_bookings (present in ads_all_bookings/OTHER). BP counted_booked app=Neon=12 internally consistent; upstream GHL truth=13. day2, known carry-over (<7d). 2026-08-07: STILL missing from ads_paid_bookings (day3). Verified: appt 5070MiX7DHGA5pRMAJz0 present in ads_all_bookings (OTHER, calendar h7zdcLFdsWVoLZGG8Rmg 'Service Area & Strategy Session', status=confirmed, booked 08-04 03:46, IN-WINDOW) but absent from ads_paid_bookings. BP paid_booked app=Neon=9; upstream truth (Rafael counted)=10. Config+PRs #385-388 on main; pre-existing booking NOT backfilled. UNBLOCK: trigger a FULL BuilderPro ghl_conversions re-walk (not incremental)."
+      "note": "Contact is a paid lead (opt-in 2026-08-04 03:44:02Z, meta_adset_id 120251749310810127, is_paid_last_touch=true) and passes the predicate on both touches (sessionSource=Paid Social, utm_medium=paid_social, utm_term=120251749310810127 Meta adset id). Booked 2026-08-04 03:46:11Z on paid calendar Service Area & Strategy Session (h7zdcLFdsWVoLZGG8Rmg) via booking_widget, confirmed. 0 rows in ads_paid_bookings; sits in OTHER bucket. 1 true miss / ~375 paid-contact-on-paid-cal bookings over 30d (OBB 0/161; CG/OP other-not-in-paid are reschedules). App==Neon==Andy ground truth all =10 (internally consistent); gap is app-vs-GHL-upstream. Owner api/ads/sync-conversions.ts. 2026-08-06: STILL reproduces. Live GHL re-verified GENUINE PAID: attributionSource.sessionSource='Paid Social', utmMedium='paid_social', utmTerm='120251749310810127' (18-digit Meta entity id) on BOTH touches; booking status=confirmed on calendar h7zdcLFdsWVoLZGG8Rmg ('Service Area & Strategy Session') which is NOW in BP ghl_paid_calendar_ids; fbc click 2026-08-04 03:42:57Z (3min pre-booking, within 28d). Calendar-wiring fix (PRs #385/#386/#387/#388 'wire BPC Strategy Session calendar into bookings') IS on origin/main and config updated, YET Rafael's already-booked row is still absent from ads_paid_bookings (present in ads_all_bookings/OTHER). BP counted_booked app=Neon=12 internally consistent; upstream GHL truth=13. day2, known carry-over (<7d). 2026-08-07: STILL missing from ads_paid_bookings (day3). Verified: appt 5070MiX7DHGA5pRMAJz0 present in ads_all_bookings (OTHER, calendar h7zdcLFdsWVoLZGG8Rmg 'Service Area & Strategy Session', status=confirmed, booked 08-04 03:46, IN-WINDOW) but absent from ads_paid_bookings. BP paid_booked app=Neon=9; upstream truth (Rafael counted)=10. Config+PRs #385-388 on main; pre-existing booking NOT backfilled. UNBLOCK: trigger a FULL BuilderPro ghl_conversions re-walk (not incremental). 2026-08-10 (day 5): STILL reproducing. Verified contact XpJFMQtZkvGBsyZQLSCC is_paid_last_touch=true, last_utm_medium=paid_social, ad \"[2026-07-31] BP|S05|BuilderMath\", on paid cal h7zd; in ads_all_bookings (booked 08-04) but STILL absent from ads_paid_bookings. Booked 08-04 is OUTSIDE this window (08-07..08-09) so 0 current-window KPI break (E2 BP 4/4 exact), but BP 08-04-week paid_booked under-attributed by 1. Approaching day-7 permanent-WARN threshold: needs BP paid-bookings re-walk / sync-conversions investigation."
     },
     "h5_additive_20260806": {
       "key": "ORBIT-H5|global|clients-config+meta-insights-additive",
@@ -2316,9 +2317,9 @@
       "severity": "WARN",
       "title": "best-ads sums 11 vs 13 ad-attributed CG leads; global 50-row cap (sort=cpbc) drops 2 lowest-cpbc converting CG ads",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "Same class as dd8b131f13 (OBB) / ca4b31b9a3 (mustache). best-ads.ts returns a GLOBAL top-50 ad set ranked by cpbc; today total=50 so CG 2 lowest-cpbc converting ads fall below the cut. Fix: always return any ad with an in-window conversion, or stop treating best-ads as a complete per-ad ledger. NOT a writer bug (I2 CG lead 57.7%/book 86.8%; drilldown adsets-all sums CG to 13).",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: not reproducing (CG best-ads sum 10 == overview 10, no 50-cap loss this window). Systemic cap class tracked under dd8b131f13.",
       "note": "2026-08-07: first run CG binds the global 50-cap. WARN not BLOCKER (surface non-zero, underlying Neon correct, adsets-all reconciles CG=13). Same root cause as the OBB/mustache I1 findings."
     },
     "3548a255a6": {
@@ -2329,9 +2330,9 @@
       "severity": "WARN",
       "title": "Shant Gueyikian booked on \"Rescheduling Calendar\" - signal: utm=facebook + fbclid",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact 8CYJS9GHrlj0C4vnRUPF. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "e5413599a7": {
@@ -2342,9 +2343,9 @@
       "severity": "WARN",
       "title": "Stephen Sandlin booked on \"Rescheduling Calendar\" - signal: utm=facebook + fbclid",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact MLfel6lKmt6rjjVL4oDa. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "dbed41eace": {
@@ -2355,9 +2356,9 @@
       "severity": "WARN",
       "title": "Jorge Montoya booked on \"Rescheduling Calendar\" - signal: utm=facebook + fbclid",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact IHdPPp6GKqUV5CJFfWLn. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "7ae0e9f496": {
@@ -2368,9 +2369,9 @@
       "severity": "WARN",
       "title": "Rodney Renner booked on \"Rescheduling Calendar\" - signal: utm=facebook + fbclid",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact vQn4g7JRomzzaEbsf6E6. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "acf662a4de": {
@@ -2381,9 +2382,9 @@
       "severity": "WARN",
       "title": "Kara McDougall booked on \"CareGenius Speech Therapy Growth Engine Info Call\" - signal: utm=facebook + fbclid",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact 24RdFYqDPiFej5cCp7VX. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "2009a4ff1c": {
@@ -2394,9 +2395,9 @@
       "severity": "WARN",
       "title": "Matt Soloway booked on \"Growth Engine for ABA Providers Onboarding\" - signal: first_utm=facebook",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact EnSwP0st7qniFWOIOMri. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "defe4f608b": {
@@ -2407,9 +2408,9 @@
       "severity": "WARN",
       "title": "Sam Bhagwat booked on \"Home Care Hero Application: Interview Scheduling (PAID cal)\" - signal: fbclid only; verified NON-paid (session=Social media, no utm/adId/utmTerm) -> correctly OTHER, not a J1 escalation",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact d5u9geIGMitDv4fCTzH4. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
     },
     "0a7a7287ba": {
@@ -2420,10 +2421,142 @@
       "severity": "WARN",
       "title": "Katie Aiello booked on \"Follow Up Call - Partner\" - signal: first_utm=facebook",
       "first_seen": "2026-08-07",
-      "last_seen": "2026-08-07",
-      "status": "new",
-      "unblocking_action": "WEEKLY cadence (Monday triage). Decide YES (promote to paid) or NO (review=ignored). contact 7MuwHs5R9h4aC0a9UTEt. Ambiguous OTHER-bucket paid-signal; not counted unless it passes the real predicate.",
+      "last_seen": "2026-08-10",
+      "status": "closed",
+      "unblocking_action": "CLOSED 2026-08-10: window-aged-out (booked before 08-07; window moved forward).",
       "note": "2026-08-07: J4 candidate detected (Friday run -> count only in report; list renders Monday)."
+    },
+    "1e65019fe8": {
+      "key": "ORBIT-B6|caregenius-b2b|wnwFFbNgeiG6CY2WA1V3",
+      "check": "ORBIT-B6",
+      "client": "caregenius-b2b",
+      "subject": "wnwFFbNgeiG6CY2WA1V3",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "in-window rung-2 phantom: opt_in 2026-08-08 23:38 UTC (NY 08-08 19:38, in-window), NULL fbc, ls/fs=Paid Social - PR253 corroboration hole",
+      "unblocking_action": "Review GHL https://app.gohighlevel.com/v2/location/WeM2Q8a9HEKqtg7CBrJv/contacts/detail/wnwFFbNgeiG6CY2WA1V3 - genuine re-opt-in or workflow re-date? Root cause is f5497be771 (PR253 accepts bare Paid-Social label w/o recency). Collapses to carry-over after today."
+    },
+    "7f60b6d703": {
+      "key": "ORBIT-B6|obb|llfEAyCA5yV10PRnLcpW",
+      "check": "ORBIT-B6",
+      "client": "obb",
+      "subject": "llfEAyCA5yV10PRnLcpW",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "in-window rung-2 phantom: opt_in 2026-08-07 15:48 UTC (NY 11:48, in-window), NULL fbc, ls/fs=Paid Social - PR253 corroboration hole",
+      "unblocking_action": "Review GHL https://app.gohighlevel.com/v2/location/Mns7ICmnKi3Pr4QuKmgp/contacts/detail/llfEAyCA5yV10PRnLcpW. Same class as f5497be771. Collapses to carry-over after today."
+    },
+    "d9c0274303": {
+      "key": "ORBIT-B6|occupancy-partners|m61t01pC1hU4neLsOF8X",
+      "check": "ORBIT-B6",
+      "client": "occupancy-partners",
+      "subject": "m61t01pC1hU4neLsOF8X",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "in-window rung-2 phantom: opt_in 2026-08-07 19:08 UTC (NY 15:08, in-window), NULL fbc, ls=Direct traffic fs=Paid Social - PR253 hole; SAME contact is J4 Bobby English",
+      "unblocking_action": "Review GHL https://app.gohighlevel.com/v2/location/bceTRUhrY1E2JDWMJP46/contacts/detail/m61t01pC1hU4neLsOF8X. Also a J4 OTHER-bucket candidate. Root cause f5497be771. Collapses after today."
+    },
+    "5cec2f149e": {
+      "key": "ORBIT-I1|occupancy-partners|best-ads-50-cap",
+      "check": "ORBIT-I1",
+      "client": "occupancy-partners",
+      "subject": "best-ads-50-cap",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "best-ads sums 8 vs 9 ad-attributed OP leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OP ad",
+      "unblocking_action": "Same class as dd8b131f13 (OBB). Ship shared best-ads fix (return any ad with an in-window conversion, or stop treating best-ads as a complete per-ad ledger). WARN not BLOCKER - headline KPI (E2) exact."
+    },
+    "78d3179ac6": {
+      "key": "ORBIT-H6|global|calendar-tiers.ts",
+      "check": "ORBIT-H6",
+      "client": "global",
+      "subject": "calendar-tiers.ts",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "api/ads/calendar-tiers.ts route not in known_endpoints catalog (backs ads_clients_config.calendar_tiers config)",
+      "unblocking_action": "Catalog in invariants/orbit.md known_endpoints. Likely skipped (config CRUD, no paid-count attribution) - confirm it does not reclassify booking counts, then mark skipped. Fold into the consolidated catalog PR (e23e7aea30)."
+    },
+    "5827b8b30f": {
+      "key": "ORBIT-H6|global|sync-ghl-dispositions.ts",
+      "check": "ORBIT-H6",
+      "client": "global",
+      "subject": "sync-ghl-dispositions.ts",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "api/ads/sync-ghl-dispositions.ts route not in known_endpoints catalog (OP GHL scorecard sync, source ghl_dispositions)",
+      "unblocking_action": "Catalog in invariants/orbit.md. Writes sales_call_dispositions (sales outcomes), not ads_paid_* - mark skipped (disposition writer, no paid-count attribution). Fold into the consolidated catalog PR (e23e7aea30)."
+    },
+    "055599d173": {
+      "key": "ORBIT-J4|obb|BYWj4HKbPUF4172XJvPT",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "BYWj4HKbPUF4172XJvPT",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "Anita Bailey booked 2026-08-09 on \"Home Care Hero Application: Interview Scheduling\" (PAID cal); bare fbclid only, session=Social media -> verified NON-paid, correctly OTHER, NOT a J1 escalation",
+      "unblocking_action": "Monday triage: promote if a real paid booking else ignore. Predicate correctly rejects (organic social, #147). Contact gMcP2E0TjtrGNXLQzWdz."
+    },
+    "82a79c616f": {
+      "key": "ORBIT-J4|obb|J9BBJkxfiArQ2NAm1wvQ",
+      "check": "ORBIT-J4",
+      "client": "obb",
+      "subject": "J9BBJkxfiArQ2NAm1wvQ",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "Victoria Stevenson booked 2026-08-08 on \"Home Care Hero Application: Interview Scheduling\" (PAID cal); bare fbclid only, session=Social media -> verified NON-paid, correctly OTHER, NOT a J1 escalation",
+      "unblocking_action": "Monday triage: promote/ignore. Predicate correctly rejects. Contact wrmPl4K29uBUPYmavdW9."
+    },
+    "261a0e6fd2": {
+      "key": "ORBIT-J4|occupancy-partners|YKZiZEr1AQ6TYmnPyT9h",
+      "check": "ORBIT-J4",
+      "client": "occupancy-partners",
+      "subject": "YKZiZEr1AQ6TYmnPyT9h",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "Jessica Johnson booked 2026-08-08 on \"[Internal] Manual 1 Hour Booking\" (non-paid cal); first_utm=facebook",
+      "unblocking_action": "Monday triage: promote/ignore. Contact oViLLqV5Pj7sgEmXRQBn."
+    },
+    "8b1533c319": {
+      "key": "ORBIT-J4|occupancy-partners|NJiMaZTEYgnzHKC7WVmS",
+      "check": "ORBIT-J4",
+      "client": "occupancy-partners",
+      "subject": "NJiMaZTEYgnzHKC7WVmS",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "Bobby English booked 2026-08-07 on \"[Internal] Manual 1 Hour Booking\" (non-paid cal); first_utm=facebook; SAME contact is B6 phantom m61t01pC1hU4neLsOF8X",
+      "unblocking_action": "Monday triage: promote/ignore. Contact m61t01pC1hU4neLsOF8X (also a B6 candidate)."
+    },
+    "4544c3a59b": {
+      "key": "ORBIT-J4|occupancy-partners|pvEsWE8ylp3me3FfdV8R",
+      "check": "ORBIT-J4",
+      "client": "occupancy-partners",
+      "subject": "pvEsWE8ylp3me3FfdV8R",
+      "first_seen": "2026-08-10",
+      "last_seen": "2026-08-10",
+      "severity": "WARN",
+      "status": "new",
+      "title": "Katie Aiello booked 2026-08-07 on \"Onboarding Call\" (non-paid cal); first_utm=facebook",
+      "unblocking_action": "Monday triage: promote/ignore. Contact 7MuwHs5R9h4aC0a9UTEt. (Distinct appt from prior 0a7a7287ba Follow-Up-Call booking.)"
     }
   }
 }
