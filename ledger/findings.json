@@ -1,21 +1,21 @@
 {
  "version": 1,
- "updated_at": "2026-09-10T00:00:00.000Z",
- "updated_by": "andy-the-auditor vault run",
+ "updated_at": "2026-09-12T00:00:00.000Z",
+ "updated_by": "andy-the-auditor vault run 2026-09-12",
  "baselines": {
   "i2_coverage": {
-   "as_of": "2026-09-10",
+   "as_of": "2026-09-12",
    "warn_drop_pp": 2,
    "ads_paid_leads": {
     "builderpro": {
-     "has_ad": 374,
-     "has_campaign": 646,
-     "total": 670
+     "has_ad": 384,
+     "has_campaign": 656,
+     "total": 680
     },
     "caregenius-b2b": {
-     "has_ad": 691,
-     "has_campaign": 1115,
-     "total": 1686
+     "has_ad": 698,
+     "has_campaign": 1121,
+     "total": 1692
     },
     "contractor-launch": {
      "has_ad": 116,
@@ -24,19 +24,19 @@
      "note": "Baseline frozen at 2026-06-26 level (40.4% has_ad/has_campaign). Today 56/339 = 16.5% reflects downstream snoozed ig-asset-permission finding 8547bf03b9. Not ratcheted down."
     },
     "mustache-painting": {
-     "has_ad": 348,
-     "has_campaign": 348,
-     "total": 348
+     "has_ad": 350,
+     "has_campaign": 350,
+     "total": 350
     },
     "obb": {
-     "has_ad": 3252,
-     "has_campaign": 3587,
-     "total": 3796
+     "has_ad": 3242,
+     "has_campaign": 3575,
+     "total": 3828
     },
     "peach-paint-co": {
-     "has_ad": 234,
-     "has_campaign": 234,
-     "total": 234
+     "has_ad": 237,
+     "has_campaign": 237,
+     "total": 237
     },
     "queen-consultancy": {
      "has_ad": 73,
@@ -44,14 +44,14 @@
      "total": 75
     },
     "occupancy-partners": {
-     "has_ad": 215,
-     "has_campaign": 215,
-     "total": 377
+     "has_ad": 229,
+     "has_campaign": 229,
+     "total": 391
     },
     "ac-guy-near-me": {
-     "has_ad": 19,
-     "has_campaign": 19,
-     "total": 20
+     "has_ad": 24,
+     "has_campaign": 24,
+     "total": 25
     },
     "revlab": {
      "has_ad": 0,
@@ -62,14 +62,14 @@
    },
    "ads_paid_bookings": {
     "builderpro": {
-     "has_ad": 355,
-     "has_campaign": 394,
-     "total": 402
+     "has_ad": 362,
+     "has_campaign": 401,
+     "total": 409
     },
     "caregenius-b2b": {
-     "has_ad": 481,
-     "has_campaign": 543,
-     "total": 555
+     "has_ad": 490,
+     "has_campaign": 552,
+     "total": 564
     },
     "contractor-launch": {
      "has_ad": 95,
@@ -98,9 +98,9 @@
      "total": 0
     },
     "occupancy-partners": {
-     "has_ad": 175,
-     "has_campaign": 175,
-     "total": 258
+     "has_ad": 190,
+     "has_campaign": 190,
+     "total": 273
     },
     "ac-guy-near-me": {
      "has_ad": 0,
@@ -116,7 +116,7 @@
   }
  },
  "mutations_snapshot": {
-  "as_of": "2026-09-10",
+  "as_of": "2026-09-12",
   "manual_override_leads": {},
   "manual_override_bookings": {
    "caregenius-b2b": [
@@ -137,13 +137,16 @@
    ],
    "obb": [
     "1DmwM447N9v9st3JdgjL",
+    "1lld6t5I5ylyRtNQQoYU",
     "24sEitTu2rIYEhsaMHWB",
     "2Lhhktd7rwkCKChftVVE",
     "2Z2jOy9eGoQ3ou3wTPCU",
     "3TJt3bZW2QyFugdATH14",
     "3auR6QJ5PRnnSRXpXMIz",
     "40r50ssQtPhsNLwcOP6c",
+    "49dceyLgggpWOQv84uWA",
     "4qIEnHuxPca6X1fUbO1V",
+    "4qfOPdCqpoDj7Cq6Z7Rd",
     "5Hf3U7YtdSooGZcoCoyD",
     "5J9YYkHqd7B5awgMBZem",
     "5VFOLeaIpUpnFCoOkWD1",
@@ -155,16 +158,23 @@
     "9DkOHSvhZt5elayhOlyD",
     "AlKTl7rGjO88ycgMTTSo",
     "B6ovXnCvwjckhjeyPCa0",
+    "BTjk9UyXnOsU6hzMbxcE",
     "BUoDUzEGCKYNc9PVoVde",
+    "CHEA02iu1ebdLcm15W8z",
     "CHOOgJhTgGTiycw5p4ZX",
     "CJCQBMIWGWQ7xQzWQxKN",
     "EOF8xtI0zEV43n6FgXjP",
+    "EPfJI0yhSKtySwXKkhvO",
+    "EutuAriRe4V0U2hsYIYO",
     "Ev3bjN0GKw9ukXTMSDpM",
+    "GOVzrLvSVO71Sh5IzsLP",
     "GpeeqzFX1tZUxafpHxLI",
     "HeNIDdrAUOjiCUwTLMC9",
     "HoMCmiqo9AzJ9D9UwoGN",
+    "IuXYGzXbLqCF2Tsl3gic",
     "JKGgj3YO6abhOVr4j4Vd",
     "Jc91tq50yQ2aw6cq7JOS",
+    "JuyZHlY3N4iIbYXeIBtF",
     "KMkWgG14H5NimnaWkzhk",
     "Kpp9UN6y3o5I7FlsjNDg",
     "LDW4xPCi0uKoPJFM67V3",
@@ -178,6 +188,7 @@
     "O5vfxLBEcs2H7PmSo7Gk",
     "OvFOx2eFPUnc8taalUJX",
     "P3mgFdhIukt27392glrT",
+    "PBPL5dQaoUFPj1sAFenH",
     "PRb97O8UPxiZYfsZnAJH",
     "PT4jfeFVmoeqiKaSriRk",
     "PZ1hCJsaF4VjO2kJs7rE",
@@ -218,10 +229,12 @@
     "hgg9o0YGmBrA1ovqCIVB",
     "hkeOHK77LfM2j1zNiaHJ",
     "hszXlASZYIx8JalOitsG",
+    "ifg0clBUi6GAkVhBRSXJ",
     "j7ePMbzCw5lpGoXD5GeF",
     "jXvibKaPJOXgYrr60kOV",
     "ksjW2a4wQy6xCqakx0dU",
     "lz6v4sQSRW3R21HTpBYj",
+    "nH9xAOejihi8NK1H4Uu1",
     "nRquCVKeD6tqn0zsX7dK",
     "nqNgqDeDPzY0o9BASegk",
     "nxuwBbXZ41hCCQPqVLk5",
@@ -233,19 +246,18 @@
     "w8FfVzcqBwv6uRYluqPf",
     "wEXYMrPsCxOH2qNRQZYP",
     "wVbMCehrhrfGTsHAgxtK",
+    "wyE64k5YtpsPTNNAnx4G",
     "xNqs32cqRgs5rQ5phV3P",
     "xRaXXamHlBP7BkLWz7XN",
     "xRmkcwzrIMuGFkOOEKRv",
     "xfXFvZfMog0rvEkIFUSS",
     "xosqLh4IbDTlKRlGuBmv",
+    "xpFik2avQVV1f7ut4by6",
     "yHXgfuUp5WwE0Byxilzo",
     "yLi1AWwW3C2Cal41D7H3",
     "yQF2w3JHCUSSvqYTfxOT",
     "zUT7POheCHQGZUugJBSw",
-    "zUnZiSIM15sw2Y5kOLAt",
-    "GOVzrLvSVO71Sh5IzsLP",
-    "JuyZHlY3N4iIbYXeIBtF",
-    "PBPL5dQaoUFPj1sAFenH"
+    "zUnZiSIM15sw2Y5kOLAt"
    ],
    "occupancy-partners": [
     "00dZDl0YtnTruAMLfNay",
@@ -3944,7 +3956,7 @@
    "title": "rung-2 re-opt-in stamp 2026-08-31, no fbc; first-touch Paid Social/facebook (benign genuine paid)",
    "unblocking_action": "Benign: contact is genuinely paid (first-touch Paid Social). Rung-2 date stamped via dateUpdated w/o fbc. Accept, or add to F23 restamp queue. Ages out of B6 14d window after 2026-09-14.",
    "first_seen": "2026-09-01",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "note": "2026-09-02: still reproduces (CG 23ZCzO Joe Kim, optin 08-31), decayed new->known; benign first-touch Paid Social, 0 KPI impact."
   },
   "4a9314d5ca": {
@@ -3957,7 +3969,7 @@
    "title": "rung-2 re-opt-in stamp 2026-08-29, no fbc; first-touch Paid Social/Facebook (benign genuine paid)",
    "unblocking_action": "Benign paid-social (first-touch Paid Social). Accept or F23 restamp. Ages out after 2026-09-12.",
    "first_seen": "2026-09-01",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "note": "2026-09-02: still reproduces (OBB JSWBiPx, optin 08-29), decayed new->known; benign first-touch Paid Social, 0 KPI impact."
   },
   "bd93c5eb9c": {
@@ -4184,7 +4196,7 @@
    "severity": "WARN",
    "title": "rung-2 re-opt-in stamp 2026-09-03, no fbc corroboration",
    "first_seen": "2026-09-04",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "status": "known",
    "unblocking_action": "Benign member of the PR253-corroboration-hole class (parent f5497be771, snoozed 09-08): a workflow touch bumped dateUpdated and re-dated the lead into window; no fbc click to corroborate. 0 KPI impact where it counts. Restamp via scripts/backfill-reoptin-timestamp.ts or accept-and-close; will collapse to known next run.",
    "note": "GHL: https://app.gohighlevel.com/v2/location/Mns7ICmnKi3Pr4QuKmgp/contacts/detail/xrWCIUrN3iG2ZvHd1QH4 2026-09-05: reproduces (obb xrWCIU optin 09-03, no fbc); decayed new->known. Benign PR253-corroboration-hole class, 0 KPI impact."
@@ -4225,7 +4237,7 @@
    "severity": "WARN",
    "title": "rung-2 re-opt-in stamp 2026-09-06, fbc absent (PR253-corroboration-hole class)",
    "first_seen": "2026-09-07",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "status": "known",
    "unblocking_action": "Ledger-once phantom-re-opt-in candidate. Low impact: OBB headline leads come from Hyros (OBB-HYROS-SOURCE), so this Neon stamp does not move the displayed count. Rolls under the PR253 corroboration follow-up (require fresh fbc/paid-social within 7d before re-dating).",
    "note": "Detected 2026-09-07 (Monday) run. fbc=null rung-2 stamp; opt-in 2026-09-06 in-window."
@@ -4238,21 +4250,10 @@
    "severity": "WARN",
    "title": "rung-2 re-opt-in stamp 2026-09-06, fbc absent (PR253-corroboration-hole class)",
    "first_seen": "2026-09-07",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "status": "known",
    "unblocking_action": "Ledger-once phantom-re-opt-in candidate. Low impact: OBB headline leads come from Hyros (OBB-HYROS-SOURCE), so this Neon stamp does not move the displayed count. Rolls under the PR253 corroboration follow-up (require fresh fbc/paid-social within 7d before re-dating).",
    "note": "Detected 2026-09-07 (Monday) run. fbc=null rung-2 stamp; opt-in 2026-09-06 in-window."
-  },
-  "b367c132e9": {
-   "check": "ORBIT-B6",
-   "client": "obb",
-   "severity": "WARN",
-   "key": "ORBIT-B6|obb|zUnZiSIM15sw2Y5kOLAt",
-   "first_seen": "2026-09-09",
-   "last_seen": "2026-09-09",
-   "status": "new",
-   "unblocking_action": "Rung-2 dateUpdated re-opt-in stamped 2026-09-08 (in-window), no parseable fbc click. Phantom-re-opt-in candidate. Already operator-excluded (excluded_from_metrics=true this run) so 0 KPI impact. No action unless it re-enters the counted set.",
-   "note": "Detected 2026-09-09. fbc=None; rung-2 stamp. Also in the +13 MUT-1 exclusion adds, so already handled by operator booking-hygiene. Ledger-once."
   },
   "06357c17f3": {
    "key": "ORBIT-B6|obb|i1DO4ehrEw2rpP1mSDrk",
@@ -4260,11 +4261,11 @@
    "client": "obb",
    "subject": "i1DO4ehrEw2rpP1mSDrk",
    "severity": "WARN",
-   "status": "new",
+   "status": "known",
    "title": "rung-2 re-opt-in stamp, stale/absent fbc; OBB headline=Hyros so 0 KPI impact",
    "unblocking_action": "Low stakes (OBB headline is Hyros, ignores last_paid_opt_in_at). Review as F23 restamp candidate or accept. Ages out of B6 14d window ~2026-09-23.",
    "first_seen": "2026-09-10",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "note": "2026-09-10: detected NEW this vault run (opt_in in last 14d, rung-2 dateUpdated stamp, fbc >7d stale or absent)."
   },
   "f602b7caf5": {
@@ -4273,11 +4274,11 @@
    "client": "obb",
    "subject": "GOVzrLvSVO71Sh5IzsLP",
    "severity": "WARN",
-   "status": "new",
+   "status": "closed",
    "title": "rung-2 re-opt-in stamp; operator EXCLUDED this same run (self-resolving)",
-   "unblocking_action": "Self-resolved: contact excluded_from_metrics by operator this run (one of the +3 OBB MUT-1 exclusion adds). Drops from every paid surface. Close on next run.",
+   "unblocking_action": "CLOSED 2026-09-12: no longer reproduces in B6 detector; contact excluded_from_metrics (self-resolved).",
    "first_seen": "2026-09-10",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "note": "2026-09-10: detected NEW this vault run (opt_in in last 14d, rung-2 dateUpdated stamp, fbc >7d stale or absent)."
   },
   "50d654127c": {
@@ -4286,12 +4287,77 @@
    "client": "contractor-launch",
    "subject": "3vmLvvKqcioYxfoY4TfA",
    "severity": "WARN",
-   "status": "new",
+   "status": "known",
    "title": "rung-2 re-opt-in stamp, stale/absent fbc; only NEW B6 touching a Neon-counted headline",
    "unblocking_action": "CL is GHL-sourced so this touches a displayed count. Verify genuine re-opt-in vs workflow-touch phantom in GHL; if phantom, F23 restamp. Ages out ~2026-09-23.",
    "first_seen": "2026-09-10",
-   "last_seen": "2026-09-10",
+   "last_seen": "2026-09-12",
    "note": "2026-09-10: detected NEW this vault run (opt_in in last 14d, rung-2 dateUpdated stamp, fbc >7d stale or absent)."
+  },
+  "767fbdad46": {
+   "key": "ORBIT-B6|caregenius-b2b|Xgg6SLutarycPsq1RKXf",
+   "check": "ORBIT-B6",
+   "client": "caregenius-b2b",
+   "subject": "Xgg6SLutarycPsq1RKXf",
+   "severity": "WARN",
+   "title": "rung-2 re-opt-in stamp 2026-09-11, no fbc; first-touch facebook, is_paid_last_touch (benign genuine paid)",
+   "first_seen": "2026-09-12",
+   "last_seen": "2026-09-12",
+   "status": "new",
+   "unblocking_action": "Review queue only (WARN). Benign genuine-paid re-opt-in or 0-KPI-impact; collapses to known next run and ages out of the 14d detector. Run scripts/backfill-reoptin-timestamp.ts only if a restamp is ever needed.",
+   "note": "Detected 2026-09-12 vault run."
+  },
+  "6e1f6313bf": {
+   "key": "ORBIT-B6|caregenius-b2b|3ZJZX0AAJuvVUzoHCJRf",
+   "check": "ORBIT-B6",
+   "client": "caregenius-b2b",
+   "subject": "3ZJZX0AAJuvVUzoHCJRf",
+   "severity": "WARN",
+   "title": "rung-2 re-opt-in stamp 2026-09-10, no fbc; first-touch facebook, re-opt-in of 07-06 contact (benign genuine paid)",
+   "first_seen": "2026-09-12",
+   "last_seen": "2026-09-12",
+   "status": "new",
+   "unblocking_action": "Review queue only (WARN). Benign genuine-paid re-opt-in or 0-KPI-impact; collapses to known next run and ages out of the 14d detector. Run scripts/backfill-reoptin-timestamp.ts only if a restamp is ever needed.",
+   "note": "Detected 2026-09-12 vault run."
+  },
+  "315d1008d6": {
+   "key": "ORBIT-B6|obb|HoMCmiqo9AzJ9D9UwoGN",
+   "check": "ORBIT-B6",
+   "client": "obb",
+   "subject": "HoMCmiqo9AzJ9D9UwoGN",
+   "severity": "WARN",
+   "title": "rung-2 re-opt-in stamp 2026-09-11, no fbc; contact excluded_from_metrics + OBB headline=Hyros = 0 KPI impact",
+   "first_seen": "2026-09-12",
+   "last_seen": "2026-09-12",
+   "status": "new",
+   "unblocking_action": "Review queue only (WARN). Benign genuine-paid re-opt-in or 0-KPI-impact; collapses to known next run and ages out of the 14d detector. Run scripts/backfill-reoptin-timestamp.ts only if a restamp is ever needed.",
+   "note": "Detected 2026-09-12 vault run."
+  },
+  "b367c132e9": {
+   "key": "ORBIT-B6|obb|zUnZiSIM15sw2Y5kOLAt",
+   "check": "ORBIT-B6",
+   "client": "obb",
+   "subject": "zUnZiSIM15sw2Y5kOLAt",
+   "severity": "WARN",
+   "title": "rung-2 re-opt-in stamp, no fbc; excluded_from_metrics + OBB=Hyros = 0 KPI impact",
+   "first_seen": "2026-06-11",
+   "last_seen": "2026-09-12",
+   "status": "known",
+   "unblocking_action": "Review queue only (WARN). Benign genuine-paid re-opt-in or 0-KPI-impact; collapses to known next run and ages out of the 14d detector. Run scripts/backfill-reoptin-timestamp.ts only if a restamp is ever needed.",
+   "note": "Corrupt ledger entry (null subject/title) repaired 2026-09-12; previously tracked known carry-over. OBB headline=Hyros + contact excluded_from_metrics = 0 KPI impact."
+  },
+  "38ff921c06": {
+   "key": "ORBIT-B6|obb|BC8ILBjmgKPCZAH0NAVM",
+   "check": "ORBIT-B6",
+   "client": "obb",
+   "subject": "BC8ILBjmgKPCZAH0NAVM",
+   "severity": "WARN",
+   "title": "rung-2 re-opt-in stamp 2026-09-10, no fbc; OBB headline=Hyros = 0 headline KPI impact",
+   "first_seen": "2026-09-12",
+   "last_seen": "2026-09-12",
+   "status": "new",
+   "unblocking_action": "Review queue only (WARN). Benign genuine-paid re-opt-in or 0-KPI-impact; collapses to known next run and ages out of the 14d detector. Run scripts/backfill-reoptin-timestamp.ts only if a restamp is ever needed.",
+   "note": "Detected 2026-09-12 vault run."
   }
  },
  "updated_by_short": "2026-09-10 vault"
