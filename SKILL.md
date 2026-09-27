@@ -129,18 +129,41 @@ For the morning Slack routine: the same `AUDIT_TOKEN` value must also be availab
 
 Before deep-diving any discrepancy (user-reported or self-found), check whether it is already a known finding: `~/Claude Code/_audits/` (latest REPORT.md + FIX-BACKLOG.md STATUS section) and the newest vault reports under `20-Clients/*/attribution-audits/` + `_Moreway-Agency/ecosystem-audits/`. If a finding ID covers it, cite the ID and its fix status instead of re-deriving the analysis. (2026-06-10 precedent: Stuart Kaye + KPI-vs-popover were both already specced as F01/F02 the same day.)
 
-### Step 0.5 - Load the findings ledger (added 2026-06-12)
+### Step 0.5 - Load the findings ledger (added 2026-06-12; SPLIT 2026-09-27)
 
-Read `~/.claude/skills/andy-the-auditor/ledger/findings.json` (schema in `ledger/README.md`). The ledger is Andy's persistent memory: every WARN/FAIL ever emitted has a stable finding ID (`sha256("{check}|{client}|{subject}")[:10]`; subject = B6 contact_id, J4 appointment_id, I2 table/sub-issue, code-static file:symbol) with `first_seen`, `last_seen`, `status (new | known | snoozed_until | fixed_pending_verify | closed)`, and a **named `unblocking_action`** on every non-closed entry.
+The ledger is Andy's persistent memory: every WARN/FAIL ever emitted has a stable finding ID (`sha256("{check}|{client}|{subject}")[:10]`; subject = B6 contact_id, J4 appointment_id, I2 table/sub-issue, code-static file:symbol) with `first_seen`, `last_seen`, `status`, and a **named `unblocking_action`** on every non-closed entry.
+
+It is now FOUR files, not one. Read them in this order:
+
+| File | Read it | Holds |
+|---|---|---|
+| `ledger/seen-index.json` | **ALWAYS, first** | every fingerprint ever recorded, 5 fields each (`_fields` names them). ~32KB. |
+| `ledger/findings.json` | **ALWAYS** | open DEFECTS in Orbit, full bodies. Currently 27. |
+| `ledger/triage-queue.json` | only for ORBIT-J4 / ORBIT-B6 work | the human review queue. Currently 135. |
+| `ledger/archive/*.jsonl` | **NEVER** | resolved history. Grep it by hand if you need provenance. |
+
+**Why it was split (2026-09-27).** The single file was 337KB / ~84K tokens and this step said to read it whole before the first query. Measured: 219 of 381 entries were already `closed`, and 333 of 381 were ORBIT-J4 or ORBIT-B6 -- a human review queue of individual bookings and opt-in stamps, not defects in Orbit. Conflating the two is why the context load was enormous and why status was ACTION on 22 of the last 25 runs. Every-run load is now ~105KB instead of 337KB.
+
+**THE ONE RULE THAT MATTERS HERE: absence from `findings.json` does NOT mean NEW.** Check `seen-index.json` before classifying anything as new. 354 of the 381 entries live in the triage queue or the archive, and treating them as new would escalate them all in one report -- an alert storm, which is indistinguishable from silence.
+
+After any write to `findings.json` or `triage-queue.json`, rebuild the index:
+
+```bash
+python3 ~/.claude/skills/andy-the-auditor/scripts/andy_ledger.py reindex --apply
+```
+
+An index that lags its sources silently re-creates the exact storm the split prevents. `andy_ledger.py status` prints the current shape of all four.
 
 The whole report is rendered as a diff against this ledger (Step 3). Classification of every WARN/FAIL the checks produce this run:
 
-- **Not in ledger** → NEW. Add it (`status: new`).
-- **In ledger, still reproduces** → carry-over. Bump `last_seen`. `new` from a prior run decays to `known`.
+- **Not in `seen-index.json`** → NEW. Add it to `findings.json` (`status: new`), or to `triage-queue.json` if it is an ORBIT-J4/B6 candidate.
+- **In `seen-index.json`, still reproduces** → carry-over. Bump `last_seen` in whichever file `where` points at. `new` from a prior run decays to `known`.
 - **In ledger as `snoozed_until` (date in the future)** → silent carry-over (collapsed one-liner only).
 - **In ledger as `snoozed_until` (date passed) and still reproduces** → SNOOZE EXPIRED (a state change; escalates).
 - **In ledger as `fixed_pending_verify` and no longer reproduces** → FIXED (state change; flip to `closed`).
-- **In ledger as `closed` but reproduces again** → REGRESSED (state change, not a new finding; re-open as `new` with history intact).
+- **Indexed as `closed` (it lives in `archive/`) but reproduces again** → REGRESSED (state change, NOT a new finding). Pull its body out of the archive JSONL, re-open it in `findings.json` as `new` with its history intact, and reindex.
+
+**`aged_out_of_detector_window` is a RETIRED status (2026-09-27).** It was invented to dodge the permanent-WARN rule below, and it keys suppression on the detector no longer LOOKING rather than on the finding being RESOLVED -- so a real issue goes permanently silent. The 60 entries carrying it are parked in the triage queue awaiting disposition. Never write it again, and never invent a seventh status: if a finding has no legal move, the real bug is that its check cannot re-answer for an old subject.
 
 **The permanent-WARN rule (hard):** a WARN older than 7 days may never render as a plain repeated warning. It must either carry a valid future `snoozed_until` + `unblocking_action`, or be escalated into the report's ACTION section ("needs a snooze decision or a fix today"). Andy never silently repeats an aged warning, and never invents a snooze on his own authority: snoozes name the unblocking event (a PR, a Business Manager change, a Monday triage) and a date.
 
@@ -358,12 +381,15 @@ Skip vault writes entirely in Slack mode. ORBIT-F runs in Slack mode but ORBIT-H
 
 #### 3c - Persist the ledger (vault mode only, MANDATORY)
 
-After writing the vault reports: update `ledger/findings.json` (new findings added, `last_seen` bumped, state transitions applied, I2 baselines ratcheted, MUT-1 snapshot overwritten, `updated_at`/`updated_by` stamped), then:
+After writing the vault reports: update `ledger/findings.json` (new DEFECTS added, `last_seen` bumped, state transitions applied, I2 baselines ratcheted, MUT-1 snapshot overwritten, `updated_at`/`updated_by` stamped) and `ledger/triage-queue.json` (new ORBIT-J4/B6 candidates), then:
 
 ```
 cd ~/.claude/skills/andy-the-auditor
+python3 scripts/andy_ledger.py reindex --apply   # MUST run before the commit
 git add ledger/ && git commit -m "ledger: YYYY-MM-DD vault run" && git push
 ```
+
+The reindex is not optional. `seen-index.json` is what tells tomorrow's run that an entry already exists; committing updated bodies without rebuilding the index leaves it stale, and every entry it forgets comes back as NEW.
 
 This is part of the run, not housekeeping: both launchd runners `git reset --hard origin/main` before invoking the skill, so an unpushed ledger update is destroyed by the next scheduled run, and the 7am cloud routine reads the pushed copy. If the push fails, retry once; if it still fails, say so loudly in the terminal summary - a stale ledger means tomorrow's NEW section will be wrong.
 
@@ -498,7 +524,10 @@ If the morning Slack message looks stale: confirm `git log -1 --format=%h` match
 ├── invariants/
 │   └── orbit.md                            # single canonical config (account, env, rules, tolerances, queries)
 ├── ledger/
-│   ├── findings.json                       # persistent findings ledger (single writer: vault mode; commit+push every run)
+│   ├── findings.json                       # OPEN DEFECTS only (single writer: vault mode; commit+push every run)
+│   ├── triage-queue.json                   # ORBIT-J4/B6 review candidates (a work queue, not defects)
+│   ├── seen-index.json                     # every fingerprint ever seen; ALWAYS read; rebuild via andy_ledger.py reindex
+│   ├── archive/YYYY-Qn.jsonl               # resolved history; NEVER read by the agent
 │   └── README.md                           # ledger schema + lifecycle spec
 ├── references/
 │   └── orbit-architecture.md               # cross-layer explainer with file:line refs

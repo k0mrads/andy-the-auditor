@@ -1,44 +1,106 @@
-# Findings ledger
+# Andy's findings ledger
 
-`findings.json` is Andy's persistent memory of every WARN/FAIL ever emitted. It is what makes the daily report lead with NEW / STATE CHANGES / known-collapsed instead of re-printing the same warnings forever. Added 2026-06-12 (report-actionability revamp).
+Andy's persistent memory across runs. The report is a **diff against this**, not
+a re-print of it: a finding is reported in full once, then collapses to a
+one-line carry-over.
 
-## Single-writer rule
+## Four files, one job each
 
-- **Vault mode (local) is the ONLY writer.** Every vault run reconciles the ledger and then **commits AND pushes it** in the same run (`git add ledger/ && git commit && git push`). This is mandatory, not optional: both launchd runners (`andy-morning-run.sh`, `andy-gap-scan-run.sh`) do `git reset --hard origin/main` on this repo before invoking the skill, so an unpushed ledger update is silently destroyed by the next scheduled run.
-- **Slack mode (cloud routine) is read-only.** It reads the committed copy it cloned. Anything it finds that is not in the committed ledger it reports as NEW (and the next vault run ledgers it).
+| File | Read | Holds |
+|---|---|---|
+| `seen-index.json` | **always, first** | every fingerprint ever recorded, 5 fields each. ~32KB. |
+| `findings.json` | **always** | open DEFECTS in Orbit, full bodies. |
+| `triage-queue.json` | only for ORBIT-J4 / ORBIT-B6 work | the human review queue. |
+| `archive/YYYY-Qn.jsonl` | **never** (grep by hand) | resolved history, append-only. |
 
-## Finding identity
+### Why this is four files and not one (2026-09-27)
 
-`id = sha256("{check}|{client}|{subject}")[:10]` (lowercase hex). The `key` field stores the readable triple.
+It was one 337KB file, and `SKILL.md` Step 0.5 said to read it whole before the
+first query, so ~84K tokens were spent before any work happened. Measured at the
+split, 381 entries:
 
-- `subject` is the stable per-finding anchor: B6 → `contact_id`; J4 → `appointment_id`; I2 → table name or a named sub-issue; code-static findings → `file:symbol`; agency-wide findings use `client: "global"`.
+| status | n | bytes | share |
+|---|---|---|---|
+| `closed` | 219 | 144KB | 49% |
+| `snoozed_until` | 88 | 96KB | 32% |
+| `aged_out_of_detector_window` | 60 | 45KB | 15% |
+| `new` | 12 | 7KB | 2% |
+| `known` | 2 | 1KB | 0% |
 
-## Fields
+and by check, **333 of 381 (87%) were ORBIT-J4 (222) or ORBIT-B6 (111)**.
 
-| Field | Meaning |
-|---|---|
-| `check` | Check ID (`ORBIT-B6`, `ORBIT-J4`, `MUT-1`, `MIRROR-PAID-FLAG-DRIFT`, ...) |
-| `client` | `client_id` or `global` |
-| `severity` | `BLOCKER` / `WARN` / `INFO` at last observation |
-| `first_seen` / `last_seen` | dates (YYYY-MM-DD). `last_seen` is bumped every run that still observes the finding. Age = today − first_seen. |
-| `status` | `new` \| `known` \| `snoozed_until` \| `fixed_pending_verify` \| `closed` |
-| `snoozed_until` | date, required when status is `snoozed_until`. An expired snooze whose finding still reproduces is a STATE CHANGE (escalates to ACTION). |
-| `unblocking_action` | **Required for every non-closed finding.** The named, concrete action that retires it. "Investigate" is not an action. |
-| `note` | Free-text context (operator actions observed, evidence, links). |
+That is the whole diagnosis: the file was two different things wearing one name.
+A defect ledger, and a human review queue of individual bookings and opt-in
+stamps. Conflating them is why the context load was enormous, why status was
+ACTION on 22 of the last 25 runs, and why the queue never drained. J4/B6
+verdicts are read back from `ads_ghl_contacts.review_status`, so that queue
+drains when a human does the work and cannot drift.
 
-## Status lifecycle
+Every-run load is now ~105KB instead of 337KB.
 
+## The rule that makes the split safe
+
+**Absence from `findings.json` does not mean NEW.** Check `seen-index.json`
+first. 354 of the 381 entries now live in the triage queue or the archive, and
+treating them as new would escalate them all in one report. An alert storm is
+indistinguishable from silence.
+
+## Entry shape
+
+Keyed by fingerprint, `sha256("{check}|{client}|{subject}")[:10]`, where subject
+is the B6 contact_id, J4 appointment_id, I2 table/sub-issue, or code-static
+`file:symbol`.
+
+```json
+"7e88678361": {
+  "key": "ORBIT-J4|caregenius-b2b|t9tZmCw8iX7s9CvJgTg2",
+  "check": "ORBIT-J4",
+  "client": "caregenius-b2b",
+  "subject": "t9tZmCw8iX7s9CvJgTg2",
+  "severity": "WARN",
+  "title": "one line, what it is",
+  "first_seen": "2026-06-12",
+  "last_seen": "2026-06-15",
+  "status": "new",
+  "unblocking_action": "the named event that would close this"
+}
 ```
-(first observed)  → new            — appears in the NEW section; needs a human decision today
-(next run)        → known          — collapsed one-liner with age; MUST gain a snooze or escalate by day 7
-(operator/dated)  → snoozed_until  — silent until the date; expiry + still-reproducing = STATE CHANGE
-(fix shipped)     → fixed_pending_verify — waiting for a run that confirms the fix landed
-(verified gone)   → closed         — kept for history; resurfacing = REGRESSED (STATE CHANGE, not new)
+
+`seen-index.json` rows are ARRAYS, not objects, keyed by its own `_fields`
+header (`check, client, status, last_seen, where`). At 381 entries the repeated
+JSON key names cost more than the data, and this is the one file read
+unconditionally.
+
+## Statuses
+
+`new | known | snoozed_until | fixed_pending_verify | closed`
+
+**`aged_out_of_detector_window` is RETIRED (2026-09-27).** It was invented to
+dodge the permanent-WARN rule, and it keys suppression on the detector no longer
+*looking* rather than on the finding being *resolved*, so a real issue goes
+permanently silent. Its 60 entries are parked in the triage queue awaiting
+disposition. Never write it again.
+
+Never invent a seventh status either. If a finding has no legal move, the real
+bug is that its check cannot re-answer for an old subject, and the fix is a
+recheck path, not a new word.
+
+Every non-closed entry carries a **named `unblocking_action`**: the actual event
+that would close it. "Investigate" and "monitor" are not unblocking actions, and
+letting them in is how this ledger rotted to 102 open findings aged 45 to 99
+days.
+
+## Tooling
+
+```bash
+python3 scripts/andy_ledger.py status            # current shape of all four files
+python3 scripts/andy_ledger.py rotate            # dry run
+python3 scripts/andy_ledger.py rotate --apply    # archive closed, split out triage
+python3 scripts/andy_ledger.py reindex --apply   # rebuild seen-index; run after ANY write
 ```
 
-**The permanent-WARN rule:** a finding with severity WARN whose age exceeds **7 days** may never render as a plain repeated warning. The vault run MUST either (a) carry a valid future `snoozed_until` + `unblocking_action`, or (b) escalate it into the ACTION section of the report ("needs a snooze decision or a fix today"). There is no third state.
-
-## Other top-level keys
-
-- `baselines.i2_coverage` — the ORBIT-I2 numeric floors (per client/table `has_ad`/`has_campaign`/`total`). I2 is INFO by default; it WARNs only when ad-coverage (`has_ad / has_campaign`) drops more than `warn_drop_pp` below the floor, and the floor ratchets UP whenever coverage improves (vault run updates it).
-- `mutations_snapshot` — MUT-1's prior-run enumeration of operator mutations (`_manual_override` leads/bookings, `excluded_from_metrics`, `counts_as_separate`). Each vault run diffs live Neon against this, reports adds/removals under STATE CHANGES, then overwrites the snapshot.
+Rotation never decides a finding's fate. It moves `closed` entries to the
+archive and classifies J4/B6 into the triage queue; statuses are preserved
+byte-for-byte and open findings are never touched. `tests/test_ledger.py` pins
+that: conservation, no mutation, no open finding archived, no aged-out entry
+buried, and full seen-index coverage.
