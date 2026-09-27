@@ -1,0 +1,684 @@
+{
+  "schema_version": 1,
+  "_comment": "THE CONTRACT. Extracted from invariants/orbit.md on 2026-09-27, which stated every tolerance in prose and enforced none of them. The engine reads this file; the MODEL NEVER SEES IT. If the model can read a tolerance it can rationalise an exception to it.",
+  "_applies_to": {
+    "all": "every enabled client in the live roster",
+    "global": "runs once per run, not per client",
+    "has_ghl_walk": "client has non-empty ghl_paid_calendar_ids",
+    "has_leadform_source": "client's conversion source is the Meta leadform writer",
+    "has_calendly_source": "client's conversion source is the Calendly writer",
+    "has_platform_routed_truth": "client whose conversion truth differs per ad platform (OBB)",
+    "_rule": "Capability-derived from the LIVE ads_clients_config, never a hardcoded client list. Three disagreeing hardcoded rosters (SKILL.md said 7, andy-read.mjs said a different 8, live config had 9) are what this field exists to make impossible."
+  },
+  "_severity": {
+    "red": "BLOCKER",
+    "yellow": "WARN",
+    "info": "non-scoring note"
+  },
+  "_exit_codes": {
+    "0": "clean or yellow-only",
+    "1": "red floor breached",
+    "2": "usage or API error"
+  },
+  "_skip_reasons": [
+    "not_applicable_client_type",
+    "no_data_in_window",
+    "bootstrap_missing_env",
+    "endpoint_unreachable",
+    "disabled_in_registry"
+  ],
+  "_skip_rule": "A skip MUST carry a reason from the closed list above. An unexplained skip is a VERIFICATION FAILURE, not a pass. This is what makes a 3-of-9-client report structurally impossible.",
+  "max_action_items_per_report": 10,
+  "platform_truth_routing": {
+    "_comment": "Zander's call, 2026-09-27: Hyros for Facebook, Neon/Orbit for Whop.",
+    "obb": {
+      "meta": "hyros",
+      "whop": "neon"
+    },
+    "_default": {
+      "*": "neon"
+    }
+  },
+  "checks": [
+    {
+      "id": "ORBIT-A1",
+      "severity": "red",
+      "group": "A",
+      "title": "Spend: Meta Graph vs Neon rollup",
+      "applies_to": "all",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "tolerance_override": {
+        "most_recent_day_in_window": 0.1
+      },
+      "tolerance_why": "Meta is still aggregating the most recent day; only that day loosens.",
+      "truth_source": "meta:insights(level=account)",
+      "app_source": "neon:ads_meta_insights(level=campaign)",
+      "owner": "api/ads/sync-meta-insights.ts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-A2",
+      "severity": "red",
+      "group": "A",
+      "title": "Impressions: Meta Graph vs Neon rollup",
+      "applies_to": "all",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "tolerance_override": {
+        "most_recent_day_in_window": 0.1
+      },
+      "truth_source": "meta:insights(level=account)",
+      "app_source": "neon:ads_meta_insights(level=campaign)",
+      "owner": "api/ads/sync-meta-insights.ts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-A3",
+      "severity": "red",
+      "group": "A",
+      "title": "Clicks: Meta Graph vs Neon rollup",
+      "applies_to": "all",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "tolerance_override": {
+        "most_recent_day_in_window": 0.1
+      },
+      "meta_field": "inline_link_clicks",
+      "gotcha": "Neon's column is NAMED `clicks` but HOLDS inline_link_clicks. Comparing against Meta's `clicks` is a guaranteed false positive. See api/ads/audit.ts:88-95.",
+      "truth_source": "meta:insights(level=account).inline_link_clicks",
+      "app_source": "neon:ads_meta_insights.clicks",
+      "owner": "api/ads/sync-meta-insights.ts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-A4",
+      "severity": "yellow",
+      "group": "A",
+      "title": "Derived CPC / CPM / CTR",
+      "applies_to": "all",
+      "comparator": "per_field",
+      "per_field": {
+        "cpc": {
+          "comparator": "relative_pct",
+          "tolerance": 0.05
+        },
+        "cpm": {
+          "comparator": "relative_pct",
+          "tolerance": 0.05
+        },
+        "ctr": {
+          "comparator": "absolute_pp",
+          "tolerance": 0.001
+        }
+      },
+      "tolerance_why": "CTR is +/-0.1pp ABSOLUTE, not +/-5% relative: small click counts magnify the percentage into noise.",
+      "truth_source": "derived:meta",
+      "app_source": "derived:neon",
+      "owner": "api/ads/sync-meta-insights.ts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-B1",
+      "severity": "red",
+      "group": "B",
+      "title": "Paid lead count equality (counted-UNION) vs walked GHL",
+      "applies_to": "has_ghl_walk",
+      "comparator": "exact",
+      "tolerance": 0,
+      "tolerance_why": "Hard equality. Counted-UNION semantics MUST be applied to BOTH sides before comparing.",
+      "known_false_positive": "The GHL walker builds its window in UTC (_ghl-direct.ts:165-166) while Neon uses tz-aware clientWindow(). Documented low-magnitude drift class and a built-in false-positive source at window edges.",
+      "truth_source": "ghl:fetchGhlGroundTruthCounts()",
+      "app_source": "neon:ads_paid_leads(counted)",
+      "owner": "api/ads/_ghl-direct.ts#fetchGhlGroundTruthCounts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-B2",
+      "severity": "red",
+      "group": "B",
+      "title": "Golden rule: no contact-age columns in window filters",
+      "applies_to": "global",
+      "comparator": "grep_absent",
+      "banned": [
+        "created_at",
+        "dateAdded",
+        "first_paid_opt_in_at"
+      ],
+      "scope": "window filters over ads_paid_leads",
+      "tolerance_why": "The north star is last_paid_opt_in_at in window. Contact age is irrelevant; filtering on it silently drops re-opt-ins.",
+      "owner": "api/ads/_drilldown-sql.ts",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-B3",
+      "severity": "red",
+      "group": "B",
+      "title": "Re-opt-in survives: old contact, new paid opt-in, still counted",
+      "applies_to": "has_ghl_walk",
+      "comparator": "exact",
+      "tolerance": 0,
+      "detail": "A contact with dateAdded < window_start but last_paid_opt_in_at inside the window MUST appear in Neon.",
+      "owner": "api/ads/_ghl-direct.ts#getEffectiveLastTouch",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-B5",
+      "severity": "red",
+      "group": "B",
+      "title": "Opt-in dated by the event, not the sync clock",
+      "applies_to": "all",
+      "comparator": "custom",
+      "severity_split": {
+        "different_ny_day": "red",
+        "same_day_over_1h": "yellow"
+      },
+      "detail": "A now()-stamp (|opt_in - synced_at| < 2s) must corroborate a real event timestamp (fbc click time or dateUpdated) on the same NY calendar day.",
+      "owner": "api/ads/_optin-timestamp.ts",
+      "judgment": false,
+      "recheckable": true,
+      "recheck_key": "contact_id"
+    },
+    {
+      "id": "ORBIT-B6",
+      "severity": "yellow",
+      "group": "B",
+      "title": "Rung-2 stamps need fresh-event corroboration",
+      "applies_to": "all",
+      "comparator": "custom",
+      "judgment": true,
+      "judgment_kind": "triage_candidate",
+      "queue": "triage",
+      "detail": "WARN when the parseable fbc click time is >7d older than the rung-2 (dateUpdated) stamp, or absent. Phantom re-opt-in via workflow touch; the class B5 structurally cannot see.",
+      "known_false_positive": "The shipped detector regex used `\\d` inside a JS string, where the backslash is silently dropped, so it over-reported any rung-2 stamp with a non-null fbc (2026-06-19).",
+      "recheckable": true,
+      "recheck_key": "contact_id",
+      "recheck_note": "MUST be recheckable WITHOUT the rolling 14-day window filter the live detector carries, or findings age out unanswerable - which is exactly why the illegal `aged_out_of_detector_window` status was invented.",
+      "owner": "api/ads/_optin-timestamp.ts",
+      "regression_signal": "post-PR-253 candidates"
+    },
+    {
+      "id": "ORBIT-C1",
+      "severity": "red",
+      "group": "C",
+      "title": "Paid booked count equality (COUNTED) vs walked GHL events",
+      "applies_to": "has_ghl_walk",
+      "comparator": "exact",
+      "tolerance": 0,
+      "detail": "Apply the counted gates to the WALKED side too, not just the Neon side.",
+      "truth_source": "ghl:fetchGhlBookedCallsGroundTruth()",
+      "app_source": "neon:counted_bookings",
+      "owner": "api/ads/_ghl-direct.ts#fetchGhlBookedCallsGroundTruth",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-C2",
+      "severity": "red",
+      "group": "C",
+      "title": "CPBC = spend / counted paid_booked matches /api/ads/overview",
+      "applies_to": "all",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "owner": "api/ads/overview.ts#L220",
+      "judgment": false
+    },
+    {
+      "id": "ORBIT-D1",
+      "severity": "red",
+      "group": "D",
+      "title": "OBB Meta-platform conversion truth is Hyros",
+      "applies_to": "has_platform_routed_truth",
+      "platform": "meta",
+      "comparator": "exact",
+      "tolerance": 0,
+      "detail": "For OBB's Meta/Facebook spend, Hyros is conversion truth and Neon is the reconciliation line, NOT the other way round.",
+      "history": "Marked DEPRECATED on the retired-Hyros assumption. Un-retired 2026-09-27 on Zander's explicit call: Hyros for Facebook, Neon/Orbit for Whop. Andy had been auditing the wrong pipe for the Meta half of the largest spender.",
+      "truth_source": "hyros:attribution",
+      "app_source": "neon:ads_paid_leads",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)"
+    },
+    {
+      "id": "ORBIT-D2",
+      "severity": "red",
+      "group": "D",
+      "title": "OBB Whop-platform conversion truth is Neon/Orbit",
+      "applies_to": "has_platform_routed_truth",
+      "platform": "whop",
+      "comparator": "exact",
+      "tolerance": 0,
+      "truth_source": "neon:ads_paid_leads",
+      "app_source": "api:/api/ads/overview",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts"
+    },
+    {
+      "id": "ORBIT-D3",
+      "severity": "yellow",
+      "group": "D",
+      "title": "Hyros vs Neon drift on the Meta side is its own finding",
+      "applies_to": "has_platform_routed_truth",
+      "platform": "meta",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "detail": "Neither side is silently discarded. Drift between the truth source and the reconciliation line is reported rather than hidden by picking one.",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)"
+    },
+    {
+      "id": "ORBIT-E1",
+      "severity": "red",
+      "group": "E",
+      "title": "API per-client spend/impressions/clicks match the Neon rollup",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "truth_source": "neon:ads_meta_insights",
+      "app_source": "api:/api/ads/overview",
+      "judgment": false,
+      "owner": "api/ads/overview.ts#L224"
+    },
+    {
+      "id": "ORBIT-E2",
+      "severity": "red",
+      "group": "E",
+      "title": "API paid_leads / paid_booked_calls match counted B/C ground truth",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "truth_source": "neon:counted",
+      "app_source": "api:/api/ads/overview",
+      "judgment": false,
+      "owner": "api/ads/overview.ts#L224"
+    },
+    {
+      "id": "ORBIT-E3",
+      "severity": "red",
+      "group": "E",
+      "title": "API CPL / CPBC recomputed",
+      "applies_to": "all",
+      "comparator": "per_field",
+      "per_field": {
+        "cpl": {
+          "comparator": "relative_pct",
+          "tolerance": 0.005
+        },
+        "cpbc": {
+          "comparator": "relative_pct",
+          "tolerance": 0.05
+        }
+      },
+      "judgment": false,
+      "owner": "api/ads/overview.ts#L220"
+    },
+    {
+      "id": "ORBIT-E4",
+      "severity": "red",
+      "group": "E",
+      "title": "totals.* == SUM(clients.*.*), exact, every field",
+      "applies_to": "global",
+      "comparator": "exact",
+      "tolerance": 0,
+      "tolerance_why": "The strip is a deterministic sum of per-client values; any drift is a real bug, never rounding.",
+      "judgment": false,
+      "owner": "api/ads/overview.ts#L224"
+    },
+    {
+      "id": "ORBIT-E5",
+      "severity": "info",
+      "group": "E",
+      "title": "CAD/USD blended 1:1 (live FX is Phase 4)",
+      "applies_to": "global",
+      "comparator": "note",
+      "judgment": false,
+      "owner": "api/ads/overview.ts (FX blend, Phase 4)"
+    },
+    {
+      "id": "ORBIT-F1",
+      "severity": "red",
+      "group": "F",
+      "title": "Meta level=adset vs Orbit drilldown spend/impr/clicks",
+      "applies_to": "all",
+      "comparator": "relative_pct",
+      "tolerance": 0.05,
+      "truth_source": "meta:insights(level=adset)",
+      "app_source": "api:/api/ads/drilldown/adsets-all",
+      "cap_findings_per_client": 10,
+      "judgment": false,
+      "owner": "api/ads/sync-meta-structure.ts"
+    },
+    {
+      "id": "ORBIT-F2",
+      "severity": "red",
+      "group": "F",
+      "title": "SUM(per-adset paid_leads) == client total, no orphan ads",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "judgment": false,
+      "owner": "api/ads/sync-meta-structure.ts"
+    },
+    {
+      "id": "ORBIT-F3",
+      "severity": "red",
+      "group": "F",
+      "title": "SUM(per-adset paid_booked_calls) == client total",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "judgment": false,
+      "owner": "api/ads/sync-meta-structure.ts"
+    },
+    {
+      "id": "ORBIT-G1",
+      "severity": "red",
+      "group": "G",
+      "title": "Each (client, expected source) synced ok within 24h",
+      "applies_to": "all",
+      "comparator": "freshness",
+      "threshold_hours": 24,
+      "app_source": "neon:ads_sync_log",
+      "judgment": false,
+      "owner": "api/ads/cron-orchestrator.ts + vercel.json cron schedule"
+    },
+    {
+      "id": "ORBIT-G2",
+      "severity": "yellow",
+      "group": "G",
+      "title": "Latest last_paid_opt_in_at within 48h when window spend > 0",
+      "applies_to": "all",
+      "comparator": "freshness",
+      "threshold_hours": 48,
+      "precondition": "window_spend > 0",
+      "judgment": false,
+      "owner": "api/ads/cron-orchestrator.ts"
+    },
+    {
+      "id": "ORBIT-G3",
+      "severity": "yellow",
+      "group": "G",
+      "title": "token_expires_at more than 14 days out",
+      "applies_to": "all",
+      "comparator": "freshness",
+      "threshold_days": 14,
+      "app_source": "neon:ads_clients_config.token_expires_at",
+      "judgment": false,
+      "owner": "api/ads/sync-meta-insights.ts (token refresh)"
+    },
+    {
+      "id": "ORBIT-G4",
+      "severity": "yellow",
+      "group": "G",
+      "title": "/api/ads/overview under 5s",
+      "applies_to": "global",
+      "comparator": "latency_ms",
+      "tolerance": 5000,
+      "judgment": false,
+      "owner": "vercel.json maxDuration / Neon pool"
+    },
+    {
+      "id": "ORBIT-G5",
+      "severity": "yellow",
+      "group": "G",
+      "title": "/api/ads/drilldown/* under 10s per call",
+      "applies_to": "global",
+      "comparator": "latency_ms",
+      "tolerance": 10000,
+      "judgment": false,
+      "owner": "vercel.json maxDuration / Neon pool"
+    },
+    {
+      "id": "ORBIT-G6",
+      "severity": "yellow",
+      "group": "G",
+      "title": "/api/ads/audit under 30s",
+      "applies_to": "global",
+      "comparator": "latency_ms",
+      "tolerance": 30000,
+      "judgment": false,
+      "owner": "vercel.json maxDuration / Neon pool"
+    },
+    {
+      "id": "ORBIT-G7",
+      "severity": "red",
+      "group": "G",
+      "title": "No endpoint exceeds the 60s Vercel function ceiling",
+      "applies_to": "global",
+      "comparator": "latency_ms",
+      "tolerance": 60000,
+      "judgment": false,
+      "owner": "vercel.json maxDuration / Neon pool"
+    },
+    {
+      "id": "ORBIT-H1",
+      "severity": "red",
+      "group": "H",
+      "title": "No banned contact-age column anywhere ads_paid_leads is queried",
+      "applies_to": "global",
+      "comparator": "grep_absent",
+      "mode": "vault_only",
+      "banned": [
+        "created_at",
+        "dateAdded",
+        "first_paid_opt_in_at"
+      ],
+      "judgment": false,
+      "owner": "the grep hit's file:line"
+    },
+    {
+      "id": "ORBIT-H2",
+      "severity": "yellow",
+      "group": "H",
+      "title": "No bare YYYY-MM-DD into Meta Graph or drill-down SQL without clientWindow()",
+      "applies_to": "global",
+      "comparator": "grep_absent",
+      "mode": "vault_only",
+      "judgment": false,
+      "owner": "the grep hit's file:line"
+    },
+    {
+      "id": "ORBIT-H3",
+      "severity": "yellow",
+      "group": "H",
+      "title": "isLastTouchPaid() defined exactly once in the repo",
+      "applies_to": "global",
+      "comparator": "count_equals",
+      "expected": 1,
+      "mode": "vault_only",
+      "judgment": false,
+      "owner": "the duplicate definition's file:line"
+    },
+    {
+      "id": "ORBIT-H4",
+      "severity": "yellow",
+      "group": "H",
+      "title": "Cited code anchors hash unchanged",
+      "applies_to": "global",
+      "comparator": "hash",
+      "mode": "vault_only",
+      "baseline": "checksums/code-anchors.json",
+      "implementation_note": "The correct dynamic verifier ALREADY EXISTS as the [verify] block inside scripts/regen-baselines.sh. Extract it; do not rewrite it. Anchors are located by grep pattern, never by line number (hardcoded ranges hashed the wrong lines and blessed garbage - audit F39).",
+      "judgment": false,
+      "owner": "the cited anchor's invariants_ref + file:line in checksums/code-anchors.json"
+    },
+    {
+      "id": "ORBIT-H5",
+      "severity": "red",
+      "group": "H",
+      "title": "Tracked ads_*/fmt_* schema blocks hash unchanged",
+      "applies_to": "global",
+      "comparator": "hash",
+      "mode": "vault_only",
+      "baseline": "checksums/schema-baseline.json",
+      "severity_split": {
+        "hash_changed": "yellow",
+        "referenced_column_removed_or_renamed": "red"
+      },
+      "judgment": false,
+      "owner": "drizzle/schema.ts at the cited line range"
+    },
+    {
+      "id": "ORBIT-H6",
+      "severity": "yellow",
+      "group": "H",
+      "title": "All api/ads/*.ts routes catalogued or explicitly skipped",
+      "applies_to": "global",
+      "comparator": "set_membership",
+      "mode": "vault_only",
+      "judgment": true,
+      "judgment_kind": "scope_call",
+      "detail": "A newly-appeared endpoint needs a judgment call: is it conversion-bearing, i.e. does the working-MVP clause pull it into scope?",
+      "owner": "the api/ads/*.ts path returned by the grep"
+    },
+    {
+      "id": "ORBIT-I1",
+      "severity": "red",
+      "group": "I",
+      "title": "Best Ads shows non-zero conversions when ad-attributable ones exist",
+      "applies_to": "all",
+      "comparator": "custom",
+      "app_source": "api:/api/ads/best-ads",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts#resolveMetaIds; read path api/ads/best-ads.ts"
+    },
+    {
+      "id": "ORBIT-I2",
+      "severity": "red",
+      "group": "I",
+      "title": "meta_ad_id population health",
+      "applies_to": "all",
+      "comparator": "custom",
+      "severity_split": {
+        "campaign_id_present_but_ad_id_zero": "red",
+        "coverage_drop_over_2pp": "yellow",
+        "otherwise": "info"
+      },
+      "baseline_key": "baselines.i2_coverage",
+      "tolerance_why": "All-time coverage % is historical drag, not a live defect. Only a DROP below the ledger baseline is a regression.",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts#resolveMetaIds"
+    },
+    {
+      "id": "ORBIT-I3",
+      "severity": "red",
+      "group": "I",
+      "title": "Drill-in list length reconciles with the live KPI it expands",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "cardinal_rule": "Compare TWO INDEPENDENT LIVE SURFACES: contacts/list.ts response LENGTH vs the overview KPI. Neon counted SQL is the REFEREE ONLY. NEVER recompute both sides from one SQL - the pre-2026-06-10 form did exactly that, a tautological PASS that structurally could not catch the bug class it exists for.",
+      "judgment": false,
+      "owner": "api/ads/contacts/list.ts (cohort SQL vs _drilldown-sql.ts#countedPaidBookings)"
+    },
+    {
+      "id": "ORBIT-J1",
+      "severity": "red",
+      "group": "J",
+      "title": "PAID subset of ALL: every counted booking exists in ads_all_bookings",
+      "applies_to": "all",
+      "comparator": "subset",
+      "failure_means": "listCalendars() skipped a paid calendar",
+      "judgment": false,
+      "owner": "api/ads/sync-conversions.ts#listCalendars / syncOneClientAllBookings"
+    },
+    {
+      "id": "ORBIT-J2",
+      "severity": "red",
+      "group": "J",
+      "title": "Bucket math: counts.all == counts.paid + counts.other",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "judgment": false,
+      "owner": "api/ads/bookings/list.ts (bucket join / COUNT(*) FILTER)"
+    },
+    {
+      "id": "ORBIT-J3",
+      "severity": "red",
+      "group": "J",
+      "title": "Counted bookings joined into ads_all_bookings == overview paid_booked_calls",
+      "applies_to": "all",
+      "comparator": "exact",
+      "tolerance": 0,
+      "note": "Per-appointment counts.paid MAY exceed this: non-counted rows display in the bucket by design.",
+      "judgment": false,
+      "owner": "api/ads/bookings/list.ts (counted join); fix ORBIT-C first"
+    },
+    {
+      "id": "ORBIT-J4",
+      "severity": "yellow",
+      "group": "J",
+      "title": "OTHER-bucket bookings carrying an ad signal, unreviewed",
+      "applies_to": "all",
+      "comparator": "custom",
+      "judgment": true,
+      "judgment_kind": "triage_candidate",
+      "queue": "triage",
+      "cadence": "weekly_monday",
+      "resolution_source": "neon:ads_ghl_contacts.review_status",
+      "detail": "Monday vault runs render the yes/no triage list; other days and Slack carry the COUNT only.",
+      "recheckable": true,
+      "recheck_key": "appointment_id",
+      "scale_warning": "222 of 381 ledger entries were this check. It is a human work queue, not a defect ledger; it belongs in triage-queue.json.",
+      "judgment_note": "Verdicts must be read back from review_status, never decided by Andy.",
+      "owner": "api/ads/bookings/list.ts"
+    },
+    {
+      "id": "ORBIT-J5",
+      "severity": "info",
+      "group": "J",
+      "title": "Unreviewed booked-call backlog, ALL vs OTHER",
+      "applies_to": "all",
+      "comparator": "count",
+      "judgment": false,
+      "owner": "api/ads/bookings/list.ts"
+    },
+    {
+      "id": "MUT-1",
+      "severity": "yellow",
+      "group": "MUT",
+      "title": "Operator mutation ledger diff",
+      "applies_to": "global",
+      "comparator": "set_diff",
+      "judgment": true,
+      "judgment_kind": "plausibility",
+      "tracks": [
+        "_manual_override",
+        "excluded_from_metrics",
+        "counts_as_separate"
+      ],
+      "detail": "The set diff is deterministic. Judging whether the volume is plausible (e.g. 40 exclusions in one day with no operator session) is not.",
+      "judgment_note": "WARN on implausible volume or a golden-rule-violating stamp.",
+      "owner": "operator action in the Orbit UI; no single owning file"
+    },
+    {
+      "id": "LEADFORM-1",
+      "severity": "red",
+      "group": "LF",
+      "title": "Leadform writer truth vs stored raw payload",
+      "applies_to": "has_leadform_source",
+      "comparator": "timestamp_equal",
+      "tolerance_seconds": 1,
+      "rule": "last_paid_opt_in_at == (raw->>'created_time')::timestamptz, +/-1s; zero missing created_time",
+      "companion": {
+        "id": "LEADFORM-1-DUP",
+        "severity": "info",
+        "rule": "person-level duplicate count (F29)"
+      },
+      "owner": "api/ads/sync-meta-leadforms.ts",
+      "judgment": false
+    },
+    {
+      "id": "CAL-1",
+      "severity": "red",
+      "group": "CAL",
+      "title": "Calendly writer truth vs stored raw payload",
+      "applies_to": "has_calendly_source",
+      "comparator": "timestamp_equal",
+      "tolerance_seconds": 1,
+      "rule": "booked_at == (raw->'event'->>'created_at')::timestamptz, +/-1s; cancelled never counted; synthetic 'cal:' contact count == 0",
+      "owner": "api/ads/sync-calendly-bookings.ts",
+      "judgment": false
+    }
+  ]
+}
