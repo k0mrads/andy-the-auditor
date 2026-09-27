@@ -2,7 +2,7 @@
 client: Moreway Orbit
 client_dir: ~/Claude Code/Moreway/Moreway | Tasks
 vault_subfolder: _Moreway-Agency
-sub_clients: [caregenius-b2b, builderpro, obb, contractor-launch, mustache-painting, peach-paint-co, queen-consultancy]
+sub_clients: read live from ads_clients_config via scripts/andy_roster.py
 repo: k0mrads/moreway-orbit
 ---
 
@@ -51,25 +51,68 @@ Andy is a **developer-style auditor of the Moreway Orbit app**, not a marketing 
 
 ## Per sub-client config
 
-The audit reads `ads_clients_config` from Neon **at run time**. Do not hard-code these values inside Andy's prompts or scripts - especially `ghl_paid_calendar_ids`, which has already drifted once (OBB gained a third paid calendar that a hard-coded list missed). **Seven rows expected (all `enabled = true` as of 2026-06-10):**
+The roster is READ LIVE. There is no list in this document to keep in sync, on
+purpose: the previous version of this section opened with "do not hard-code
+these values" and then printed a hard-coded seven-row table, which by
+2026-09-27 disagreed with `scripts/andy-read.mjs` (a different eight) and with
+the live table (eight, different again). Every run started from a wrong map.
 
-| client_id | label | meta_account_id | currency | timezone | conversion source | enabled |
-|---|---|---|---|---|---|---|
-| `caregenius-b2b` | CareGenius B2B | `act_27449078924707675` | CAD | `America/New_York` | Neon (`ads_paid_leads` + `ads_paid_bookings`, fed by the GHL walker in `sync-conversions.ts`) | true |
-| `builderpro` | BuilderPro | `act_1586857008888840` | USD | `America/Los_Angeles` | Neon (GHL walker) | true |
-| `obb` | OBB Home Care | `act_425612416873215` | USD | `America/New_York` | Neon (GHL walker; Part 11, 2026-05-20; Hyros retired). **THREE paid calendars** - read `ghl_paid_calendar_ids` live. | true |
-| `contractor-launch` | Contractor Launch | `act_626274846998122` | USD | `America/Chicago` | Neon (GHL walker; added 2026-05-28) | true |
-| `mustache-painting` | Mustache Painting | per `ads_clients_config` | USD | per config | Neon, fed by **`sync-meta-leadforms.ts`** (Meta lead forms → `ads_paid_leads`; no GHL, no bookings - `paid_booked_calls` naturally 0) | true |
-| `peach-paint-co` | Peach Paint Co | per `ads_clients_config` | USD | per config | Neon, fed by **`sync-meta-leadforms.ts`** (same leadform path) | true |
-| `queen-consultancy` | Queen Consultancy | `act_2115558905474636` | USD | `America/Los_Angeles` | Neon, leads from **`sync-meta-leadforms.ts`**, bookings from **`sync-calendly-bookings.ts`** (Calendly → `ads_paid_bookings`; the Calendly sync sets `click_at` = the matched lead's opt-in time so the recency gate passes) | true |
+```bash
+python3 ~/.claude/skills/andy-the-auditor/scripts/andy_roster.py           # table
+python3 ~/.claude/skills/andy-the-auditor/scripts/andy_roster.py --json    # collector input
+```
 
-Other columns the audit reads: `meta_secret_name`, `ghl_api_secret_name`, `hyros_secret_name`, `ghl_paid_calendar_ids`, `token_expires_at`. If `enabled = false` for a client, skip its entire section.
+### Capability derivation (the only routing that exists)
 
-OBB's `ghl_location_id` is `Mns7ICmnKi3Pr4QuKmgp`. Known paid calendars as of 2026-06-10: `ClJ06JUJICgDCoELfn9A` (Home Care Hero Application: Interview Scheduling), `1FlpwUCCzC52Zt9y6cr2` (Franchise Interview), and `KtiOSC0uuSUbEyt3Ikpd` (third paid calendar, carries ~14 percent of OBB paid bookings). This list is a snapshot for orientation only - the live `ghl_paid_calendar_ids` row is authoritative. API key in `GHL_KEY_OBB`. `hyros_secret_name` is still 'HYROS_KEY_OBB' in the row but the env var is unused by the dashboard post-Part-11.
+`checks/registry.json` routes every check on CAPABILITIES, never on client
+names. There is **no `conversion_source` column** in `ads_clients_config`; an
+earlier draft assumed one, which would have made `has_leadform_source`
+permanently false and silently skipped LEADFORM-1 for every client. The real
+discriminators, verified against the live table:
 
-Conversion source dispatch lives at [api/ads/_sources.ts](api/ads/_sources.ts) (`fetchConversionCounts`): **all seven clients** route to the Neon row-counter (`fetchGhlCountsFromNeon`) - the GHL-walker clients via explicit cases, leadform/Calendly clients via the default case reading `timezone` from `ads_clients_config`. (`fetchHyrosCallsCount` dead code was removed by PR #255, 2026-06-12.)
+| capability | derived from | checks it gates |
+|---|---|---|
+| `has_ghl_walk` | `ghl_paid_calendar_ids` non-empty | ORBIT-B1, B3, C1 |
+| `has_leadform_source` | `meta_leads_page_id` not null | LEADFORM-1 |
+| `has_calendly_source` | no column exists; no enabled client | CAL-1 |
+| `has_platform_routed_truth` | `hyros_secret_name` not null | ORBIT-D1, D2, D3 |
 
-GHL applies to 4 of 7 (caregenius-b2b, builderpro, obb, contractor-launch). ORBIT-B/C live GHL walks run for those four only; for leadform/Calendly clients, the writer-side truth checks are the raw-payload comparisons (`last_paid_opt_in_at == raw->>'created_time'` for leadforms; `booked_at == raw->'event'->>'created_at'` for Calendly).
+**Every enabled client must have exactly one lead pipe.** `andy_roster.py`
+warns if any client has zero (invisible to Orbit; its conversion checks must
+SKIP with a reason, never fail) or two (the schema has drifted).
+
+### Live snapshot, 2026-09-27 (orientation only, NOT authoritative)
+
+Eight enabled clients. Queen Consultancy is gone from the table entirely and
+Contractor Launch is no longer enabled; `ac-guy-near-me`, `occupancy-partners`
+and `revlab` were added and appeared in no prior version of this document.
+
+| client | pipe | tz | cur |
+|---|---|---|---|
+| `builderpro` | GHL walker (3 cals) | `America/Los_Angeles` | USD |
+| `caregenius-b2b` | GHL walker (6 cals) | `America/New_York` | CAD |
+| `obb` | GHL walker (3 cals) + platform-routed truth | `America/New_York` | USD |
+| `occupancy-partners` | GHL walker (3 cals) | `America/New_York` | USD |
+| `revlab` | GHL walker (2 cals) | `America/New_York` | USD |
+| `ac-guy-near-me` | Meta leadform | `America/New_York` | USD |
+| `mustache-painting` | Meta leadform | `America/New_York` | USD |
+| `peach-paint-co` | Meta leadform | `America/New_York` | USD |
+
+OBB's paid calendars have drifted before (it gained a third that a hard-coded
+list missed), so read `ghl_paid_calendar_ids` live, always.
+
+### OBB conversion truth is PLATFORM-ROUTED (Zander, 2026-09-27)
+
+| platform | truth | reconciliation line |
+|---|---|---|
+| Meta / Facebook | **Hyros** | Neon |
+| Whop | **Neon / Orbit** | - |
+
+This supersedes the previous "Hyros retired, ORBIT-D deprecated" position,
+which was wrong and meant Andy audited the wrong pipe for the Meta half of the
+largest spender. `HYROS_KEY_OBB` is a LIVE credential, not dead env. Drift
+between Hyros and Neon on the Meta side is its own finding (ORBIT-D3), not
+something to resolve by silently picking a side.
 
 ---
 
@@ -232,7 +275,7 @@ WHERE client_id = $client_id
 
 `level='campaign'` is preferred over `level='account'` because campaign-level is always synced; account-level rows are optional. Both should reconcile within ±5% of Meta Graph API.
 
-### Lead layer (per client, all 7)
+### Lead layer (per client, every enabled client)
 
 ```sql
 SELECT contact_id, last_paid_opt_in_at, meta_campaign_id, meta_adset_id, meta_ad_id
@@ -449,7 +492,9 @@ SELECT client_id, contact_id     FROM ads_ghl_contacts  WHERE excluded_from_metr
 SELECT client_id, appointment_id FROM ads_paid_bookings WHERE counts_as_separate = true          ORDER BY 1,2;
 ```
 
-### Leadform writer truth (LEADFORM-1, mustache-painting + peach-paint-co + queen-consultancy, formalized 2026-06-12 per audit F20)
+### Leadform writer truth (LEADFORM-1, the `has_leadform_source` clients, formalized 2026-06-12 per audit F20)
+
+Three as of 2026-09-27: `ac-guy-near-me`, `mustache-painting`, `peach-paint-co`. Derived from `meta_leads_page_id` being set, never from a list. (`ac-guy-near-me` appeared in no earlier version of this document, which is how a leadform client went unchecked.)
 
 The leadform writer's only legitimate date source is the Meta leadform `created_time`. Any drift = the writer re-dated a lead (golden-rule violation on the leadform path). BLOCKER on any row returned:
 
@@ -474,7 +519,9 @@ SELECT COUNT(*) FROM (
 ) d;
 ```
 
-### Calendly writer truth (CAL-1, queen-consultancy, formalized 2026-06-12 per audit F20)
+### Calendly writer truth (CAL-1, the `has_calendly_source` clients, formalized 2026-06-12 per audit F20)
+
+**No enabled client currently has this pipe.** Queen Consultancy was its only user and is gone from `ads_clients_config`. CAL-1 must therefore SKIP with reason `not_applicable_client_type`; a check with no subject that reports nothing is indistinguishable from a passing check, which is the failure mode the skip-reason discipline exists to close. The SQL below stands ready for the next Calendly client.
 
 BLOCKER on any row from either query; third query is the F30 synthetic-contact guard (must stay 0 while F30 is open):
 
@@ -560,7 +607,7 @@ WHERE client_id = $client_id
 GROUP BY source;
 ```
 
-Sources expected: `meta_insights:campaign`, `meta_insights:adset`, `meta_insights:ad`, `meta_structure`, `orchestrator` (all 7 clients); `ghl_conversions` (the 4 GHL clients); `meta_leadforms` (mustache-painting, peach-paint-co, queen-consultancy); `calendly` (queen-consultancy). `hyros` is no longer expected; if it appears, it's residual log data from before Part 11.
+Sources expected: `meta_insights:campaign`, `meta_insights:adset`, `meta_insights:ad`, `meta_structure`, `orchestrator` (every enabled client); `ghl_conversions` (the `has_ghl_walk` clients); `meta_leadforms` (the `has_leadform_source` clients); `calendly` (none currently enabled, so CAL-1 must SKIP with a reason). `hyros` IS expected for OBB, whose Meta-platform conversion truth is Hyros.
 
 ### Most-recent paid event (sanity)
 
@@ -601,15 +648,15 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-A2 | BLOCKER | Meta ↔ Neon | Impressions, ±5% |
 | ORBIT-A3 | BLOCKER | Meta ↔ Neon | Clicks (inline_link_clicks), ±5% |
 | ORBIT-A4 | WARN    | Meta ↔ Neon | Derived CPC/CPM/CTR, ±5% (CTR ±0.1pp) |
-| ORBIT-B1 | BLOCKER | GHL ↔ Neon (4 GHL clients) | Paid lead counted-UNION count equality |
+| ORBIT-B1 | BLOCKER | GHL ↔ Neon (the `has_ghl_walk` clients) | Paid lead counted-UNION count equality |
 | ORBIT-B2 | BLOCKER | Golden rule grep | No `created_at`/`dateAdded`/`first_paid_opt_in_at` in window filters |
-| ORBIT-B3 | BLOCKER | GHL ↔ Neon (4 GHL clients) | Re-opt-in survives: contact with `dateAdded` < window_start but `last_paid_opt_in_at` in window appears in Neon |
+| ORBIT-B3 | BLOCKER | GHL ↔ Neon (the `has_ghl_walk` clients) | Re-opt-in survives: contact with `dateAdded` < window_start but `last_paid_opt_in_at` in window appears in Neon |
 | ORBIT-B5 | BLOCKER/WARN | Neon writer, all clients | Opt-in dated by the EVENT not the sync clock: a `now()`-stamp (`\|opt_in - synced_at\| < 2s`) must corroborate a real event timestamp (fbc click time / `dateUpdated`) on the same calendar day. BLOCKER on different-day; WARN on same-day but >1h off |
-| ORBIT-C1 | BLOCKER | GHL ↔ Neon (4 GHL clients) | Paid booked COUNTED-booking count equality vs walked GHL events (apply gates 4-5 on the walked side too) |
+| ORBIT-C1 | BLOCKER | GHL ↔ Neon (the `has_ghl_walk` clients) | Paid booked COUNTED-booking count equality vs walked GHL events (apply gates 4-5 on the walked side too) |
 | ORBIT-C2 | BLOCKER | Display, all clients | CPBC = spend / counted paid_booked within ±5% of `/api/ads/overview` |
-| ORBIT-D1 | DEPRECATED | Hyros, OBB | (Part 11) OBB no longer Hyros-backed; section retired |
-| ORBIT-D2 | DEPRECATED | Hyros, OBB | (Part 11) Same - count now sourced from Neon under B/C |
-| ORBIT-D3 | DEPRECATED | Hyros, OBB | (Part 11) HYROS_KEY_OBB env unused; advisory retired |
+| ORBIT-D1 | BLOCKER | Hyros, OBB | OBB's **Meta/Facebook** conversion truth is Hyros; Neon is the reconciliation line |
+| ORBIT-D2 | BLOCKER | Neon, OBB | OBB's **Whop** conversion truth is Neon/Orbit |
+| ORBIT-D3 | WARN | Hyros vs Neon, OBB | Drift between the two on the Meta side is its own finding, never resolved by picking a side |
 | ORBIT-E1 | BLOCKER | API ↔ Neon | Per-client spend/impressions/clicks exact match to Neon rollup |
 | ORBIT-E2 | BLOCKER | API ↔ Neon | Per-client paid_leads / paid_booked_calls exact match to the counted B/C ground truth |
 | ORBIT-E3 | BLOCKER | API ↔ Neon | CPL/CPBC recomputed within ±0.5% / ±5% |
@@ -641,12 +688,12 @@ These IDs are the contract with SKILL.md. Do not rename. Do not renumber. Add ne
 | ORBIT-J5 | INFO | Booked Calls triage | Unreviewed booked-call backlog: in-window bookings with `review_status IS NULL`, split ALL vs OTHER |
 | ORBIT-B6 | WARN | Neon writer, all clients | Rung-2 (`dateUpdated`) re-opt-in stamps require fresh-event corroboration: WARN when the parseable fbc click time is >7d older than the stamp or absent (phantom re-opt-in via workflow touch; the F23 class B5 cannot see). Appended 2026-06-10. **Ledger-once: each candidate is reported NEW once, then collapses; never re-listed daily. Forward fix shipped in Orbit PR #253 (2026-06-12) - post-#253 candidates are a regression signal** |
 | MUT-1 | INFO/WARN | Operator mutations | Enumerate `_manual_override` leads/bookings + `excluded_from_metrics` + `counts_as_separate` per run, diff vs the ledger's `mutations_snapshot`, surface adds/removes under STATE CHANGES. WARN on implausible volume or a golden-rule-violating stamp. Added 2026-06-12 (audit F20) |
-| LEADFORM-1 | BLOCKER | Leadform writer truth | mustache-painting / peach-paint-co / queen-consultancy: `last_paid_opt_in_at == raw->>'created_time'` (±1s), zero missing `created_time`; INFO companion: person-level dup count (F29). Formalized 2026-06-12 (audit F20) |
-| CAL-1 | BLOCKER | Calendly writer truth | queen-consultancy: `booked_at == raw->'event'->>'created_at'` (±1s); cancelled events never counted; synthetic `cal:` contact count == 0 (F30 guard). Formalized 2026-06-12 (audit F20) |
+| LEADFORM-1 | BLOCKER | Leadform writer truth | the `has_leadform_source` clients: `last_paid_opt_in_at == raw->>'created_time'` (±1s), zero missing `created_time`; INFO companion: person-level dup count (F29). Formalized 2026-06-12 (audit F20) |
+| CAL-1 | BLOCKER | Calendly writer truth | the `has_calendly_source` clients (NONE enabled as of 2026-09-27, so this SKIPs with a reason): `booked_at == raw->'event'->>'created_at'` (±1s); cancelled events never counted; synthetic `cal:` contact count == 0 (F30 guard). |
 
-Sections B and C apply to the **4 GHL-walker clients** (CG B2B, BuilderPro, OBB, Contractor Launch); B5/B6 data-side detectors apply to ALL clients with `ads_paid_leads` rows. Leadform clients (mustache-painting, peach-paint-co) and queen-consultancy have no GHL to walk - their writer-truth checks compare Neon against the stored raw payloads (`last_paid_opt_in_at == raw->>'created_time'`; queen `booked_at == raw->'event'->>'created_at'`).
+Sections B and C apply to the clients with `has_ghl_walk` (five as of 2026-09-27: builderpro, caregenius-b2b, obb, occupancy-partners, revlab). B5/B6 data-side detectors apply to ALL clients with `ads_paid_leads` rows. Leadform clients have no GHL to walk; their writer-truth check compares Neon against the stored raw payload (`last_paid_opt_in_at == raw->>'created_time'`). CAL-1 has no live subject while no Calendly client is enabled and must SKIP with a reason rather than read as a pass.
 
-ORBIT-J (added 2026-05-22) audits the Booked Calls (ALL / PAID / OTHER) tab + `ads_all_bookings` table + `/api/ads/bookings/list`. J1–J3 enforce correctness (PAID ⊆ ALL, bucket sum, KPI reconciliation) and run in both modes. J4–J5 are the deep morning triage queue Zander asked Andy to "look through" - OTHER-bucket calls that carry a paid signal but missed the confident set, plus the unreviewed backlog. Freshness is covered by ORBIT-G1 (the all-bookings sync runs inside `sync-conversions.ts`, source `ghl_conversions`). ORBIT-D is fully **DEPRECATED** - there is nothing for Andy to audit on the Hyros path because the dashboard no longer reads from it.
+ORBIT-J (added 2026-05-22) audits the Booked Calls (ALL / PAID / OTHER) tab + `ads_all_bookings` table + `/api/ads/bookings/list`. J1–J3 enforce correctness (PAID ⊆ ALL, bucket sum, KPI reconciliation) and run in both modes. J4–J5 are the deep morning triage queue Zander asked Andy to "look through" - OTHER-bucket calls that carry a paid signal but missed the confident set, plus the unreviewed backlog. Freshness is covered by ORBIT-G1 (the all-bookings sync runs inside `sync-conversions.ts`, source `ghl_conversions`). ORBIT-D is **LIVE again** (2026-09-27), rebuilt as platform-routed truth: Hyros for OBB's Facebook spend, Neon/Orbit for its Whop spend.
 
 ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the conversion surfaces downstream of the headline counts: the per-ad Best Ads tab (I1), the `meta_ad_id` writer health (I2), and the drill-in popovers/Contacts list (I3, added later on 2026-05-21 after the Booked-popover count-vs-list bug; rewritten 2026-06-10 to compare the counted cohort non-tautologically). It runs in **both** vault and `--slack` modes (a best-ads call + a handful of Neon counts; cheap, unlike per-adset ORBIT-F).
 
@@ -664,7 +711,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/audit.ts` | cross-validation only (not ground truth, per audit.ts:243-260 caveat) | in-app drift report |
 | `api/ads/sync-meta-structure.ts` | ORBIT-G1 (freshness) + Slack alert on fail | Meta object metadata sync |
 | `api/ads/sync-meta-insights.ts` | ORBIT-A, G1 + Slack alert on fail | Meta insights sync |
-| `api/ads/sync-conversions.ts` | ORBIT-B, C, G1 + Slack alert on fail | GHL contacts + bookings walker (4 GHL clients) |
+| `api/ads/sync-conversions.ts` | ORBIT-B, C, G1 + Slack alert on fail | GHL contacts + bookings walker (the `has_ghl_walk` clients) |
 | `api/ads/cron-orchestrator.ts` | ORBIT-G1 + Slack alert on fail | structure + insights fan-out |
 | `api/ads/drilldown/campaigns.ts` | ORBIT-F | per-campaign breakdown |
 | `api/ads/drilldown/adsets.ts` | ORBIT-F | per-adset breakdown |
@@ -696,7 +743,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/bookings/count-separate.ts` | **CONVERSION-BEARING writer** (cataloged 2026-06-10) | flips `ads_paid_bookings.counts_as_separate`; changes paid_booked counting (counted CTE gate 3). |
 | `api/ads/bookings/promote.ts` | **CONVERSION-BEARING writer** (cataloged 2026-06-10) | promotes OTHER-bucket bookings into `ads_paid_bookings` (and demotes); promoted rows carry `_manual_override='true'` so they bypass the click-recency gate by design. |
 | `api/ads/sync-meta-leadforms.ts` | **CONVERSION WRITER** - ORBIT-G1 (source `meta_leadforms`) + writer-truth check (cataloged 2026-06-10) | THE lead path for mustache-painting + peach-paint-co (and queen leads): writes `ads_paid_leads.last_paid_opt_in_at` from Meta leadform `created_time`. Writer invariant: `last_paid_opt_in_at == raw->>'created_time'`. |
-| `api/ads/sync-calendly-bookings.ts` | **CONVERSION WRITER** - ORBIT-G1 (source `calendly`) + writer-truth check (cataloged 2026-06-10) | THE booking path for queen-consultancy: Calendly events → `ads_paid_bookings`, `booked_at = event.created_at`, `click_at` = matched lead opt-in time (so the recency gate passes). Writer invariant: `booked_at == raw->'event'->>'created_at'`; cancelled-status rows must not count. |
+| `api/ads/sync-calendly-bookings.ts` | **CONVERSION WRITER** - ORBIT-G1 (source `calendly`) + writer-truth check (cataloged 2026-06-10) | THE booking path for any `has_calendly_source` client (none enabled as of 2026-09-27): Calendly events → `ads_paid_bookings`, `booked_at = event.created_at`, `click_at` = matched lead opt-in time (so the recency gate passes). Writer invariant: `booked_at == raw->'event'->>'created_at'`; cancelled-status rows must not count. |
 | `api/ads/slack-obb-update.ts` | **CONVERSION-BEARING display** (cataloged 2026-06-10) | client-facing daily/weekly OBB Slack post. KNOWN DRIFT (audit F03): reimplements leads/booked from retired Hyros walkers (cancelled calls + organic leads included), diverging from the dashboard definition; fix tracked separately. Until fixed, expect its numbers NOT to reconcile with overview - report as the known F03 finding, not a new regression. |
 | `api/ads/slack-eod-sales.ts` | **CONVERSION-ADJACENT display** (cataloged 2026-06-10) | nightly booked/show/close counts to Slack; reads sales dispositions + booking counts. |
 | `api/ads/slack-weekly-sales.ts` | **CONVERSION-BEARING display** (cataloged 2026-06-10) | weekly spend/leads/booked/CPBC/revenue/ROAS per client to Slack; must use the counted path. |
@@ -731,7 +778,7 @@ This table is identical to SKILL.md's. When a check fails, Andy includes the lik
 | ORBIT-B5 opt-in == synced_at on wrong day | [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts) `resolveReOptInDate` (fbc click → dateUpdated → now ladder) + its caller in [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) re-opt-in branch. Historical rows: `scripts/backfill-reoptin-timestamp.ts` |
 | ORBIT-B6 rung-2 stamp without fresh corroboration | [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts) `resolveReOptInDate` rung 2 (accepts any `dateUpdated > priorAt`); triggering writer is usually a GHL workflow/bulk edit bumping `dateUpdated` (F23 class) |
 | ORBIT-C booked count off | [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts), calendar filter, booking_source filter; read-side: the counted gates in [api/ads/_drilldown-sql.ts:49-133](api/ads/_drilldown-sql.ts#L49) |
-| ORBIT-D (DEPRECATED post-Part-11) | n/a - Hyros no longer in dashboard data path |
+| ORBIT-D OBB Meta-platform count off | Hyros attribution pipe (truth side) + [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) (Neon reconciliation side) |
 | ORBIT-E aggregation off | [api/ads/overview.ts:224-245](api/ads/overview.ts#L224), cross-client SUM logic |
 | ORBIT-E CPL/CPBC off | [api/ads/overview.ts:220-221](api/ads/overview.ts#L220), null-safe formulas |
 | ORBIT-F orphan ads | [api/ads/sync-meta-structure.ts](api/ads/sync-meta-structure.ts), missing `parent_id` / `campaign_id` on ad rows |
@@ -756,9 +803,9 @@ Andy runs in two modes, both invoking the same skill body. Section scope differs
 | Section | Local (vault) | `--slack` (Slack post) |
 |---|---|---|
 | ORBIT-A (Meta ↔ Neon) | RUN | RUN |
-| ORBIT-B (GHL ↔ Neon, 4 GHL clients; B5/B6 all clients) | RUN | RUN |
-| ORBIT-C (Booked, 4 GHL clients; counted read-side all clients) | RUN | RUN |
-| ORBIT-D (Hyros, OBB) | DEPRECATED (Part 11) | DEPRECATED (Part 11) |
+| ORBIT-B (GHL ↔ Neon, `has_ghl_walk` clients; B5/B6 all clients) | RUN | RUN |
+| ORBIT-C (Booked, `has_ghl_walk` clients; counted read-side all clients) | RUN | RUN |
+| ORBIT-D (OBB platform-routed truth: Hyros=Meta, Neon=Whop) | RUN | RUN |
 | ORBIT-E (API ↔ Neon) | RUN | RUN |
 | ORBIT-F (Per-adset drilldown) | RUN | **SKIP** (top-20 loop is too slow for Slack TTL) |
 | ORBIT-G (Sync freshness) | RUN | RUN |

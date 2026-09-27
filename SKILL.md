@@ -1,11 +1,15 @@
 ---
 name: andy-the-auditor
-description: End-to-end correctness audit for the Moreway Orbit Ads Command Center. Triangulates Meta Graph API ↔ Neon ↔ GHL/leadform/Calendly raw payloads (upstream truth) ↔ Orbit's own API endpoints (display layer) across all 7 enabled clients (CG B2B, BuilderPro, OBB, Contractor Launch, Mustache Painting, Peach Paint Co, Queen Consultancy). Anchored on Zander's lead-attribution north star (`last_paid_opt_in_at` in window, contact age irrelevant) and the counted booking semantics (`countedPaidBookings`). Writes per-client vault reports with machine-parseable frontmatter for Slack-bot consumption.
+description: Correctness audit for the Moreway Orbit Ads Command Center. Triangulates Meta Graph, Neon, GHL/leadform raw payloads and Orbit's own API across every enabled client (roster read live, never hard-coded). Writes per-client vault reports. Triggers on: audit Orbit, check the dashboard numbers, attribution audit.
 ---
 
 # andy-the-auditor
 
-Andy is the guardrail against vibe-coding regressions in the Moreway Orbit Ads Command Center. He audits attribution correctness for the **seven enabled client surfaces** - CareGenius B2B, BuilderPro, OBB Home Care, Contractor Launch (GHL-walker conversions), Mustache Painting, Peach Paint Co (Meta leadform conversions), Queen Consultancy (leadform leads + Calendly bookings) - against the rules Zander actually wants the dashboard to enforce, and produces a per-client morning report. The roster is read live from `ads_clients_config` (`enabled = true`); never hard-code it.
+Andy is the guardrail against vibe-coding regressions in the Moreway Orbit Ads Command Center. He audits attribution correctness for **every enabled client** against the rules Zander actually wants the dashboard to enforce, and produces a per-client morning report.
+
+**The roster is READ LIVE and there is no list in this file.** Run `python3 scripts/andy_roster.py` (or `--json`). Until 2026-09-27 this paragraph named seven clients, `scripts/andy-read.mjs` hard-coded a different eight, and the live table had eight different again: Queen Consultancy was gone, Contractor Launch was disabled, and `ac-guy-near-me`, `occupancy-partners` and `revlab` appeared in no document at all. Every run started from a wrong map, and one leadform client was going unchecked.
+
+Checks route on CAPABILITIES (`has_ghl_walk`, `has_leadform_source`, `has_calendly_source`, `has_platform_routed_truth`) derived from live columns, never on client names. `checks/registry.json` is the contract.
 
 This skill replaces the older `/attribution-audit` skill (which audited three separate dashboards in the pre-consolidation world). Orbit is the only ads dashboard now, so Andy is the only auditor.
 
@@ -81,7 +85,7 @@ The test: if the sentence would fit in a marketing-performance Slack channel, it
 - `/andy-the-auditor builderpro` - BuilderPro only
 - `/andy-the-auditor obb` - OBB only
 - `/andy-the-auditor contractor-launch` / `mustache-painting` / `peach-paint-co` / `queen-consultancy` - any other enabled client_id
-- `/andy-the-auditor --slack ADS_AUDITS_SLACK_WEBHOOK` - Slack mode: skip vault writes, POST a summary to the webhook URL in `$ADS_AUDITS_SLACK_WEBHOOK`. Used by the daily routine `trig_01K8mpqa8e9F2DmBRHivNNPV`. Can be combined with a client filter (e.g. `/andy-the-auditor caregenius --slack ADS_AUDITS_SLACK_WEBHOOK`).
+- `/andy-the-auditor --slack ADS_AUDITS_SLACK_WEBHOOK` - Slack mode: skip vault writes, POST a summary to the webhook URL in `$ADS_AUDITS_SLACK_WEBHOOK`. Can be combined with a client filter (e.g. `/andy-the-auditor caregenius --slack ADS_AUDITS_SLACK_WEBHOOK`). **Nothing currently invokes this mode on a schedule** - see the scheduling note below.
 - Natural language: "andy", "audit orbit", "audit the dashboard", "is orbit accurate", "did I break the math", "check attribution"
 
 ---
@@ -91,7 +95,7 @@ The test: if the sentence would fit in a marketing-performance Slack channel, it
 Andy auto-loads:
 
 - `~/.claude/skills/andy-the-auditor/invariants/orbit.md` - single canonical config (replaces the three sister-app invariants files).
-- `~/Claude Code/Moreway/Moreway | Tasks/.env` - Orbit's local env: `DATABASE_URL`, `AUDIT_TOKEN`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB` (plus the contractor-launch / painting / queen Meta secrets named in `ads_clients_config.meta_secret_name`), `GHL_KEY_CAREGENIUS`, `GHL_KEY_BUILDERPRO`, `GHL_KEY_OBB` + the contractor-launch GHL key (4 GHL clients). `HYROS_KEY_OBB` is unused since Part 11 (kept as dead env for cleanup follow-up). NOTE (F10): the 2026-06-09 `.env` rewrite silently stripped 5 of these keys and Andy bootstrap-halted while reporting green; the morning runner now flips a no-report run to exit 4.
+- `~/Claude Code/Moreway/Moreway | Tasks/.env` - Orbit's local env: `DATABASE_URL`, `AUDIT_TOKEN`, `META_TOKEN_CAREGENIUS_B2B`, `META_TOKEN_BUILDERPRO`, `META_TOKEN_OBB` (plus the contractor-launch / painting / queen Meta secrets named in `ads_clients_config.meta_secret_name`), the `GHL_KEY_*` secrets named in `ads_clients_config.ghl_api_secret_name` for the `has_ghl_walk` clients. `HYROS_KEY_OBB` is a **LIVE credential**: OBB's Meta/Facebook conversion truth is Hyros (Zander, 2026-09-27). It was previously documented as dead env, which is why Andy audited the wrong pipe for the Meta half of the largest spender. NOTE (F10): the 2026-06-09 `.env` rewrite silently stripped 5 of these keys and Andy bootstrap-halted while reporting green; the morning runner now flips a no-report run to exit 4.
 - `ads_clients_config` table in Neon - per-client config read at run time so Andy never goes stale on currency / timezone / calendar IDs.
 
 If any required env var is missing, Andy halts with a bootstrap message rather than emitting a misleading green report.
@@ -189,7 +193,7 @@ In `--slack` mode the ledger is **read-only** (the committed copy in the cloned 
 
 ### Step 2 - Per target client
 
-For each target client, run sections ORBIT-A through ORBIT-J below. The live GHL walks in ORBIT-B/C apply to the **4 GHL-walker clients** (CG B2B, BuilderPro, OBB, Contractor Launch); the data-side writer checks (B5/B6) and all counted read-side checks apply to every client. Leadform clients (mustache-painting, peach-paint-co) and queen-consultancy verify writer truth against stored raw payloads instead of a GHL walk (`last_paid_opt_in_at == raw->>'created_time'`; queen bookings `booked_at == raw->'event'->>'created_at'`). ORBIT-D (Hyros) is **deprecated** as of Part 11 and is logged as INFO only - there is no longer anything to audit on the Hyros path because the dashboard no longer reads from it.
+For each target client, run sections ORBIT-A through ORBIT-J below. The live GHL walks in ORBIT-B/C apply to the **`has_ghl_walk`** clients; the data-side writer checks (B5/B6) and all counted read-side checks apply to every client. The **`has_leadform_source`** clients verify writer truth against the stored raw payload instead of a GHL walk (`last_paid_opt_in_at == raw->>'created_time'`). CAL-1 has no enabled client and must SKIP with reason `not_applicable_client_type`, never read as a pass. **ORBIT-D is LIVE again**: OBB's conversion truth is platform-routed, Hyros for Facebook and Neon/Orbit for Whop, with drift between them reported as its own finding (D3).
 
 #### ORBIT-A - Meta Graph API ↔ Neon `ads_meta_insights`
 
@@ -204,7 +208,7 @@ Most-recent day tolerance loosens to ±10% (Meta still aggregating).
 
 Failure-mode hint: spend drift → [api/ads/sync-meta-insights.ts](api/ads/sync-meta-insights.ts) (date alignment / level filtering).
 
-#### ORBIT-B - GHL (live) ↔ Neon `ads_paid_leads` (4 GHL-walker clients; B5/B6 all clients)
+#### ORBIT-B - GHL (live) ↔ Neon `ads_paid_leads` (`has_ghl_walk` clients; B5/B6 all clients)
 
 The north-star check. Use the canonical walker from [api/ads/_ghl-direct.ts `fetchGhlGroundTruthCounts()`](api/ads/_ghl-direct.ts) - same predicate Orbit's own sync uses (`touchIsPaidMeta` first-or-last; bare fbclid NOT sufficient), applied independently for the audit. Build the ground-truth set of (contact_id) tuples.
 
@@ -214,7 +218,7 @@ The north-star check. Use the canonical walker from [api/ads/_ghl-direct.ts `fet
 - **B5 (BLOCKER) - opt-in dated by the EVENT, not the sync clock.** The north star says window membership is the paid opt-in *event* timestamp. The writer must never stamp `last_paid_opt_in_at` at the moment the sync ran. Detector: any `ads_paid_leads` row where `ABS(last_paid_opt_in_at - synced_at) < 2s` is a `now()`-stamp (the re-opt-in path). For each such row, a real event timestamp must exist in the stored `raw` and corroborate the stamp **on the same calendar day** (client tz): the `_fbc` cookie click time (`raw.lastAttributionSource.fbc` → `fb.<v>.<ms>.<fbclid>`), else `raw.dateUpdated`. **FAIL** when a `now()`-stamp lands on a different calendar day than the best available event timestamp (the lead is mis-windowed - this is the 2026-05-21 Britteni Colbert bug: stamped today, real fbc click was yesterday). **WARN** when same-day but more than ~1h off the event time. Owner: [api/ads/sync-conversions.ts](api/ads/sync-conversions.ts) `resolveReOptInDate` (in [api/ads/_optin-timestamp.ts](api/ads/_optin-timestamp.ts)). Remediation for historical rows: `scripts/backfill-reoptin-timestamp.ts`. Code-static companion: grep that the re-opt-in branch does NOT assign a bare `now`/`new Date()` to `lastPaidOptInAt` without going through the event ladder.
 - **B6 (WARN, appended 2026-06-10) - rung-2 stamps need fresh-event corroboration.** B5 only sees `now()`-stamps. The ladder's rung 2 takes `raw.dateUpdated` as the event time, and GHL bumps `dateUpdated` on ANY contact touch - bulk edits, touch-flips, reactivation workflows (e.g. CG `tfu_ai_reactivation`) - producing **phantom re-opt-ins stamped at a real, non-clock timestamp** that B5 structurally cannot catch (audit F23: ~13-16 false placements all-time). Detector: rows where `last_paid_opt_in_at == raw.dateUpdated` (and NOT ≈ `synced_at`) whose best corroborating event (parseable fbc click time) is **more than 7 days older than the stamp, or absent**. WARN per hit (a genuine re-opt-in through a UTM-less path can look identical - this is a review queue, not an auto-FAIL). SQL in `invariants/orbit.md`. **Ledger-once rule:** each candidate (keyed by contact_id) enters the findings ledger ONCE on first detection - it appears in the NEW section that day with its GHL deep link, then collapses to the known-carry-over line; it is never re-listed daily. **Forward fix SHIPPED:** Orbit PR #253 (2026-06-12) adds fresh-event corroboration to `resolveReOptInDate` rung 2 (live `paid social` session, or fbc click within 7d of the stamp; uncorroborated flips keep the prior date), so NEW candidates appearing after #253 deploys are a regression signal, not routine noise. Pre-#253 candidates sit in the ledger as `fixed_pending_verify` until restamped/verdicted via the F23 cleanup apply-script.
 
-#### ORBIT-C - GHL bookings ↔ Neon `ads_paid_bookings` (4 GHL-walker clients; counted read-side all clients)
+#### ORBIT-C - GHL bookings ↔ Neon `ads_paid_bookings` (`has_ghl_walk` clients; counted read-side all clients)
 
 Use [`fetchGhlBookedCallsGroundTruth()` in _ghl-direct.ts](api/ads/_ghl-direct.ts) to walk `/calendars/events` for each `ghl_paid_calendar_ids` value in `ads_clients_config` (read live - OBB has THREE paid calendars), apply `isLastTouchPaid()` to each event's parent contact.
 
@@ -253,7 +257,7 @@ For each adset with non-zero activity in the window (spend > 0 OR leads > 0 OR b
 
 Read `ads_sync_log` per `(client_id, source)`.
 
-- **G1 (BLOCKER)** - Each enabled client has rows for its expected sources with latest `started_at` within last 24h AND latest row's `ok = true`. Expected: `meta_insights:*` + `meta_structure` (all 7); `ghl_conversions` (the 4 GHL clients); `meta_leadforms` (mustache-painting, peach-paint-co, queen-consultancy); `calendly` (queen-consultancy). The check is "latest row" not "any row in last 24h" - an aggregate `bool_and(ok)` over 48h is a different question (transient retry history) and does not count as G1 failure.
+- **G1 (BLOCKER)** - Each enabled client has rows for its expected sources with latest `started_at` within last 24h AND latest row's `ok = true`. Expected: `meta_insights:*` + `meta_structure` (every enabled client); `ghl_conversions` (the `has_ghl_walk` clients); `meta_leadforms` (the `has_leadform_source` clients); `calendly` (none enabled); `hyros` (OBB). The check is "latest row" not "any row in last 24h" - an aggregate `bool_and(ok)` over 48h is a different question (transient retry history) and does not count as G1 failure.
 - **G2 (WARN)** - Latest `ads_paid_leads.last_paid_opt_in_at` per client within last 48h when window spend > 0 (detects silent conversion-sync regression). Applies to all enabled clients.
 - **G3 (WARN)** - `ads_clients_config.token_expires_at` per client > 14 days out. For BuilderPro, current expiry is 2026-06-18 per memory - flag when within window.
 
@@ -481,7 +485,14 @@ Status rules (same as Step 3):
 
 ## Scheduling
 
-Andy already has a daily scheduled run. The remote routine `trig_01K8mpqa8e9F2DmBRHivNNPV` ("Attribution Audit 7am ET", fires `0 11 * * *` UTC) clones this skill's git repo at every firing, reads `SKILL.md`, and follows the `--slack` execution flow to post to `#ads-audits`. **Do NOT create a separate `/schedule` entry** - the routine is already wired.
+Andy's real schedule is **two launchd jobs on Zander's Mac**, both at 2am local via `overnight-wrap.sh`:
+
+| job | runner | cadence |
+|---|---|---|
+| `com.zander.andy-morning` | `~/.local/bin/andy-morning-run.sh` | daily, vault mode |
+| `com.zander.andy-gap-scan` | `~/.local/bin/andy-gap-scan-run.sh` | Sundays, `--gap-scan` |
+
+**The cloud routine `trig_01K8mpqa8e9F2DmBRHivNNPV` ("Attribution Audit 7am ET") has been DISABLED since 2026-05-21** and was still described here as "already wired" four months later. Nothing invokes `--slack` mode on a schedule today, and Andy's findings do not currently reach Slack at all; only Bailey's job-health posts do. Wiring that is a tracked follow-up. **Do NOT create a `/schedule` entry** - the launchd jobs are the schedule.
 
 **Single source of truth via git.** The skill lives at TWO places that stay in sync:
 
@@ -524,6 +535,17 @@ If the morning Slack message looks stale: confirm `git log -1 --format=%h` match
 ├── invariants/
 │   └── orbit.md                            # single canonical config (account, env, rules, tolerances, queries)
 ├── ledger/
+├── checks/
+│   └── registry.json                       # THE CONTRACT: 46 checks, tolerances, capability routing. The model never reads this.
+├── scripts/
+│   ├── andy_checks.py                      # pure evaluators, ZERO IO (tested)
+│   ├── andy_roster.py                      # live roster + capability derivation (the only roster that exists)
+│   ├── andy_ledger.py                      # rotate / reindex / status
+│   └── regen-baselines.sh                  # H4/H5 baseline regen (its [verify] block is the real anchor verifier)
+├── tests/
+│   ├── test_checks.py                      # 56 cases incl. tolerance boundaries + the no-IO property
+│   ├── test_ledger.py                      # rotation safety, against a frozen fixture
+│   └── test_gap_scan_tz.py                 # DST regression
 │   ├── findings.json                       # OPEN DEFECTS only (single writer: vault mode; commit+push every run)
 │   ├── triage-queue.json                   # ORBIT-J4/B6 review candidates (a work queue, not defects)
 │   ├── seen-index.json                     # every fingerprint ever seen; ALWAYS read; rebuild via andy_ledger.py reindex
