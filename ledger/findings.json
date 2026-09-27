@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-27T17:27:56.074155+00:00",
+  "updated_at": "2026-09-27T17:31:22.300439+00:00",
   "updated_by": "andy v2 rebuild session 2026-09-27",
   "baselines": {
     "i2_coverage": {
@@ -622,10 +622,10 @@
       "severity": "WARN",
       "title": "adsets-all under-sums spend -$82.07 (-4.6%) vs KPI; Neon adset spend is complete",
       "first_seen": "2026-09-25",
-      "last_seen": "2026-09-25",
+      "last_seen": "2026-09-27",
       "status": "new",
       "snoozed_until": null,
-      "unblocking_action": "confirm orphan-adset structure gap vs fresh sync regression; re-run sync-meta-structure if fresh",
+      "unblocking_action": "DIAGNOSED 2026-09-27 (root cause found, was mis-hypothesised as orphan Whop adsets). /api/ads/drilldown/adsets-all DROPS every ad set whose parent campaign has objective=OUTCOME_AWARENESS. The split is total and has zero exceptions across both clients: OBB returned 8/8 OUTCOME_LEADS adsets ($2878.15) and 0/17 OUTCOME_AWARENESS ($136.94); OP returned 3/3 OUTCOME_LEADS ($1816.62) and 0/6 OUTCOME_AWARENESS ($138.74). NEON IS COMPLETE: campaign-level and adset-level spend agree to the cent for both clients and there are ZERO adsets missing an ads_meta_structure row, so this is not a sync gap and not orphan ad sets. It is a read-side objective filter in the endpoint. The headline KPI counts awareness spend while the drill-down does not, which is why the breakdown cannot reconcile. DECISION FOR ZANDER: either the drill-down includes awareness campaigns (showing real spend against 0 conversions), or the KPI excludes awareness spend. Recommend the former: awareness spend is real spend, and hiding it in the breakdown is what makes the breakdown fail to reconcile. Owner: api/ads/drilldown/adsets-all.ts.",
       "note": "insights adset==campaign 1802.28; endpoint 1720.21. Whop ad groups may not map to Meta adsets"
     },
     "d9cbce38ca": {
@@ -636,10 +636,10 @@
       "severity": "WARN",
       "title": "adsets-all under-sums spend -$85.67 (-6.7%) vs KPI; Neon adset spend is complete",
       "first_seen": "2026-09-25",
-      "last_seen": "2026-09-25",
+      "last_seen": "2026-09-27",
       "status": "new",
       "snoozed_until": null,
-      "unblocking_action": "confirm orphan-adset structure gap vs fresh sync regression",
+      "unblocking_action": "DIAGNOSED 2026-09-27 (root cause found, was mis-hypothesised as orphan Whop adsets). /api/ads/drilldown/adsets-all DROPS every ad set whose parent campaign has objective=OUTCOME_AWARENESS. The split is total and has zero exceptions across both clients: OBB returned 8/8 OUTCOME_LEADS adsets ($2878.15) and 0/17 OUTCOME_AWARENESS ($136.94); OP returned 3/3 OUTCOME_LEADS ($1816.62) and 0/6 OUTCOME_AWARENESS ($138.74). NEON IS COMPLETE: campaign-level and adset-level spend agree to the cent for both clients and there are ZERO adsets missing an ads_meta_structure row, so this is not a sync gap and not orphan ad sets. It is a read-side objective filter in the endpoint. The headline KPI counts awareness spend while the drill-down does not, which is why the breakdown cannot reconcile. DECISION FOR ZANDER: either the drill-down includes awareness campaigns (showing real spend against 0 conversions), or the KPI excludes awareness spend. Recommend the former: awareness spend is real spend, and hiding it in the breakdown is what makes the breakdown fail to reconcile. Owner: api/ads/drilldown/adsets-all.ts.",
       "note": "insights adset==campaign 1273.89; endpoint 1188.22"
     }
   },
