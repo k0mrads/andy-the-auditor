@@ -117,6 +117,54 @@ size = len(json.dumps(seen))
 check("seen-index is under 40KB", size < 40_000, True)
 print(f"        (actual: {size:,} bytes for {len(seen)} fingerprints)")
 
+
+print("\n--- rotation must be IDEMPOTENT (regression: 2026-09-27) ---")
+# The first implementation rebuilt triage-queue.json from findings.json alone,
+# so a SECOND run wrote a queue holding only the J4/B6 entries still in
+# findings.json -- after the first run, none. It clobbered 135 entries. Git had
+# them, so nothing was lost, but an operation whose second invocation destroys
+# data cannot be scheduled, and rotation is meant to be routine.
+import json as _json, shutil as _shutil, tempfile as _tempfile, importlib as _importlib
+
+_tmp = pathlib.Path(_tempfile.mkdtemp())
+(_tmp / "ledger").mkdir()
+_shutil.copy2(FIXTURE, _tmp / "ledger" / "findings.json")
+
+_orig_paths = (L.LEDGER, L.FINDINGS, L.TRIAGE, L.SEEN, L.ARCHIVE_DIR)
+L.LEDGER = _tmp / "ledger"
+L.FINDINGS = L.LEDGER / "findings.json"
+L.TRIAGE = L.LEDGER / "triage-queue.json"
+L.SEEN = L.LEDGER / "seen-index.json"
+L.ARCHIVE_DIR = L.LEDGER / "archive"
+
+import io as _io, contextlib as _ctx
+def _rotate_quiet():
+    with _ctx.redirect_stdout(_io.StringIO()):
+        L.rotate(apply=True)
+
+def _counts():
+    f = len(_json.loads(L.FINDINGS.read_text())["findings"])
+    t = len(_json.loads(L.TRIAGE.read_text())["findings"]) if L.TRIAGE.exists() else 0
+    a = 0
+    if L.ARCHIVE_DIR.exists():
+        a = sum(1 for p_ in L.ARCHIVE_DIR.glob("*.jsonl") for ln in p_.open() if ln.strip())
+    return f, t, a
+
+_rotate_quiet()
+first = _counts()
+_rotate_quiet()
+_rotate_quiet()
+third = _counts()
+
+check("first rotate conserves all 381", sum(first), 381)
+check("a second and third rotate change nothing", third, first)
+check("the triage queue is not clobbered by re-running", third[1], first[1])
+check("the archive gains no duplicate rows", third[2], first[2])
+print(f"        (stable at {first[0]} defects / {first[1]} triage / {first[2]} archived)")
+
+L.LEDGER, L.FINDINGS, L.TRIAGE, L.SEEN, L.ARCHIVE_DIR = _orig_paths
+_shutil.rmtree(_tmp, ignore_errors=True)
+
 total = len(failures)
 print(f"\n{'ALL PASS' if total == 0 else str(total) + ' FAILURE(S)'}")
 sys.exit(1 if total else 0)

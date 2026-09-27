@@ -227,6 +227,67 @@ Gates 1-3 are write-side (rows that fail never enter `ads_paid_bookings`); gates
 
 ---
 
+
+### Counted bookings has TWO MODES. Using the wrong one for OBB is a false failure.
+
+Documented from `origin/main:api/ads/_drilldown-sql.ts` on 2026-09-27, closing
+the standing ANDY-INVARIANTS-DRIFT finding. The mode is chosen by where the
+client's HEADLINE conversion number comes from.
+
+| mode | clients | click-recency gate | primary-booking anchor | excluded-contact gate |
+|---|---|---|---|---|
+| **STRICT** (default) | every Neon-sourced client | applies | applies | applies |
+| **ATTRIBUTION-FIRST** | Hyros-sourced; **OBB only** | **dropped** | **dropped** | applies |
+
+The principle: the two gates exist to stop a HEADLINE inflating. OBB's headline
+comes from Hyros, so its Neon rows set no client-facing total; their only job is
+to say WHICH AD a booking came from. Under STRICT they could not do that job. A
+real booking by someone who clicked an ad again months after a previous call was
+silently dropped and landed in "(Not attributed to a campaign)", looking like a
+tracking failure.
+
+Zander, 2026-08-25: *"regardless of if they are old or not I want them showing
+up on Orbit from whatever ad they last clicked."*
+
+The reschedule risk the anchor guards against does not materialise for OBB: over
+the 30 days to 2026-08-25 it had 27 repeat bookings, ZERO within a day of the
+previous one, averaging 74 days apart, and 23 of 27 clicked an ad again the same
+day they re-booked. New opportunities, not reschedules.
+
+**For Andy this is load-bearing.** Applying STRICT counting to OBB in ORBIT-C,
+E2, I3 or J3 produces a count that is legitimately lower than the app's and
+reports a false BLOCKER. Use the mode the client is actually on.
+
+### Cancelled appointments COUNT as booked calls, in both modes
+
+Deliberate, Zander 2026-09-23, not an oversight: *"I still want cancelled calls
+to count as booked calls, because the only way they are cancelled is if this is
+done by our setter and that's her decision."* The booking form is the qualifier,
+so a booking is the ICP signal regardless of what happens to the appointment
+afterwards. Neither mode filters `ads_paid_bookings.status`.
+
+Note `api/ads/slack-bp-sales.ts` DOES exclude cancelled. That surface answers a
+different question (how many calls did the team actually take) from the one
+these rows answer (which ad reached someone who qualifies), so the two are
+MEANT to disagree. Never "reconcile" them. Memory:
+`feedback_cancelled_calls_count_as_booked`.
+
+### Andy CAN verify OBB's Hyros numbers. He has an MCP.
+
+The `hyros-obb` MCP is registered globally in `~/.claude.json`, so every headless
+`claude -p` run has it. `HYROS_KEY_OBB` is NOT in Orbit's `.env`, which is what
+led Andy to report for 36 days that he "structurally cannot verify OBB
+leads/booked (no HYROS key, no Hyros MCP locally)". The key is absent; the MCP
+is not. Use `mcp__hyros-obb__hyros_get_leads` / `hyros_get_calls` /
+`hyros_get_attribution_report` for ORBIT-D1 and D3.
+
+Gotchas that apply (from `reference_hyros_per_ad_attribution`): Hyros
+`clickDate` is UTC-5 wearing a `Z`, so add 5h; per-ad attribution comes via
+`sourceLinkAd.adSourceId`; and the Hyros `cost` field for OBB runs ~1.83x Meta
+spend, so use Meta as the spend numerator, never Hyros.
+
+---
+
 ## Required Neon queries
 
 Connect via `DATABASE_URL` from `~/Claude Code/Moreway/Moreway | Tasks/.env`. **READ-ONLY**. Never `UPDATE`, `INSERT`, `DELETE`, or `TRUNCATE`. Andy is post-hoc, not transactional.
@@ -607,7 +668,28 @@ WHERE client_id = $client_id
 GROUP BY source;
 ```
 
-Sources expected: `meta_insights:campaign`, `meta_insights:adset`, `meta_insights:ad`, `meta_structure`, `orchestrator` (every enabled client); `ghl_conversions` (the `has_ghl_walk` clients); `meta_leadforms` (the `has_leadform_source` clients); `calendly` (none currently enabled, so CAL-1 must SKIP with a reason). `hyros` IS expected for OBB, whose Meta-platform conversion truth is Hyros.
+Sources expected, verified against `ads_sync_log` on 2026-09-27:
+
+| source | scope | n |
+|---|---|---|
+| `meta_insights:campaign` / `:adset` / `:ad` | every enabled client | 8 |
+| `meta_structure` | every enabled client | 8 |
+| `ghl_conversions`, `ghl_conversions_sweep`, `ghl_all_contacts` | `has_ghl_walk` | 5 |
+| `meta_leadforms` | `has_leadform_source` | 3 |
+| `ghl_dispositions` | clients with disposition sync | 1 |
+| `orchestrator` | global | - |
+
+**NOT expected, and G1 must not ask for them:**
+
+- **bare `meta_insights`** (no level suffix). DEAD LEGACY. The entire table holds
+  exactly ONE such row, occupancy-partners, written 2026-07-29, `ok=false`,
+  never written since. Andy expecting it produced a daily WARN for 60 days that
+  was his own bug, not Orbit's: the granular `:campaign`/`:adset`/`:ad` sources
+  all succeed and OP spend reconciles.
+- **`calendly`**. The writer `sync-calendly-bookings.ts` has been DELETED from
+  the repo.
+- **`hyros`**. Orbit does not sync Hyros into `ads_sync_log`; the dashboard
+  fetches it live. Absence here is correct and is not a freshness failure.
 
 ### Most-recent paid event (sanity)
 
@@ -701,6 +783,25 @@ ORBIT-I (added 2026-05-21) enforces the working-MVP clause on the conversion sur
 
 ## Known endpoints (ORBIT-H6 catalog)
 
+**Catalogued 2026-09-27 (closes the 12 standing ORBIT-H6 findings, oldest 101 days).**
+The gap was 36 routes, not 12: each ledger finding covered a whole PR. 85 live
+route files against 50 catalogued.
+
+Every uncatalogued route is now either in scope with a named check, or marked
+**OUT OF SCOPE** with a reason, so its absence from Andy's checks is a recorded
+decision rather than a hole. H6 fires on anything appearing here in neither state.
+
+**The important find.** `hyros-dashboard.ts` and the three `whop-*.ts` routes were
+uncatalogued and unaudited, and they are OBB's ACTUAL conversion surfaces: Hyros
+is truth for its Facebook spend, Neon/Orbit for its Whop spend. Andy had a blind
+spot over the conversion surfaces of the largest spender, caused by the same
+stale "Hyros is retired" belief that deprecated ORBIT-D.
+
+`sync-calendly-bookings.ts` is in the old catalog but **has been DELETED from the
+repo**. CAL-1's writer no longer exists, which is stronger than "no enabled
+client uses it": the pipe is gone, not idle.
+
+
 This list is the contract for ORBIT-H6. When a new file appears in `api/ads/*.ts` and isn't listed here, andy WARNs. Either add the new route to this list AND determine whether it warrants an explicit audit check, or mark it as `skipped: <reason>`.
 
 Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so they're not subject to ORBIT-H6. 50 route files exist as of 2026-06-10.
@@ -708,6 +809,43 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | Route | Audited by | Notes |
 |---|---|---|
 | `api/ads/overview.ts` | ORBIT-A, E | per-client + cross-client KPI cards |
+| `api/ads/hyros-dashboard.ts` | **ORBIT-D1/D3 (NEW)** | Hyros surface. OBB's Meta/Facebook conversion TRUTH since 2026-08-20. Andy had never audited it because Hyros was documented as retired. |
+| `api/ads/whop-report.ts` | **ORBIT-D2 (NEW)** | OBB Whop reporting. Whop conversions are Neon/Orbit truth. |
+| `api/ads/whop-snapshot.ts` | **ORBIT-D2, G1 (NEW)** | Whop snapshot writer, conversion-bearing for OBB. |
+| `api/ads/whop-structure.ts` | **ORBIT-D2 (NEW)** | Whop ad structure for OBB. |
+| `api/ads/v2/timeseries.ts` | ORBIT-E (extend) | Timeseries with a `conversions=1` mode; conversion-bearing display surface. |
+| `api/ads/drilldown/reconciliation.ts` | ORBIT-F (extend) | In-app reconciliation view. |
+| `api/ads/calendar-tiers.ts` | ORBIT-C/J (extend) | Calendar tiers gate WHICH bookings count; conversion-bearing by definition. |
+| `api/ads/tier-contacts.ts` | ORBIT-C/J (extend) | Tier-filtered contact lists behind the tier KPIs. |
+| `api/ads/sync-ghl-dispositions.ts` | ORBIT-G1 (extend) | GHL disposition/closes sync; downstream of the conversion path. |
+| `api/ads/split-tests.ts` | ORBIT-E (extend) | Split-test results; reports per-variant conversion counts. |
+| `api/ads/split-tests-ingest.ts` | ORBIT-G1 (extend) | Split-test ingest writer. |
+| `api/ads/health-overview.ts` | ORBIT-E (extend) | KPI health surface. |
+| `api/ads/weekly-diagnostic.ts` | ORBIT-E (extend) | Weekly diagnostic numbers. |
+| `api/ads/chatgpt-report.ts` | ORBIT-E (extend) | Mustache ChatGPT Ads. NOTE: those leads reach DripJobs, never Orbit, so folding that spend into Orbit tiles would corrupt CPL. |
+| `api/ads/slack-bp-sales.ts` | **client-facing numbers** | BuilderPro sales channel feed. |
+| `api/ads/slack-op-sales.ts` | **client-facing numbers** | Occupancy Partners sales channel feed. |
+| `api/ads/slack-obb-weekly-metrics.ts` | **client-facing numbers** | OBB weekly metrics post. |
+| `api/ads/slack-revlab-daily.ts` | **client-facing numbers** | RevLab daily post. |
+| `api/ads/coverage-audit.ts` | OUT OF SCOPE | The Coverage Warden. Audits WIRING, not numbers. Different axis; see its own docs. |
+| `api/ads/coverage-local-facts.ts` | OUT OF SCOPE | Coverage Warden Mac-side fact ingest. |
+| `api/ads/coverage-fix-requests.ts` | OUT OF SCOPE | Coverage Warden prepared-fix queue. |
+| `api/ads/coverage-migrate.ts` | OUT OF SCOPE | Coverage Warden schema migration. |
+| `api/ads/cron-bp-spend-controller.ts` | OUT OF SCOPE | Budget control, spend-side only. |
+| `api/ads/cron-caregenius-spend-controller.ts` | OUT OF SCOPE | Budget control, spend-side only. |
+| `api/ads/cron-op-spend-controller.ts` | OUT OF SCOPE | Budget control, spend-side only. |
+| `api/ads/cron-revlab-spend-controller.ts` | OUT OF SCOPE | Budget control, spend-side only. |
+| `api/ads/spend-command.ts` | OUT OF SCOPE | Spend-from-anywhere bridge; changes budgets, not counts. |
+| `api/ads/spend-controller-config.ts` | OUT OF SCOPE | Spend controller config. |
+| `api/ads/adset-lock-watch.ts` | OUT OF SCOPE | Watches ad sets Meta made read-only. |
+| `api/ads/creative-preview.ts` | OUT OF SCOPE | Creative rendering. |
+| `api/ads/watch-nudge.ts` | OUT OF SCOPE | Slack watch nudge card. |
+| `api/ads/health-watch.ts` | OUT OF SCOPE | Ads Health watch/snooze list. |
+| `api/ads/actions/whop.ts` | OUT OF SCOPE | Whop action logging. |
+| `api/ads/drilldown/frequency.ts` | OUT OF SCOPE | Delivery frequency; spend-side. |
+| `api/ads/v2/ad-delivery.ts` | OUT OF SCOPE | Delivery status; spend-side. |
+| `api/ads/migrate-health-watches.ts` | OUT OF SCOPE | One-shot migration. |
+| `api/ads/migrate-whop-snapshots.ts` | OUT OF SCOPE | One-shot migration. |
 | `api/ads/audit.ts` | cross-validation only (not ground truth, per audit.ts:243-260 caveat) | in-app drift report |
 | `api/ads/sync-meta-structure.ts` | ORBIT-G1 (freshness) + Slack alert on fail | Meta object metadata sync |
 | `api/ads/sync-meta-insights.ts` | ORBIT-A, G1 + Slack alert on fail | Meta insights sync |
@@ -743,7 +881,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/bookings/count-separate.ts` | **CONVERSION-BEARING writer** (cataloged 2026-06-10) | flips `ads_paid_bookings.counts_as_separate`; changes paid_booked counting (counted CTE gate 3). |
 | `api/ads/bookings/promote.ts` | **CONVERSION-BEARING writer** (cataloged 2026-06-10) | promotes OTHER-bucket bookings into `ads_paid_bookings` (and demotes); promoted rows carry `_manual_override='true'` so they bypass the click-recency gate by design. |
 | `api/ads/sync-meta-leadforms.ts` | **CONVERSION WRITER** - ORBIT-G1 (source `meta_leadforms`) + writer-truth check (cataloged 2026-06-10) | THE lead path for mustache-painting + peach-paint-co (and queen leads): writes `ads_paid_leads.last_paid_opt_in_at` from Meta leadform `created_time`. Writer invariant: `last_paid_opt_in_at == raw->>'created_time'`. |
-| `api/ads/sync-calendly-bookings.ts` | **CONVERSION WRITER** - ORBIT-G1 (source `calendly`) + writer-truth check (cataloged 2026-06-10) | THE booking path for any `has_calendly_source` client (none enabled as of 2026-09-27): Calendly events → `ads_paid_bookings`, `booked_at = event.created_at`, `click_at` = matched lead opt-in time (so the recency gate passes). Writer invariant: `booked_at == raw->'event'->>'created_at'`; cancelled-status rows must not count. |
+| `api/ads/sync-calendly-bookings.ts` (DELETED from repo) | **CONVERSION WRITER** - ORBIT-G1 (source `calendly`) + writer-truth check (cataloged 2026-06-10) | THE booking path for any `has_calendly_source` client (none enabled as of 2026-09-27): Calendly events → `ads_paid_bookings`, `booked_at = event.created_at`, `click_at` = matched lead opt-in time (so the recency gate passes). Writer invariant: `booked_at == raw->'event'->>'created_at'`; cancelled-status rows must not count. |
 | `api/ads/slack-obb-update.ts` | **CONVERSION-BEARING display** (cataloged 2026-06-10) | client-facing daily/weekly OBB Slack post. KNOWN DRIFT (audit F03): reimplements leads/booked from retired Hyros walkers (cancelled calls + organic leads included), diverging from the dashboard definition; fix tracked separately. Until fixed, expect its numbers NOT to reconcile with overview - report as the known F03 finding, not a new regression. |
 | `api/ads/slack-eod-sales.ts` | **CONVERSION-ADJACENT display** (cataloged 2026-06-10) | nightly booked/show/close counts to Slack; reads sales dispositions + booking counts. |
 | `api/ads/slack-weekly-sales.ts` | **CONVERSION-BEARING display** (cataloged 2026-06-10) | weekly spend/leads/booked/CPBC/revenue/ROAS per client to Slack; must use the counted path. |

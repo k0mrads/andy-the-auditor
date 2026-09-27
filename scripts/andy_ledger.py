@@ -66,6 +66,19 @@ TRIAGE_CHECKS = {"ORBIT-J4", "ORBIT-B6"}
 ARCHIVED_STATUSES = {"closed"}
 
 
+
+def _disp(path: pathlib.Path) -> str:
+    """Display a path relative to the skill root when it is under it.
+
+    Falls back to the full path instead of raising: the paths are module-level
+    and get redirected to a temp dir by the idempotence test, and a formatting
+    helper must never be the thing that fails a rotation.
+    """
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
 def load() -> dict:
     return json.loads(FINDINGS.read_text())
 
@@ -108,22 +121,57 @@ def build_seen_index(groups: dict[str, dict]) -> dict:
     return idx
 
 
+def load_existing_splits() -> tuple[dict, dict]:
+    """Read what has ALREADY been split out. Rotation must MERGE with these.
+
+    The first version of rotate() rebuilt triage-queue.json from findings.json
+    alone, so a SECOND run wrote a queue containing only the J4/B6 entries still
+    in findings.json -- which, after the first run, is none. It clobbered 135
+    entries. Everything was in git so nothing was lost, but an operation whose
+    second invocation destroys data is not safe to schedule, and rotation is
+    meant to be routine. Idempotence is the requirement, not a nicety.
+    """
+    triage = {}
+    if TRIAGE.exists():
+        triage = json.loads(TRIAGE.read_text()).get("findings", {})
+    archive = {}
+    if ARCHIVE_DIR.exists():
+        for path in sorted(ARCHIVE_DIR.glob("*.jsonl")):
+            for line in path.open():
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                fp = row.pop("fingerprint", None)
+                if fp:
+                    archive[fp] = row
+    return triage, archive
+
+
 def rotate(apply: bool) -> int:
     raw = load()
     F = raw["findings"]
-    groups: dict[str, dict] = {"findings": {}, "triage": {}, "archive": {}}
-    for fp, f in F.items():
-        groups[classify(fp, f)][fp] = f
+    prior_triage, prior_archive = load_existing_splits()
 
-    total = len(F)
-    moved = len(groups["triage"]) + len(groups["archive"])
+    groups: dict[str, dict] = {"findings": {}, "triage": dict(prior_triage),
+                               "archive": dict(prior_archive)}
+    newly = {"triage": 0, "archive": 0}
+    for fp, f in F.items():
+        dest = classify(fp, f)
+        if dest != "findings" and fp not in groups[dest]:
+            newly[dest] += 1
+        groups[dest][fp] = f
+
+    universe = set(F) | set(prior_triage) | set(prior_archive)
+    total = len(universe)
     assert sum(len(g) for g in groups.values()) == total, "entries lost during classification"
+    print(f"(merging with {len(prior_triage)} already-queued + {len(prior_archive)} already-archived)")
 
     def size(d):
         return len(json.dumps(d))
 
     print(f"{'':22s} {'entries':>8s} {'bytes':>10s}")
-    print(f"{'BEFORE findings.json':22s} {total:8d} {FINDINGS.stat().st_size:10,d}")
+    print(f"{'BEFORE (all files)':22s} {total:8d} {FINDINGS.stat().st_size:10,d}")
     for name in ("findings", "triage", "archive"):
         print(f"{'  -> ' + name:22s} {len(groups[name]):8d} {size(groups[name]):10,d}")
     seen = build_seen_index(groups)
@@ -153,14 +201,20 @@ def rotate(apply: bool) -> int:
     shutil.copy2(FINDINGS, backup)
     ARCHIVE_DIR.mkdir(exist_ok=True)
 
-    for q, _ in by_q.items():
-        rows = [dict(fingerprint=fp, **f) for fp, f in groups["archive"].items()
+    # Append ONLY entries not already on disk, or the archive grows duplicates
+    # every run.
+    fresh = {fp: f for fp, f in groups["archive"].items() if fp not in prior_archive}
+    by_q_fresh = collections.Counter(quarter_of(f.get("last_seen")) for f in fresh.values())
+    for q in by_q_fresh:
+        rows = [dict(fingerprint=fp, **f) for fp, f in fresh.items()
                 if quarter_of(f.get("last_seen")) == q]
         path = ARCHIVE_DIR / f"{q}.jsonl"
         with path.open("a") as fh:
             for r in rows:
                 fh.write(json.dumps(r, sort_keys=True) + "\n")
-        print(f"archived {len(rows):4d} -> {path.relative_to(ROOT)}")
+        print(f"archived {len(rows):4d} -> {_disp(path)}")
+    if not fresh:
+        print("archived    0 (nothing new; rotation is idempotent)")
 
     now = dt.datetime.now(dt.timezone.utc).isoformat()
     raw["findings"] = groups["findings"]
@@ -193,7 +247,7 @@ def rotate(apply: bool) -> int:
     print(f"\nwrote findings.json ({FINDINGS.stat().st_size:,}), "
           f"triage-queue.json ({TRIAGE.stat().st_size:,}), "
           f"seen-index.json ({SEEN.stat().st_size:,})")
-    print(f"backup: {backup.relative_to(ROOT)}")
+    print(f"backup: {_disp(backup)}")
     return 0
 
 
@@ -246,7 +300,7 @@ def reindex(apply: bool) -> int:
         "_fields": SEEN_FIELDS,
         "index": seen,
     }) + "\n")
-    print(f"wrote {SEEN.relative_to(ROOT)} ({SEEN.stat().st_size:,} bytes)")
+    print(f"wrote {_disp(SEEN)} ({SEEN.stat().st_size:,} bytes)")
     return 0
 
 

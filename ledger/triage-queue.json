@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-27T17:09:57.371997+00:00",
+  "updated_at": "2026-09-27T17:27:56.074155+00:00",
   "_shape": "ORBIT-J4 / ORBIT-B6 review candidates. A human work queue, not defects in Orbit. Verdicts are read back from ads_ghl_contacts.review_status, never decided by Andy.",
   "findings": {
     "7e88678361": {

@@ -209,7 +209,13 @@
       "truth_source": "ghl:fetchGhlBookedCallsGroundTruth()",
       "app_source": "neon:counted_bookings",
       "owner": "api/ads/_ghl-direct.ts#fetchGhlBookedCallsGroundTruth",
-      "judgment": false
+      "judgment": false,
+      "counting_mode": {
+        "_rule": "STRICT for Neon-sourced clients; ATTRIBUTION-FIRST for Hyros-sourced (OBB only). Applying STRICT to OBB reports a false BLOCKER.",
+        "strict": "default",
+        "attribution_first": "clients with has_platform_routed_truth"
+      },
+      "cancelled_bookings": "COUNT, in both modes (Zander 2026-09-23). Never filter ads_paid_bookings.status."
     },
     {
       "id": "ORBIT-C2",
@@ -220,7 +226,13 @@
       "comparator": "relative_pct",
       "tolerance": 0.05,
       "owner": "api/ads/overview.ts#L220",
-      "judgment": false
+      "judgment": false,
+      "counting_mode": {
+        "_rule": "STRICT for Neon-sourced clients; ATTRIBUTION-FIRST for Hyros-sourced (OBB only). Applying STRICT to OBB reports a false BLOCKER.",
+        "strict": "default",
+        "attribution_first": "clients with has_platform_routed_truth"
+      },
+      "cancelled_bookings": "COUNT, in both modes (Zander 2026-09-23). Never filter ads_paid_bookings.status."
     },
     {
       "id": "ORBIT-D1",
@@ -236,7 +248,13 @@
       "truth_source": "hyros:attribution",
       "app_source": "neon:ads_paid_leads",
       "judgment": false,
-      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)"
+      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)",
+      "truth_access": "mcp__hyros-obb__* (registered globally in ~/.claude.json, available to headless runs). HYROS_KEY_OBB is NOT in Orbit's .env; the MCP is the access path.",
+      "gotchas": [
+        "Hyros clickDate is UTC-5 wearing a Z: add 5h",
+        "per-ad attribution via sourceLinkAd.adSourceId",
+        "Hyros cost field runs ~1.83x Meta spend for OBB; use Meta as the spend numerator"
+      ]
     },
     {
       "id": "ORBIT-D2",
@@ -263,7 +281,13 @@
       "tolerance": 0.05,
       "detail": "Neither side is silently discarded. Drift between the truth source and the reconciliation line is reported rather than hidden by picking one.",
       "judgment": false,
-      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)"
+      "owner": "api/ads/sync-conversions.ts (Neon side) + Hyros attribution API (truth side)",
+      "truth_access": "mcp__hyros-obb__* (registered globally in ~/.claude.json, available to headless runs). HYROS_KEY_OBB is NOT in Orbit's .env; the MCP is the access path.",
+      "gotchas": [
+        "Hyros clickDate is UTC-5 wearing a Z: add 5h",
+        "per-ad attribution via sourceLinkAd.adSourceId",
+        "Hyros cost field runs ~1.83x Meta spend for OBB; use Meta as the spend numerator"
+      ]
     },
     {
       "id": "ORBIT-E1",
@@ -289,7 +313,13 @@
       "truth_source": "neon:counted",
       "app_source": "api:/api/ads/overview",
       "judgment": false,
-      "owner": "api/ads/overview.ts#L224"
+      "owner": "api/ads/overview.ts#L224",
+      "counting_mode": {
+        "_rule": "STRICT for Neon-sourced clients; ATTRIBUTION-FIRST for Hyros-sourced (OBB only). Applying STRICT to OBB reports a false BLOCKER.",
+        "strict": "default",
+        "attribution_first": "clients with has_platform_routed_truth"
+      },
+      "cancelled_bookings": "COUNT, in both modes (Zander 2026-09-23). Never filter ads_paid_bookings.status."
     },
     {
       "id": "ORBIT-E3",
@@ -568,7 +598,13 @@
       "tolerance": 0,
       "cardinal_rule": "Compare TWO INDEPENDENT LIVE SURFACES: contacts/list.ts response LENGTH vs the overview KPI. Neon counted SQL is the REFEREE ONLY. NEVER recompute both sides from one SQL - the pre-2026-06-10 form did exactly that, a tautological PASS that structurally could not catch the bug class it exists for.",
       "judgment": false,
-      "owner": "api/ads/contacts/list.ts (cohort SQL vs _drilldown-sql.ts#countedPaidBookings)"
+      "owner": "api/ads/contacts/list.ts (cohort SQL vs _drilldown-sql.ts#countedPaidBookings)",
+      "counting_mode": {
+        "_rule": "STRICT for Neon-sourced clients; ATTRIBUTION-FIRST for Hyros-sourced (OBB only). Applying STRICT to OBB reports a false BLOCKER.",
+        "strict": "default",
+        "attribution_first": "clients with has_platform_routed_truth"
+      },
+      "cancelled_bookings": "COUNT, in both modes (Zander 2026-09-23). Never filter ads_paid_bookings.status."
     },
     {
       "id": "ORBIT-J1",
@@ -602,7 +638,13 @@
       "tolerance": 0,
       "note": "Per-appointment counts.paid MAY exceed this: non-counted rows display in the bucket by design.",
       "judgment": false,
-      "owner": "api/ads/bookings/list.ts (counted join); fix ORBIT-C first"
+      "owner": "api/ads/bookings/list.ts (counted join); fix ORBIT-C first",
+      "counting_mode": {
+        "_rule": "STRICT for Neon-sourced clients; ATTRIBUTION-FIRST for Hyros-sourced (OBB only). Applying STRICT to OBB reports a false BLOCKER.",
+        "strict": "default",
+        "attribution_first": "clients with has_platform_routed_truth"
+      },
+      "cancelled_bookings": "COUNT, in both modes (Zander 2026-09-23). Never filter ads_paid_bookings.status."
     },
     {
       "id": "ORBIT-J4",
