@@ -15,6 +15,7 @@ import sys
 import json
 import datetime as dt
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
@@ -26,11 +27,24 @@ META_API_VERSION = "v21.0"
 DRIFT_TOLERANCE_PCT = 5.0  # >5% delta = warn; missing entirely = fail
 
 
-def yesterday_ny() -> dt.date:
-    # Approximate: use system UTC minus 5h then floor to date, then step back one day.
-    # We're only using this for a calendar-date window boundary, not for exact tz math.
-    now_utc = dt.datetime.utcnow()
-    ny_now = now_utc - dt.timedelta(hours=5)
+NY = ZoneInfo("America/New_York")
+
+
+def yesterday_ny(now: "dt.datetime | None" = None) -> dt.date:
+    """Yesterday's NY calendar date.
+
+    Was: `utcnow() - timedelta(hours=5)`, a hardcoded EST offset that is wrong
+    for the ~8 months of the year NY is on EDT. During DST it resolved an hour
+    early, so between 00:00 and 01:00 NY it returned the wrong calendar day and
+    the 90-day window silently shifted by one day. That is an indefensible bug
+    in a skill whose entire premise is timezone-correct window boundaries (the
+    audit has a dedicated check, ORBIT-H2, for exactly this class elsewhere).
+    ZoneInfo carries the real DST rules, so there is no offset to get wrong.
+
+    `now` is injectable so the DST behaviour is testable without freezing the
+    system clock; production always calls it with no argument.
+    """
+    ny_now = now.astimezone(NY) if now is not None else dt.datetime.now(NY)
     return (ny_now - dt.timedelta(days=1)).date()
 
 
@@ -205,7 +219,7 @@ def main():
         "window_start": start.isoformat(),
         "window_end": end.isoformat(),
         "window_days": WINDOW_DAYS,
-        "generated_at": dt.datetime.utcnow().isoformat() + "Z",
+        "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "tolerance_pct": DRIFT_TOLERANCE_PCT,
         "clients": reports,
     }
