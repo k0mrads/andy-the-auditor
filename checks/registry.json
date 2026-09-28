@@ -375,7 +375,12 @@
       "app_source": "api:/api/ads/drilldown/adsets-all",
       "cap_findings_per_client": 10,
       "judgment": false,
-      "owner": "api/ads/sync-meta-structure.ts"
+      "owner": "api/ads/sync-meta-structure.ts",
+      "excluded_campaigns": {
+        "_rule": "The drill-down DELIBERATELY omits non-lead-gen campaigns: Hammer Them / Blitz by name, and (from Orbit PR #587, 2026-09-28) ANY campaign whose objective is in AWARENESS_OBJECTIVES. Their SPEND still counts in the headline KPI. So drill-down spend is EXPECTED to be lower than the KPI by exactly the excluded campaigns' spend.",
+        "how_to_compare": "Subtract excluded-campaign spend from the KPI before comparing, or compare against the endpoint's own excluded bucket. Comparing the raw KPI against the drill-down sum reports a permanent false gap that GROWS as more awareness campaigns are excluded.",
+        "source": "api/ads/_excluded-campaigns.ts (isNonLeadGenCampaignRow)"
+      }
     },
     {
       "id": "ORBIT-F2",
@@ -386,7 +391,12 @@
       "comparator": "exact",
       "tolerance": 0,
       "judgment": false,
-      "owner": "api/ads/sync-meta-structure.ts"
+      "owner": "api/ads/sync-meta-structure.ts",
+      "excluded_campaigns": {
+        "_rule": "The drill-down DELIBERATELY omits non-lead-gen campaigns: Hammer Them / Blitz by name, and (from Orbit PR #587, 2026-09-28) ANY campaign whose objective is in AWARENESS_OBJECTIVES. Their SPEND still counts in the headline KPI. So drill-down spend is EXPECTED to be lower than the KPI by exactly the excluded campaigns' spend.",
+        "how_to_compare": "Subtract excluded-campaign spend from the KPI before comparing, or compare against the endpoint's own excluded bucket. Comparing the raw KPI against the drill-down sum reports a permanent false gap that GROWS as more awareness campaigns are excluded.",
+        "source": "api/ads/_excluded-campaigns.ts (isNonLeadGenCampaignRow)"
+      }
     },
     {
       "id": "ORBIT-F3",
@@ -397,7 +407,12 @@
       "comparator": "exact",
       "tolerance": 0,
       "judgment": false,
-      "owner": "api/ads/sync-meta-structure.ts"
+      "owner": "api/ads/sync-meta-structure.ts",
+      "excluded_campaigns": {
+        "_rule": "The drill-down DELIBERATELY omits non-lead-gen campaigns: Hammer Them / Blitz by name, and (from Orbit PR #587, 2026-09-28) ANY campaign whose objective is in AWARENESS_OBJECTIVES. Their SPEND still counts in the headline KPI. So drill-down spend is EXPECTED to be lower than the KPI by exactly the excluded campaigns' spend.",
+        "how_to_compare": "Subtract excluded-campaign spend from the KPI before comparing, or compare against the endpoint's own excluded bucket. Comparing the raw KPI against the drill-down sum reports a permanent false gap that GROWS as more awareness campaigns are excluded.",
+        "source": "api/ads/_excluded-campaigns.ts (isNonLeadGenCampaignRow)"
+      }
     },
     {
       "id": "ORBIT-G1",
