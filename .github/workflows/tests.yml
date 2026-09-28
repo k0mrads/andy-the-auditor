@@ -1,0 +1,53 @@
+name: tests
+
+# Andy's runners do `git reset --hard origin/main` before every 2am invocation,
+# so whatever is on main runs unattended tonight with nothing in front of it.
+# That makes main the deploy target, and this the only gate. Until 2026-09-28
+# there was no CI here at all: the suite passed when run by hand, and was run by
+# hand approximately never.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The tests are self-running scripts on purpose: no pytest, no
+      # requirements.txt, nothing to drift. Keep them that way.
+      - name: Run the suite
+        run: |
+          set -euo pipefail
+          for t in tests/test_*.py; do
+            echo "=== $t"
+            python3 "$t"
+          done
+
+      - name: Registry is valid JSON and self-consistent
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          r = json.load(open('checks/registry.json'))
+          checks = r['checks']
+          ids = [c['id'] for c in checks]
+          assert len(ids) == len(set(ids)), "duplicate check id"
+          legal_skips = set(r['_skip_reasons'])
+          assert legal_skips, "closed skip-reason list is empty"
+          for c in checks:
+              assert c.get('severity') in r['_severity'], f"{c['id']} bad severity"
+              # A check that queues per-item work must say who drains the queue.
+              if c.get('queue') not in (None, 'none'):
+                  assert c.get('resolution_source'), \
+                      f"{c['id']} queues work with no resolution_source"
+          print(f"registry OK: {len(checks)} checks, "
+                f"{sum(1 for c in checks if not c.get('judgment'))} deterministic")
+          PY
+
+      - name: Ledger lint (no vague unblocking actions)
+        run: python3 scripts/andy_ledger.py lint

@@ -166,5 +166,34 @@ L.LEDGER, L.FINDINGS, L.TRIAGE, L.SEEN, L.ARCHIVE_DIR = _orig_paths
 _shutil.rmtree(_tmp, ignore_errors=True)
 
 total = len(failures)
+
+# --- the vague-action gate (added 2026-09-28) -------------------------------
+# The README has required a real unblocking_action since the split, and nothing
+# enforced it: 73 of 147 live entries (49.7%) opened with investigate / monitor /
+# review on 2026-09-28. A test that only asserted "lint passes" would stay green
+# if the regex matched nothing, so both directions are pinned here.
+print("\n--- unblocking_action must name an action ---")
+from andy_ledger import VAGUE_ACTION  # noqa: E402
+
+for bad in ("Investigate whether the GHL walker window is off",
+            "Monitor for a few more runs",
+            "Review in GHL or accept",
+            "Decide: count_as_separate or not",
+            "TBD",
+            "None (ledger-once). Benign paid-social re-opt-in"):
+    check(f"rejects {bad[:34]!r}", bool(VAGUE_ACTION.match(bad)), True)
+
+for good in ("Orbit PR (batch 08-17): give sweep/force_full a bookings pass",
+             "DECISION OWED (grouped, 5 clients, one bug): raise the best-ads cap",
+             "RESOLVED 2026-09-28 on evidence, not aged out."):
+    check(f"accepts {good[:34]!r}", bool(VAGUE_ACTION.match(good)), False)
+
+# Run the real CLI against the real ledger: earlier tests reload the module
+# against a temp dir, so calling lint() in-process could lint the wrong tree.
+import subprocess as _sp  # noqa: E402
+_r = _sp.run([sys.executable, str(ROOT / "scripts/andy_ledger.py"), "lint"],
+             capture_output=True, text=True)
+check("the live ledger has no vague actions", _r.returncode, 0)
+
 print(f"\n{'ALL PASS' if total == 0 else str(total) + ' FAILURE(S)'}")
 sys.exit(1 if total else 0)

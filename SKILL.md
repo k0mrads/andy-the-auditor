@@ -142,11 +142,13 @@ It is now FOUR files, not one. Read them in this order:
 | File | Read it | Holds |
 |---|---|---|
 | `ledger/seen-index.json` | **ALWAYS, first** | every fingerprint ever recorded, 5 fields each (`_fields` names them). ~32KB. |
-| `ledger/findings.json` | **ALWAYS** | open DEFECTS in Orbit, full bodies. Currently 27. |
-| `ledger/triage-queue.json` | only for ORBIT-J4 / ORBIT-B6 work | the human review queue. Currently 135. |
+| `ledger/findings.json` | **ALWAYS** | open DEFECTS in Orbit, full bodies. Currently 8 (~29KB). |
+| `ledger/triage-queue.json` | **NEVER** (empty by design since 2026-09-28) | was the human review queue. Currently 0. J4 is a counter and B6 carries a first-touch guard, so neither queues per-item work. If this file grows again, a check regressed. |
 | `ledger/archive/*.jsonl` | **NEVER** | resolved history. Grep it by hand if you need provenance. |
 
-**Why it was split (2026-09-27).** The single file was 337KB / ~84K tokens and this step said to read it whole before the first query. Measured: 219 of 381 entries were already `closed`, and 333 of 381 were ORBIT-J4 or ORBIT-B6 -- a human review queue of individual bookings and opt-in stamps, not defects in Orbit. Conflating the two is why the context load was enormous and why status was ACTION on 22 of the last 25 runs. Every-run load is now ~105KB instead of 337KB.
+**Why it was split (2026-09-27).** The single file was 337KB / ~84K tokens and this step said to read it whole before the first query. Measured: 219 of 381 entries were already `closed`, and 333 of 381 were ORBIT-J4 or ORBIT-B6 -- a human review queue of individual bookings and opt-in stamps, not defects in Orbit. Conflating the two is why the context load was enormous and why status was ACTION on 22 of the last 25 runs. Every-run load is now ~60KB instead of 337KB.
+
+**2026-09-28, the queue was answered, not carried.** All 135 triage entries were resolved on evidence and archived. ORBIT-B6's 81: rechecked against `ads_ghl_contacts`, and 111 of 111 candidates ever recorded carry a Facebook first-touch UTM, so every one is a paid lead under the first-OR-last rule whatever its rung-2 stamp says. The check consulted only last touch, so it could not produce a true positive; it now carries a first-touch precondition. ORBIT-J4's 54: demoted to a count-only metric, because its drain path (`ads_ghl_contacts.review_status`) was NULL on all 12,163 rows. Live entries tripping the aged-warning clause went from 146 to 8, and those 8 are two real grouped decisions.
 
 **THE ONE RULE THAT MATTERS HERE: absence from `findings.json` does NOT mean NEW.** Check `seen-index.json` before classifying anything as new. 354 of the 381 entries live in the triage queue or the archive, and treating them as new would escalate them all in one report -- an alert storm, which is indistinguishable from silence.
 

@@ -48,6 +48,7 @@ import argparse
 import collections
 import datetime as dt
 import json
+import re
 import pathlib
 import shutil
 import sys
@@ -324,11 +325,48 @@ def status() -> int:
     return 0
 
 
+# A non-closed entry must name something a human can DO. The README has said so
+# since the split; nothing enforced it, and on 2026-09-28 73 of 147 live entries
+# (49.7%) still opened with investigate / monitor / review. A ledger of things to
+# look into is the shape the rot takes, so the rule is executable now.
+VAGUE_ACTION = re.compile(
+    r"^\s*(?:please\s+)?(investigate|monitor|watch|review|look into|look at|keep an eye"
+    r"|check|consider|decide|assess|evaluate|track|observe|revisit|tbd|n/?a|none)\b",
+    re.I)
+
+
+def lint(strict: bool = True) -> int:
+    """Fail on any live entry whose unblocking_action is not an action.
+
+    Exit 0 clean, 1 violations found. Wired into the test suite and CI so a vague
+    action is rejected at write time rather than audited months later.
+    """
+    bad = []
+    for label, path in (("findings", FINDINGS), ("triage", TRIAGE)):
+        if not path.exists():
+            continue
+        entries = json.loads(path.read_text()).get("findings") or {}
+        items = entries.items() if isinstance(entries, dict) else enumerate(entries)
+        for fp, f in items:
+            if f.get("status") == "closed":
+                continue
+            act = (f.get("unblocking_action") or "").strip()
+            if not act:
+                bad.append((label, fp, f.get("check"), "<empty>"))
+            elif VAGUE_ACTION.match(act):
+                bad.append((label, fp, f.get("check"), act[:70]))
+    for label, fp, chk, act in bad:
+        print(f"VAGUE  {label:9s} {str(fp)[:10]:10s} {str(chk):26s} {act}")
+    print(f"\n{len(bad)} vague or missing unblocking_action(s) on live entries")
+    return 1 if (bad and strict) else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("status")
+    sub.add_parser("lint")
     r = sub.add_parser("rotate")
     r.add_argument("--apply", action="store_true",
                    help="actually write; omitted means dry run")
@@ -338,6 +376,8 @@ def main() -> int:
     a = ap.parse_args()
     if a.cmd == "status":
         return status()
+    if a.cmd == "lint":
+        return lint()
     if a.cmd == "reindex":
         return reindex(a.apply)
     return rotate(a.apply)

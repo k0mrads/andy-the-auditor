@@ -73,9 +73,16 @@ unconditionally.
 
 ## Statuses
 
-`new | known | snoozed_until | fixed_pending_verify | closed`
+`new | known | snoozed_until | fix_pending_verify | closed`
 
-**`aged_out_of_detector_window` is RETIRED (2026-09-27).** It was invented to
+(Spelled `fix_pending_verify`, not `fixed_`. Until 2026-09-28 this line said
+`fixed_pending_verify`, which matched **zero** rows in the data, so any tooling
+or agent that string-matched the documented name silently missed every entry.)
+
+**`aged_out_of_detector_window` is RETIRED (2026-09-27) and as of 2026-09-28
+zero rows carry it.** Retiring the word in September did nothing about the 60
+rows still holding it; those were answered on 2026-09-28 (see ORBIT-B6 below)
+and archived. It was invented to
 dodge the permanent-WARN rule, and it keys suppression on the detector no longer
 *looking* rather than on the finding being *resolved*, so a real issue goes
 permanently silent. Its 60 entries are parked in the triage queue awaiting

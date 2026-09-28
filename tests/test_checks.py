@@ -168,11 +168,25 @@ o = ac.evaluate(BY_ID["ORBIT-B5"], {"client": "cg", "ok": False,
 check("B5 same-day-over-1h is yellow", o.finding.severity, "yellow")
 
 print("\n--- judgment routing ---")
-o = ac.evaluate(BY_ID["ORBIT-J4"], {"client": "obb", "ok": False, "subject": "appt:abc"})
-check("J4 failure is flagged for judgment", o.finding.needs_judgment, True)
-check("J4 judgment kind is triage_candidate", o.finding.judgment_kind, "triage_candidate")
+o = ac.evaluate(BY_ID["MUT-1"], {"client": "global", "subject": "excl",
+                                 "before": ["a"], "after": ["a", "b"]})
+check("MUT-1 failure is flagged for judgment", o.finding.needs_judgment, True)
+check("MUT-1 judgment kind is plausibility", o.finding.judgment_kind, "plausibility")
 o = ac.evaluate(BY_ID["ORBIT-A1"], {"client": "obb", "truth": 100.0, "app": 50.0})
 check("A1 failure is NOT flagged for judgment", o.finding.needs_judgment, False)
+
+print("\n--- count-only checks never queue per-item work (2026-09-28) ---")
+# ORBIT-J4 was demoted to a counter because its drain path (review_status) was
+# NULL on all 12,163 rows; ORBIT-B6 because it produced 111 false positives and
+# zero true positives without a first-touch guard. Both must stay counters: a
+# regression here silently recreates the 135-entry triage queue.
+for cid in ("ORBIT-J4", "ORBIT-B6"):
+    check(f"{cid} emits count_only", BY_ID[cid].get("emit"), "count_only")
+    check(f"{cid} queues nothing", BY_ID[cid].get("queue"), "none")
+o = ac.evaluate(BY_ID["ORBIT-J4"], {"client": "obb", "ok": False, "subject": "appt:abc"})
+check("J4 no longer asks the model for a verdict", o.finding.needs_judgment, False)
+check("B6 carries a first-touch precondition",
+      "NOT paid_by_first_touch" in (BY_ID["ORBIT-B6"].get("precondition") or ""), True)
 
 print("\n--- capability routing, never a hardcoded client list ---")
 ghl = {"client_id": "builderpro", "capabilities": {"has_ghl_walk": True}}
