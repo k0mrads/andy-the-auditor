@@ -20,7 +20,11 @@ from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
 
-import psycopg2
+# psycopg2 is imported lazily inside main(). yesterday_ny() is pure date logic
+# and is the part with a real bug history (the hardcoded -5h offset that broke
+# under DST), so its test must be runnable with no database driver installed.
+# Importing the driver at module scope made the tz suite pass on a laptop that
+# happened to have psycopg2 and fail in CI, which is the shared-state trap.
 
 WINDOW_DAYS = 90
 META_API_VERSION = "v21.0"
@@ -175,6 +179,8 @@ def scan_client(conn, client: dict, start: dt.date, end: dt.date) -> dict:
 
 
 def main():
+    import psycopg2  # local: keeps the pure date logic importable without a driver
+
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         print("BOOTSTRAP HALT: DATABASE_URL not set", file=sys.stderr)
