@@ -1,21 +1,21 @@
 {
   "version": 1,
-  "updated_at": "2026-09-28T19:43:05.783740+00:00",
-  "updated_by": "dispose.py 2026-09-28 (ledger disposition)",
+  "updated_at": "2026-09-29T08:30:00+00:00",
+  "updated_by": "andy-the-auditor 2026-09-29 vault run",
   "baselines": {
     "i2_coverage": {
-      "as_of": "2026-09-18",
+      "as_of": "2026-09-29",
       "warn_drop_pp": 2,
       "ads_paid_leads": {
         "builderpro": {
-          "has_ad": 401,
-          "has_campaign": 670,
-          "total": 694
+          "has_ad": 422,
+          "has_campaign": 691,
+          "total": 715
         },
         "caregenius-b2b": {
-          "has_ad": 711,
-          "has_campaign": 1131,
-          "total": 1702
+          "has_ad": 730,
+          "has_campaign": 1148,
+          "total": 1718
         },
         "contractor-launch": {
           "has_ad": 116,
@@ -24,19 +24,19 @@
           "note": "Baseline frozen at 2026-06-26 level (40.4% has_ad/has_campaign). Today 56/339 = 16.5% reflects downstream snoozed ig-asset-permission finding 8547bf03b9. Not ratcheted down."
         },
         "mustache-painting": {
-          "has_ad": 360,
-          "has_campaign": 360,
-          "total": 360
+          "has_ad": 376,
+          "has_campaign": 376,
+          "total": 376
         },
         "obb": {
-          "has_ad": 3263,
-          "has_campaign": 3593,
-          "total": 3877
+          "has_ad": 3361,
+          "has_campaign": 3691,
+          "total": 3995
         },
         "peach-paint-co": {
-          "has_ad": 247,
-          "has_campaign": 247,
-          "total": 247
+          "has_ad": 254,
+          "has_campaign": 254,
+          "total": 254
         },
         "queen-consultancy": {
           "has_ad": 73,
@@ -44,32 +44,32 @@
           "total": 75
         },
         "occupancy-partners": {
-          "has_ad": 256,
-          "has_campaign": 256,
-          "total": 418
+          "has_ad": 295,
+          "has_campaign": 295,
+          "total": 457
         },
         "ac-guy-near-me": {
-          "has_ad": 28,
-          "has_campaign": 28,
-          "total": 29
+          "has_ad": 37,
+          "has_campaign": 37,
+          "total": 38
         },
         "revlab": {
-          "has_ad": 2,
-          "has_campaign": 2,
-          "total": 2,
+          "has_ad": 13,
+          "has_campaign": 13,
+          "total": 13,
           "note": "Enabled 2026-08-26 spend-only; now GHL-attributed (1 lead all-time), coverage 100%."
         }
       },
       "ads_paid_bookings": {
         "builderpro": {
-          "has_ad": 384,
-          "has_campaign": 423,
-          "total": 431
+          "has_ad": 409,
+          "has_campaign": 448,
+          "total": 456
         },
         "caregenius-b2b": {
-          "has_ad": 503,
-          "has_campaign": 568,
-          "total": 580
+          "has_ad": 531,
+          "has_campaign": 597,
+          "total": 609
         },
         "contractor-launch": {
           "has_ad": 102,
@@ -78,9 +78,9 @@
           "note": "Baseline frozen at 2026-06-26 level. Today 102/154 = 66.2% reflects same ig-asset-permission downstream effect. Not ratcheted down."
         },
         "obb": {
-          "has_ad": 1078,
-          "has_campaign": 1108,
-          "total": 1197
+          "has_ad": 1144,
+          "has_campaign": 1174,
+          "total": 1272
         },
         "queen-consultancy": {
           "has_ad": 3,
@@ -98,9 +98,9 @@
           "total": 0
         },
         "occupancy-partners": {
-          "has_ad": 218,
-          "has_campaign": 218,
-          "total": 301
+          "has_ad": 262,
+          "has_campaign": 262,
+          "total": 345
         },
         "ac-guy-near-me": {
           "has_ad": 0,
@@ -108,16 +108,16 @@
           "total": 0
         },
         "revlab": {
-          "has_ad": 2,
-          "has_campaign": 2,
-          "total": 3,
+          "has_ad": 13,
+          "has_campaign": 13,
+          "total": 14,
           "note": "Now GHL-attributed (2 bookings all-time)."
         }
       }
     }
   },
   "mutations_snapshot": {
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-29",
     "manual_override_leads": {},
     "manual_override_bookings": {
       "caregenius-b2b": [
@@ -183,6 +183,7 @@
         "HeNIDdrAUOjiCUwTLMC9",
         "HoMCmiqo9AzJ9D9UwoGN",
         "IYJbGTikDksYH3lw2a1n",
+        "Il1J1POTrI3Wbj7bTiSF",
         "IuXYGzXbLqCF2Tsl3gic",
         "JKGgj3YO6abhOVr4j4Vd",
         "Jc91tq50yQ2aw6cq7JOS",
@@ -194,6 +195,7 @@
         "LDW4xPCi0uKoPJFM67V3",
         "LG0TigEaEgi8UyE6v1wr",
         "LYdwqvmPETTJUU5Ak5FB",
+        "LcUOJmyLtVQ1YcqQD3lB",
         "M1ogBC2xj2fFgKoRkMFp",
         "MSaCqapCBRP3sonmtE9Q",
         "MpHC4lopLPLtXDbrXu7U",
@@ -209,6 +211,7 @@
         "PRb97O8UPxiZYfsZnAJH",
         "PT4jfeFVmoeqiKaSriRk",
         "PZ1hCJsaF4VjO2kJs7rE",
+        "PpAcUxLpA7908kCopktO",
         "Q4LIBH67xLggMTV64TYS",
         "RWlrGAu4tciV1xOMDWzM",
         "Rwhelybw79wa6ERIlJjQ",
@@ -482,10 +485,10 @@
       "severity": "WARN",
       "title": "best-ads sums 44 vs 45 ad-attributed OBB leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OBB ad",
       "first_seen": "2026-07-15",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped, 5 clients, one bug): /api/ads/best-ads applies a global 50-row cap sorted by CPBC, which drops the lowest-CPBC converting ad once the roster exceeds the cap. Fix = raise the cap or make it per-client, or guarantee any ad with an in-window conversion is returned. Headline KPIs are unaffected; only the Best Ads surface under-counts.",
-      "note": "WARN not BLOCKER: surface not all-zero, underlying Neon correct, drilldown/adsets-all reconciles. Cap became binding for OBB today (07-14 OBB reconciled); peach still short 1 (i1_peach_14). 2026-08-07: best-ads sum OBB leads=37 vs 38 ad-attributed (short 1). Global 50-cap; underlying Neon correct (drilldown adsets-all sums OBB=38). Known. 2026-08-10: still short (44/45). Snoozed to 08-17 with shared-fix unblocker (was chronic-known without snooze, permanent-WARN). 2026-08-11: reproduces 44 vs 45 ad-attributed OBB leads (global 50-cap active, 50/50 rows); snooze active until 08-17. | 2026-08-17: NOT reproducing today (OBB best-ads 36 shown = 36 ad-attributed leads; the 37th in-window lead has null meta_campaign_id, unresolvable, would never appear). Cap-dependent; renewed to 08-24. 2026-08-18: OBB best-ads fully reconciled 30/30 ad-attributed this window; cap did NOT bind for OBB today (stays snoozed, structural). 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: NOT reproducing today (OBB best-ads 43 == 43 ad-attributed, exact). Cap artifact volume-dependent; kept snoozed. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "WARN not BLOCKER: surface not all-zero, underlying Neon correct, drilldown/adsets-all reconciles. Cap became binding for OBB today (07-14 OBB reconciled); peach still short 1 (i1_peach_14). 2026-08-07: best-ads sum OBB leads=37 vs 38 ad-attributed (short 1). Global 50-cap; underlying Neon correct (drilldown adsets-all sums OBB=38). Known. 2026-08-10: still short (44/45). Snoozed to 08-17 with shared-fix unblocker (was chronic-known without snooze, permanent-WARN). 2026-08-11: reproduces 44 vs 45 ad-attributed OBB leads (global 50-cap active, 50/50 rows); snooze active until 08-17. | 2026-08-17: NOT reproducing today (OBB best-ads 36 shown = 36 ad-attributed leads; the 37th in-window lead has null meta_campaign_id, unresolvable, would never appear). Cap-dependent; renewed to 08-24. 2026-08-18: OBB best-ads fully reconciled 30/30 ad-attributed this window; cap did NOT bind for OBB today (stays snoozed, structural). 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: NOT reproducing today (OBB best-ads 43 == 43 ad-attributed, exact). Cap artifact volume-dependent; kept snoozed. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired (last 09-21, no run re-snoozed); escalated to ACTION as grouped decision #1 (best-ads 50-cap). REPRODUCES today: OBB best-ads sum 42 vs 48 ad-attributed leads (50/50 rows, cap binding)."
     },
     "fd66928d02": {
       "key": "ORBIT-C1|builderpro|5070MiX7DHGA5pRMAJz0",
@@ -495,10 +498,10 @@
       "severity": "WARN",
       "title": "Rafael Martinez paid booking (appt 5070MiX7DHGA5pRMAJz0, contact XpJFMQtZkvGBsyZQLSCC) present in ads_all_bookings but never written to ads_paid_bookings; BP paid_booked app=10 vs GHL upstream=11",
       "first_seen": "2026-08-05",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped with ORBIT-C, one theme): named bookings present in ads_all_bookings but never in ads_paid_bookings. Same recovery-path gap; resolve with the same sweep fix.",
-      "note": "Contact is a paid lead (opt-in 2026-08-04 03:44:02Z, meta_adset_id 120251749310810127, is_paid_last_touch=true) and passes the predicate on both touches (sessionSource=Paid Social, utm_medium=paid_social, utm_term=120251749310810127 Meta adset id). Booked 2026-08-04 03:46:11Z on paid calendar Service Area & Strategy Session (h7zdcLFdsWVoLZGG8Rmg) via booking_widget, confirmed. 0 rows in ads_paid_bookings; sits in OTHER bucket. 1 true miss / ~375 paid-contact-on-paid-cal bookings over 30d (OBB 0/161; CG/OP other-not-in-paid are reschedules). App==Neon==Andy ground truth all =10 (internally consistent); gap is app-vs-GHL-upstream. Owner api/ads/sync-conversions.ts. 2026-08-06: STILL reproduces. Live GHL re-verified GENUINE PAID: attributionSource.sessionSource='Paid Social', utmMedium='paid_social', utmTerm='120251749310810127' (18-digit Meta entity id) on BOTH touches; booking status=confirmed on calendar h7zdcLFdsWVoLZGG8Rmg ('Service Area & Strategy Session') which is NOW in BP ghl_paid_calendar_ids; fbc click 2026-08-04 03:42:57Z (3min pre-booking, within 28d). Calendar-wiring fix (PRs #385/#386/#387/#388 'wire BPC Strategy Session calendar into bookings') IS on origin/main and config updated, YET Rafael's already-booked row is still absent from ads_paid_bookings (present in ads_all_bookings/OTHER). BP counted_booked app=Neon=12 internally consistent; upstream GHL truth=13. day2, known carry-over (<7d). 2026-08-07: STILL missing from ads_paid_bookings (day3). Verified: appt 5070MiX7DHGA5pRMAJz0 present in ads_all_bookings (OTHER, calendar h7zdcLFdsWVoLZGG8Rmg 'Service Area & Strategy Session', status=confirmed, booked 08-04 03:46, IN-WINDOW) but absent from ads_paid_bookings. BP paid_booked app=Neon=9; upstream truth (Rafael counted)=10. Config+PRs #385-388 on main; pre-existing booking NOT backfilled. UNBLOCK: trigger a FULL BuilderPro ghl_conversions re-walk (not incremental). 2026-08-10 (day 5): STILL reproducing. Verified contact XpJFMQtZkvGBsyZQLSCC is_paid_last_touch=true, last_utm_medium=paid_social, ad \"[2026-07-31] BP|S05|BuilderMath\", on paid cal h7zd; in ads_all_bookings (booked 08-04) but STILL absent from ads_paid_bookings. Booked 08-04 is OUTSIDE this window (08-07..08-09) so 0 current-window KPI break (E2 BP 4/4 exact), but BP 08-04-week paid_booked under-attributed by 1. Approaching day-7 permanent-WARN threshold: needs BP paid-bookings re-walk / sync-conversions investigation. 2026-08-10 deep audit ROOT CAUSE: bookings walker classifies each event ONCE at sync time (fresh contact detail fetch -> isLastTouchPaid); Rafael booked 08-04T03:46Z but his GHL attribution landed late, every top-up 08-04..08-07 classified him non-paid, and on ~08-07 his event dateUpdated fell out of BOOKINGS_RESCAN_LOOKBACK_MS (3d) so no run will ever re-examine it. Verified 08-10: contact now Paid Social both touches + utm paid_social + booking_widget + confirmed + paid cal h7zd => all write gates pass, row still absent. Fix = bookings/promote (same resolver as sync, survives future syncs, reversible). Promote attempt in audit session blocked by permission classifier; handed to Zander. 2026-08-11: Rafael booking 08-04 is OUT of this window (BP booked=2 in 08-08..08-10, app=Neon=GHL reconcile exact); row still absent from ads_paid_bookings. Needs BP GHL re-walk + promote. Day 6. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "Contact is a paid lead (opt-in 2026-08-04 03:44:02Z, meta_adset_id 120251749310810127, is_paid_last_touch=true) and passes the predicate on both touches (sessionSource=Paid Social, utm_medium=paid_social, utm_term=120251749310810127 Meta adset id). Booked 2026-08-04 03:46:11Z on paid calendar Service Area & Strategy Session (h7zdcLFdsWVoLZGG8Rmg) via booking_widget, confirmed. 0 rows in ads_paid_bookings; sits in OTHER bucket. 1 true miss / ~375 paid-contact-on-paid-cal bookings over 30d (OBB 0/161; CG/OP other-not-in-paid are reschedules). App==Neon==Andy ground truth all =10 (internally consistent); gap is app-vs-GHL-upstream. Owner api/ads/sync-conversions.ts. 2026-08-06: STILL reproduces. Live GHL re-verified GENUINE PAID: attributionSource.sessionSource='Paid Social', utmMedium='paid_social', utmTerm='120251749310810127' (18-digit Meta entity id) on BOTH touches; booking status=confirmed on calendar h7zdcLFdsWVoLZGG8Rmg ('Service Area & Strategy Session') which is NOW in BP ghl_paid_calendar_ids; fbc click 2026-08-04 03:42:57Z (3min pre-booking, within 28d). Calendar-wiring fix (PRs #385/#386/#387/#388 'wire BPC Strategy Session calendar into bookings') IS on origin/main and config updated, YET Rafael's already-booked row is still absent from ads_paid_bookings (present in ads_all_bookings/OTHER). BP counted_booked app=Neon=12 internally consistent; upstream GHL truth=13. day2, known carry-over (<7d). 2026-08-07: STILL missing from ads_paid_bookings (day3). Verified: appt 5070MiX7DHGA5pRMAJz0 present in ads_all_bookings (OTHER, calendar h7zdcLFdsWVoLZGG8Rmg 'Service Area & Strategy Session', status=confirmed, booked 08-04 03:46, IN-WINDOW) but absent from ads_paid_bookings. BP paid_booked app=Neon=9; upstream truth (Rafael counted)=10. Config+PRs #385-388 on main; pre-existing booking NOT backfilled. UNBLOCK: trigger a FULL BuilderPro ghl_conversions re-walk (not incremental). 2026-08-10 (day 5): STILL reproducing. Verified contact XpJFMQtZkvGBsyZQLSCC is_paid_last_touch=true, last_utm_medium=paid_social, ad \"[2026-07-31] BP|S05|BuilderMath\", on paid cal h7zd; in ads_all_bookings (booked 08-04) but STILL absent from ads_paid_bookings. Booked 08-04 is OUTSIDE this window (08-07..08-09) so 0 current-window KPI break (E2 BP 4/4 exact), but BP 08-04-week paid_booked under-attributed by 1. Approaching day-7 permanent-WARN threshold: needs BP paid-bookings re-walk / sync-conversions investigation. 2026-08-10 deep audit ROOT CAUSE: bookings walker classifies each event ONCE at sync time (fresh contact detail fetch -> isLastTouchPaid); Rafael booked 08-04T03:46Z but his GHL attribution landed late, every top-up 08-04..08-07 classified him non-paid, and on ~08-07 his event dateUpdated fell out of BOOKINGS_RESCAN_LOOKBACK_MS (3d) so no run will ever re-examine it. Verified 08-10: contact now Paid Social both touches + utm paid_social + booking_widget + confirmed + paid cal h7zd => all write gates pass, row still absent. Fix = bookings/promote (same resolver as sync, survives future syncs, reversible). Promote attempt in audit session blocked by permission classifier; handed to Zander. 2026-08-11: Rafael booking 08-04 is OUT of this window (BP booked=2 in 08-08..08-10, app=Neon=GHL reconcile exact); row still absent from ads_paid_bookings. Needs BP GHL re-walk + promote. Day 6. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #2 (bookings recovery gap). Rafael booking out-of-window; BP bookings walk clean this window (counted 4==KPI 4, reverse-verify 6/6, 0 missing)."
     },
     "5cec2f149e": {
       "key": "ORBIT-I1|occupancy-partners|best-ads-50-cap",
@@ -506,12 +509,12 @@
       "client": "occupancy-partners",
       "subject": "best-ads-50-cap",
       "first_seen": "2026-08-10",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "severity": "WARN",
       "status": "known",
       "title": "best-ads sums 8 vs 9 ad-attributed OP leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting OP ad",
       "unblocking_action": "DECISION OWED (grouped, 5 clients, one bug): /api/ads/best-ads applies a global 50-row cap sorted by CPBC, which drops the lowest-CPBC converting ad once the roster exceeds the cap. Fix = raise the cap or make it per-client, or guarantee any ad with an in-window conversion is returned. Headline KPIs are unaffected; only the Best Ads surface under-counts.",
-      "note": " | 2026-08-17: reproduces (OP best-ads sum_leads 2 vs 3 in-window ad-attributed; global 50-cap distributed 10 OP ads). Renewed to 08-24. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: reproduces (OP best-ads sum 8 vs 9 ad-attributed; global 50-row cap). [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": " | 2026-08-17: reproduces (OP best-ads sum_leads 2 vs 3 in-window ad-attributed; global 50-cap distributed 10 OP ads). Renewed to 08-24. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: reproduces (OP best-ads sum 8 vs 9 ad-attributed; global 50-row cap). [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #1. Did NOT reproduce today (OP best-ads 9 == 9 ad-attributed)."
     },
     "e388d5bcde": {
       "key": "ORBIT-C|builderpro|bookings-forcefull-gap",
@@ -521,10 +524,10 @@
       "severity": "WARN",
       "title": "No recovery path for missed paid bookings older than 3 days: force_full implies sweep, sweep runs leads-only; bookings walker one-shot-classifies events then never revisits after the 3d rescan lookback",
       "first_seen": "2026-08-10",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped with ORBIT-C1, one theme): paid bookings missed more than 3 days back have no recovery path, because force_full implies sweep and sweep runs leads-only. Fix = give sweep/force_full a bookings pass (syncOneClientBookings forceFull).",
-      "note": "Found 2026-08-10 while root-causing fd66928d02. Owner: api/ads/sync-conversions.ts syncOneClientLocked (sweep branch runs syncOneClientLeads only) + syncOneClientBookings incremental filter (BOOKINGS_RESCAN_LOOKBACK_MS=3d). 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "Found 2026-08-10 while root-causing fd66928d02. Owner: api/ads/sync-conversions.ts syncOneClientLocked (sweep branch runs syncOneClientLeads only) + syncOneClientBookings incremental filter (BOOKINGS_RESCAN_LOOKBACK_MS=3d). 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #2. Structural (force_full=sweep, sweep leads-only). BP bookings reconcile clean this window."
     },
     "68b9dc45f3": {
       "key": "ORBIT-C|builderpro|T65w5UQa0V5gxVHHkY4v",
@@ -534,10 +537,10 @@
       "severity": "WARN",
       "title": "Stuart Kaye booked 08-07 off a FRESH ad click (click 08-07T00:34Z, opt-in 08-07) but booking not counted: first-booking anchor dedupes to his 05-13 primary; precedent = his 06-09 booking was operator-marked counts_as_separate (abkII0bm)",
       "first_seen": "2026-08-10",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped with ORBIT-C1, one theme): paid bookings missed more than 3 days back have no recovery path, because force_full implies sweep and sweep runs leads-only. Fix = give sweep/force_full a bookings pass (syncOneClientBookings forceFull).",
-      "note": "Detected by 2026-08-10 deep 4-day audit (window 08-06..08-09 LA). He counts as a paid LEAD in-window (re-opt-in rule) either way; only the booked-call count is at stake. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "Detected by 2026-08-10 deep 4-day audit (window 08-06..08-09 LA). He counts as a paid LEAD in-window (re-opt-in rule) either way; only the booked-call count is at stake. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: BP bookings reconcile clean this window (J1=0, counted 6==KPI 6, J2 14=12+2+0). Structural snooze holds. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #2. Stuart 08-07 booking out-of-window; structural anchor."
     },
     "607a5d4532": {
       "key": "ORBIT-I1|ac-guy-near-me|best-ads-50-cap",
@@ -547,10 +550,10 @@
       "severity": "WARN",
       "title": "best-ads sums 3 vs 4 ad-attributed ac-guy leads; global 50-row cap (sort=cpbc) drops lowest-cpbc converting ad",
       "first_seen": "2026-08-18",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped, 5 clients, one bug): /api/ads/best-ads applies a global 50-row cap sorted by CPBC, which drops the lowest-CPBC converting ad once the roster exceeds the cap. Fix = raise the cap or make it per-client, or guarantee any ad with an in-window conversion is returned. Headline KPIs are unaffected; only the Best Ads surface under-counts.",
-      "note": "| 2026-08-21: did NOT reproduce this run (reconciles/detector clear); snooze kept. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: NOT reproducing today (ac-guy best-ads 2 == 2 ad-attributed, exact). Kept snoozed. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "| 2026-08-21: did NOT reproduce this run (reconciles/detector clear); snooze kept. 2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: NOT reproducing today (ac-guy best-ads 2 == 2 ad-attributed, exact). Kept snoozed. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #1. Did NOT reproduce today (ac-guy 2 == 2)."
     },
     "17257ab199": {
       "key": "ORBIT-I1|mustache-painting|best-ads-50-cap",
@@ -560,10 +563,10 @@
       "severity": "WARN",
       "title": "best-ads sums 2 vs 4 ad-attributed mustache leads; global 50-row cap (sort=cpbc) drops 2 lowest-cpbc converting ads",
       "first_seen": "2026-08-18",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "status": "known",
       "unblocking_action": "DECISION OWED (grouped, 5 clients, one bug): /api/ads/best-ads applies a global 50-row cap sorted by CPBC, which drops the lowest-CPBC converting ad once the roster exceeds the cap. Fix = raise the cap or make it per-client, or guarantee any ad with an in-window conversion is returned. Headline KPIs are unaffected; only the Best Ads surface under-counts.",
-      "note": "2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: reproduces (mustache best-ads sum 6 vs 7 ad-attributed; global 50-row cap). [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "2026-09-01: snooze date reached; chronic accepted (no BLOCKER, still structural/reproducing or code-static deferred). Re-snoozed to 2026-09-08. 2026-09-02: reproduces (mustache best-ads sum 6 vs 7 ad-attributed; global 50-row cap). [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #1. REPRODUCES today: mustache best-ads sum 4 vs 5 ad-attributed."
     },
     "31e433726b": {
       "key": "ORBIT-I1|caregenius-b2b|best-ads-50-cap",
@@ -574,12 +577,12 @@
       "status": "known",
       "title": "best-ads sums 10 vs 11 ad-attributed CG leads; global 50-row cap (sort=cpbc) drops 1 lowest-cpbc converting ad",
       "first_seen": "2026-09-05",
-      "last_seen": "2026-09-28",
+      "last_seen": "2026-09-29",
       "unblocking_action": "DECISION OWED (grouped, 5 clients, one bug): /api/ads/best-ads applies a global 50-row cap sorted by CPBC, which drops the lowest-CPBC converting ad once the roster exceeds the cap. Fix = raise the cap or make it per-client, or guarantee any ad with an in-window conversion is returned. Headline KPIs are unaffected; only the Best Ads surface under-counts.",
-      "note": "2026-09-05: NEW. CG best-ads sum 10 vs 11 ad-attributed; global 50-row cap. Benign display truncation, 0 KPI impact. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.]"
+      "note": "2026-09-05: NEW. CG best-ads sum 10 vs 11 ad-attributed; global 50-row cap. Benign display truncation, 0 KPI impact. [2026-09-14: snooze-cliff re-decision -> re-snoozed to 2026-09-21, unblocker unchanged; still reproduces, no BLOCKER.] | 2026-09-29: snooze expired; ACTION grouped decision #1. Did NOT reproduce today (CG 7 == 7)."
     }
   },
-  "updated_by_short": "2026-09-25",
+  "updated_by_short": "2026-09-29",
   "rotated_at": "2026-09-27T17:27:56.074155+00:00",
   "_shape": "Open DEFECTS only. ORBIT-J4/B6 review candidates live in triage-queue.json; resolved history in archive/*.jsonl; every known fingerprint in seen-index.json. Check seen-index BEFORE calling anything NEW."
 }
