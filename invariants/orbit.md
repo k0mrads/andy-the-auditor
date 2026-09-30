@@ -810,6 +810,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 |---|---|---|
 | `api/ads/overview.ts` | ORBIT-A, E | per-client + cross-client KPI cards |
 | `api/ads/hyros-dashboard.ts` | **ORBIT-D1/D3 (NEW)** | Hyros surface. OBB's Meta/Facebook conversion TRUTH since 2026-08-20. Andy had never audited it because Hyros was documented as retired. |
+| `api/ads/cron-hyros-warm.ts` | **ORBIT-D1 (cache faithfulness), G** | Added 2026-09-30 (Orbit #592). Warms `hyros_result_cache` every 15 min (`4,19,34,49 * * * *`), runs logged in `automation_runs` job `moreway-tasks-api-ads-cron-hyros-warm`. Audit: cached payload for a window must be byte-identical to a live walk of the same origin/main code (run with `HYROS_SHARED_CACHE=off` so the live read never writes). Not conversion-bearing itself; it feeds every OBB Hyros surface. |
 | `api/ads/whop-report.ts` | **ORBIT-D2 (NEW)** | OBB Whop reporting. Whop conversions are Neon/Orbit truth. |
 | `api/ads/whop-snapshot.ts` | **ORBIT-D2, G1 (NEW)** | Whop snapshot writer, conversion-bearing for OBB. |
 | `api/ads/whop-structure.ts` | **ORBIT-D2 (NEW)** | Whop ad structure for OBB. |
