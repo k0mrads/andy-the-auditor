@@ -37,7 +37,7 @@ Andy is a **developer-style auditor of the Moreway Orbit app**, not a marketing 
 | **Project root** | `~/Claude Code/Moreway/Moreway \| Tasks/` |
 | **Env file** | `.env` at project root (mirrored in Vercel Production + Preview) |
 | **Database** | Neon Postgres via `DATABASE_URL` |
-| **Auth token (audit)** | `AUDIT_TOKEN` in `.env`, mirrored to Vercel. Consumed by [api/_db.ts:120-130 `requireSession()`](api/_db.ts#L120) as a service-auth bypass (synthetic session, `role: 'internal'`, `scopedClientId: null`). |
+| **Auth token (audit)** | `AUDIT_TOKEN` in `.env`, mirrored to Vercel. Consumed by [api/_db.ts:456-469 `requireSession()`](api/_db.ts#L456) as a service-auth bypass (`safeEqual` constant-time match → synthetic `id: 'audit-bot'`, `role: 'internal'`, `scopedClientId: null`, `isOwner: false`). Line range moved from 120-130 by the #624/#646/#678 auth PRs (ORBIT-H4, 2026-10-17). |
 | **Frontend route** | `/ads` (entry `src/pages/AdsCommandCenter.tsx` → `src/components/ads-command-center/AdsCommandCenterRoot.tsx`) |
 | **Overview page** | `src/components/ads-command-center/routes/Overview.tsx` |
 | **Cross-client strip** | [src/components/ads-command-center/components/CrossClientStrip.tsx:43-76](src/components/ads-command-center/components/CrossClientStrip.tsx#L43) |
@@ -702,7 +702,7 @@ SELECT MAX(booked_at)            AS latest_booking FROM ads_paid_bookings  WHERE
 
 ## Required endpoint replays
 
-All endpoint calls use `Authorization: Bearer ${AUDIT_TOKEN}`. Auth bypass lives in [api/_db.ts:120-130 `requireSession()`](api/_db.ts#L120) (service-auth path: if `Authorization` header matches `AUDIT_TOKEN`, return a synthetic internal session). If the deployed code lacks this bypass, every replay returns `401` and Andy halts ORBIT-E with a bootstrap note.
+All endpoint calls use `Authorization: Bearer ${AUDIT_TOKEN}`. Auth bypass lives in [api/_db.ts:456-469 `requireSession()`](api/_db.ts#L456) (service-auth path: if `Authorization` header `safeEqual`-matches `AUDIT_TOKEN`, return a synthetic internal `audit-bot` session). If the deployed code lacks this bypass, every replay returns `401` and Andy halts ORBIT-E with a bootstrap note.
 
 ```
 GET {origin}/api/ads/overview?date_start=YYYY-MM-DD&date_end=YYYY-MM-DD

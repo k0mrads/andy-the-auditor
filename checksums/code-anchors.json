@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated_at": "2026-10-02T08:26:59Z",
-  "source_ref": "origin/main@a05df27",
+  "generated_at": "2026-10-17T08:21:38Z",
+  "source_ref": "origin/main@e03b73e",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
@@ -28,8 +28,8 @@
     {
       "id": "countedPaidBookings-cte",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 232,
-      "line_end": 236,
+      "line_start": 288,
+      "line_end": 292,
       "start_pattern": "export function countedPaidBookings(",
       "end_spec": "brace",
       "hash": "sha256:1112b4d896e41fcf5aca209d3d731b4e32fbe4489b71fa715b0f4673bd3494b7",
@@ -39,8 +39,8 @@
     {
       "id": "paidConversionsByObject-union",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 374,
-      "line_end": 426,
+      "line_start": 430,
+      "line_end": 482,
       "start_pattern": "export function paidConversionsByObject(",
       "end_spec": "brace",
       "hash": "sha256:8b127071b13737b95cc0b77b78060c26bf413784b8e0b98ab4053327a49db834",
@@ -50,8 +50,8 @@
     {
       "id": "clientWindow-tz-builder",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 302,
-      "line_end": 309,
+      "line_start": 358,
+      "line_end": 365,
       "start_pattern": "export function clientWindow(",
       "end_spec": "brace",
       "hash": "sha256:bfadb9fa488e6c62debc28838ca42071cf07628cf18df2a61d422f7f4efe7e89",
@@ -94,19 +94,19 @@
     {
       "id": "requireSession-audit-bypass",
       "file": "api/_db.ts",
-      "line_start": 409,
-      "line_end": 419,
+      "line_start": 456,
+      "line_end": 469,
       "start_pattern": "const auditToken = process.env.AUDIT_TOKEN",
       "end_spec": "until@expiresAt: new Date@2",
-      "hash": "sha256:cea83287ad1a8321ed69f6a6ed5bb5917a8a2d194f45d3e00ffd2b7ccae4a456",
+      "hash": "sha256:f442af09edeca4260567db54c8d9b1eca86bc3a453aac41a32deec4e1ab9b00b",
       "invariants_ref": "invariants/orbit.md#account-credentials",
       "purpose": "AUDIT_TOKEN bearer bypass"
     },
     {
       "id": "audit-endpoint-conversion-shortcut",
       "file": "api/ads/audit.ts",
-      "line_start": 56,
-      "line_end": 62,
+      "line_start": 57,
+      "line_end": 63,
       "start_pattern": "'dashboard_self_reference' = ground_truth is the dashboard's OWN number",
       "end_spec": "until@ground_truth_source: 'dashboard_self_reference'@0",
       "hash": "sha256:b5e57e10284733b159095982910b0605cab475bf32b39346948277d11cdb02ee",
