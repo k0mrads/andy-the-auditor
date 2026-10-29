@@ -258,6 +258,24 @@ day they re-booked. New opportunities, not reschedules.
 E2, I3 or J3 produces a count that is legitimately lower than the app's and
 reports a false BLOCKER. Use the mode the client is actually on.
 
+### STRICT has per-client extensions (VSB, since #738/#739, 2026-10-27)
+
+`_drilldown-sql.ts` `strictCountedBookings(clientId, window)` now takes the
+caller's window and ORs two extra keep-conditions onto the STRICT anchor for
+clients listed in two constants. Read both constants off origin/main every run;
+do not copy the client list here.
+
+| constant | effect | clients (2026-10-29) |
+|---|---|---|
+| `COUNT_PER_WINDOW_CLIENTS` | a contact's first gated booking INSIDE the window counts, even if they first booked before it (`MIN(booked_at) FILTER (WHERE booked_at in window) OVER (PARTITION BY contact_id)`) | `virtual-sales-builder` |
+| `REBOOK_COUNTS_AFTER_DAYS` | a booking counts when no `ads_paid_bookings` row (ungated) for the same contact falls in the N days before it | `virtual-sales-builder`: 7 |
+
+Click gate and exclusion antijoin still apply. Andy's counted CTE for these
+clients must add both ORs, or E2/I3/J3 report a false BLOCKER (Andy's count
+lower than the app's). Conversion siblings (`_conversion-siblings.ts`, x5 under
+revlab since #737) also change the exclusion antijoin: a sibling's rows are
+judged by the PARENT's `ads_ghl_contacts`.
+
 ### Cancelled appointments COUNT as booked calls, in both modes
 
 Deliberate, Zander 2026-09-23, not an oversight: *"I still want cancelled calls
