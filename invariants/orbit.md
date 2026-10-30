@@ -914,6 +914,11 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/migrate-spend-controller-config.ts` | skipped (one-off migration) | cataloged 2026-06-10 |
 | `api/ads/migrate-spend-proposals.ts` | skipped (one-off migration) | cataloged 2026-06-10 |
 | `api/ads/triage-migrate.ts` | skipped (one-off migration) | cataloged 2026-06-10 |
+| `api/ads/booking-hygiene.ts` | **MUT-1** (operator-mutation class, cataloged 2026-10-30) | Daily cron that cards suspect bookings (internal identities, test bookings) to Slack and logs `booking_hygiene_run_log`. The exclusion it leads to lands in `ads_ghl_contacts.excluded_from_metrics`, so its effect shows up in the MUT-1 exclusion diff, same class as `contacts/exclusion.ts`. Closes H6 finding first seen 2026-10-04. |
+| `api/ads/drilldown/ad-windows.ts` | ORBIT-F / I (cataloged 2026-10-30) | Per-ad conversion drilldown; reuses `paidConversionsByObject`, so it inherits counted semantics from `_drilldown-sql.ts`. Conversion-bearing display surface under the working-MVP clause. Closes H6 finding first seen 2026-10-16. |
+| `api/ads/wiring-map.ts` | OUT OF SCOPE (cataloged 2026-10-30) | Client Wiring Map (automations per client). Wiring, not numbers. |
+| `api/ads/cron-x5-spend-controller.ts` | OUT OF SCOPE (cataloged 2026-10-30) | Budget control, spend-side only, same class as the other `cron-*-spend-controller.ts` routes. |
+| `api/ads/whop-buyers.ts` | OUT OF SCOPE for lead/booked (cataloged 2026-10-30) | POST receiver (#744) for Whop buyer records pushed from the Mac; feeds OBB new-customer counting (`whop_payment_buyers`). No `paid_leads` / `paid_booked` output. If new-customer counts ever become an Andy check, this is its writer. |
 
 Underscore-prefixed helpers (not routes; NEVER counted by ORBIT-H6). 16 as of 2026-06-10:
 `_classify-health.ts`, `_client-roster.ts`, `_drilldown-sql.ts`, `_freshness.ts`, `_ghl-availability.ts`, `_ghl-direct.ts`, `_insights-window.ts`, `_meta-write.ts`, `_meta.ts`, `_onboard-client.ts`, `_optin-timestamp.ts`, `_reap-stale-sync.ts`, `_slack-alert.ts`, `_sources.ts`, `_spend-controller.ts`, `_spend-proposals.ts` (plus `api/_db.ts` one level up).
