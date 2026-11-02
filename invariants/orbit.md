@@ -132,6 +132,8 @@ days  = 3
 
 **Per-client timezone**: read from `ads_clients_config.timezone` and passed into [api/ads/_drilldown-sql.ts `clientWindow()`](api/ads/_drilldown-sql.ts#L194) when computing exact timestamp boundaries. Bare `YYYY-MM-DD` strings without `clientWindow()` get parsed as UTC midnight and shift 4 to 8 hours. (The old private copy in `_sources.ts` was removed by PR #244, F42 - verified gone 2026-06-12; `_sources.ts` now imports the canonical export.)
 
+**A window can straddle a DST change, so its two ends can carry different offsets.** The 2026-10-30..11-01 NY window is `-04:00` at the start and `-05:00` at the end (LA `-07:00` / `-08:00`). Build each end from its own date, the way `clientWindow()` does, never one offset for both. Known defect in `clientWindow()` itself: a window that STARTS on the change day gets the wrong start offset (ledger 3aa9ff3538), so Andy's bounds match the app's on purpose and that finding is tested separately by comparing single days against the two days together.
+
 > **Known inconsistency**: [api/ads/audit.ts `defaultLast3Days()`](api/ads/audit.ts#L318) uses "today + 2 prior" (INCLUDES today), which disagrees with the picker. Andy matches the **picker**, not the audit endpoint's default. When the endpoint is fixed, no change to Andy.
 
 ---
@@ -149,7 +151,7 @@ Verbatim from origin/main (shipped in #79 `ba3d93c` 2026-05-22 first-or-last wid
 ```ts
 // Per-touch predicate (:149-156). Paid IFF any of:
 //   isPaidSocialSession(t)  - GHL sessionSource == 'paid social'
-//   hasMetaEntityId(t)      - adId / adGroupId / utmTerm is a 6+ digit Meta id,
+//   hasMetaEntityId(t)      - adId / adGroupId / utmTerm is a 12+ digit Meta id (META_ID_RE, was 6+),
 //                             or adId/adGroupId/adsetId/utm_id/utm_term resolves
 //                             in the landing-page URL
 //   hasPaidMedium(t)        - utm_medium matches /paid|cpc|ppc/
