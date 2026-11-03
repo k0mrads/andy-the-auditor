@@ -921,6 +921,7 @@ Underscore-prefixed files (`api/ads/_*.ts`) are helper modules, not routes, so t
 | `api/ads/wiring-map.ts` | OUT OF SCOPE (cataloged 2026-10-30) | Client Wiring Map (automations per client). Wiring, not numbers. |
 | `api/ads/cron-x5-spend-controller.ts` | OUT OF SCOPE (cataloged 2026-10-30) | Budget control, spend-side only, same class as the other `cron-*-spend-controller.ts` routes. |
 | `api/ads/whop-buyers.ts` | OUT OF SCOPE for lead/booked (cataloged 2026-10-30) | POST receiver (#744) for Whop buyer records pushed from the Mac; feeds OBB new-customer counting (`whop_payment_buyers`). No `paid_leads` / `paid_booked` output. If new-customer counts ever become an Andy check, this is its writer. |
+| `api/ads/whop-cash-check.ts` | OUT OF SCOPE for lead/booked (cataloged 2026-11-03) | Daily read-only compare of OBB Whop payments to the sales cash list; a Zander-only DM of mismatches. No `paid_leads` / `paid_booked` output and no writes to `ads_*`. Cron health is its own (automation watchdog). |
 
 Underscore-prefixed helpers (not routes; NEVER counted by ORBIT-H6). 16 as of 2026-06-10:
 `_classify-health.ts`, `_client-roster.ts`, `_drilldown-sql.ts`, `_freshness.ts`, `_ghl-availability.ts`, `_ghl-direct.ts`, `_insights-window.ts`, `_meta-write.ts`, `_meta.ts`, `_onboard-client.ts`, `_optin-timestamp.ts`, `_reap-stale-sync.ts`, `_slack-alert.ts`, `_sources.ts`, `_spend-controller.ts`, `_spend-proposals.ts` (plus `api/_db.ts` one level up).

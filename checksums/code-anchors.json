@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated_at": "2026-10-17T08:21:38Z",
-  "source_ref": "origin/main@e03b73e",
+  "generated_at": "2026-11-03T09:08:43Z",
+  "source_ref": "origin/main@7dc1dfd",
   "anchors": [
     {
       "id": "isLastTouchPaid-predicate",
@@ -28,30 +28,30 @@
     {
       "id": "countedPaidBookings-cte",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 288,
-      "line_end": 292,
+      "line_start": 292,
+      "line_end": 296,
       "start_pattern": "export function countedPaidBookings(",
       "end_spec": "brace",
-      "hash": "sha256:1112b4d896e41fcf5aca209d3d731b4e32fbe4489b71fa715b0f4673bd3494b7",
+      "hash": "sha256:3f7776a68d16c959f8e97f1b24d7d177f4bfc2eab250c1f8273b8253df8b1e1e",
       "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
       "purpose": "counted-bookings CTE (28d click gate + exclusions + primary anchor + counts_as_separate)"
     },
     {
       "id": "paidConversionsByObject-union",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 430,
-      "line_end": 482,
+      "line_start": 489,
+      "line_end": 541,
       "start_pattern": "export function paidConversionsByObject(",
       "end_spec": "brace",
-      "hash": "sha256:8b127071b13737b95cc0b77b78060c26bf413784b8e0b98ab4053327a49db834",
+      "hash": "sha256:5f0defb1a537ca0ab5b41a85dca71caa7c800507f0c992015005075dab993684",
       "invariants_ref": "invariants/orbit.md#paid-attribution-rule",
       "purpose": "counted UNION semantics for paid_leads/paid_booked per meta object"
     },
     {
       "id": "clientWindow-tz-builder",
       "file": "api/ads/_drilldown-sql.ts",
-      "line_start": 358,
-      "line_end": 365,
+      "line_start": 417,
+      "line_end": 424,
       "start_pattern": "export function clientWindow(",
       "end_spec": "brace",
       "hash": "sha256:bfadb9fa488e6c62debc28838ca42071cf07628cf18df2a61d422f7f4efe7e89",
@@ -61,8 +61,8 @@
     {
       "id": "cpl-cpbc-formulas",
       "file": "api/ads/overview.ts",
-      "line_start": 549,
-      "line_end": 550,
+      "line_start": 565,
+      "line_end": 566,
       "start_pattern": "c.cpl = counts.paidLeads",
       "end_spec": "+1",
       "hash": "sha256:4b9aa062b7b7ba0980cb43cfb6bb334c4aa93b8fa608210efdc51be48ed782fa",
@@ -72,8 +72,8 @@
     {
       "id": "overview-aggregation",
       "file": "api/ads/overview.ts",
-      "line_start": 624,
-      "line_end": 664,
+      "line_start": 657,
+      "line_end": 697,
       "start_pattern": "let spend = 0;",
       "end_spec": "until@cpbc: anyCallsKnown@1",
       "hash": "sha256:851d505ac955536f3dfdbb017c61a94cb7dfca09740dfecc7295afe9b56145c5",
