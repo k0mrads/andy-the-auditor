@@ -390,6 +390,8 @@ Skip vault writes entirely in Slack mode. ORBIT-F runs in Slack mode but ORBIT-H
 
 #### 3c - Persist the ledger (vault mode only, MANDATORY)
 
+**Ledger text is IDs only (2026-11-03).** `ledger/` is committed and pushed, so notes, titles and actions carry contact_id or appointment_id, never a lead's name or email. Names belong in the vault reports.
+
 After writing the vault reports: update `ledger/findings.json` (new DEFECTS added, `last_seen` bumped, state transitions applied, I2 baselines ratcheted, MUT-1 snapshot overwritten, `updated_at`/`updated_by` stamped) and NOT `ledger/triage-queue.json`, which is empty by design and must stay empty, then:
 
 ```
@@ -502,7 +504,7 @@ Andy's real schedule is **two launchd jobs on Zander's Mac**, both at 2am local 
 **Single source of truth via git.** The skill lives at TWO places that stay in sync:
 
 - **Local**: `~/.claude/skills/andy-the-auditor/` - what you edit and what Andy reads in vault mode.
-- **Remote**: `https://github.com/k0mrads/andy-the-auditor` (private repo) - what the morning routine clones.
+- **Remote**: `https://github.com/k0mrads/andy-the-auditor` - what the morning routine clones. Found PUBLIC on 2026-11-03 although this line said private; check with `gh repo view --json visibility`.
 
 Workflow for any change (rule, tolerance, new section, fix):
 
