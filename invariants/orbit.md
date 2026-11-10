@@ -278,6 +278,14 @@ lower than the app's). Conversion siblings (`_conversion-siblings.ts`, x5 under
 revlab since #737) also change the exclusion antijoin: a sibling's rows are
 judged by the PARENT's `ads_ghl_contacts`.
 
+**Group-wide anchor and re-book gap (#823, 2026-11-09).** For a client with
+siblings (revlab + x5 today), the `MIN(booked_at)` anchor partitions over
+`pb.client_id IN (conversionGroup)` and the `REBOOK_COUNTS_AFTER_DAYS` lookback
+checks `prev.client_id IN (conversionGroup)`; the outer filter then keeps only
+`cpb.client_id = $client_id`. Zander: one person counts once across both RevLab
+ad accounts. A client with no siblings is a group of one and its SQL is
+unchanged. Andy's referee CTE for revlab/x5 must do the same, or E2/J3 disagree.
+
 ### Cancelled appointments COUNT as booked calls, in both modes
 
 Deliberate, Zander 2026-09-23, not an oversight: *"I still want cancelled calls
