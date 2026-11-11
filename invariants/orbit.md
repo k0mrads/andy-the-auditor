@@ -286,6 +286,16 @@ checks `prev.client_id IN (conversionGroup)`; the outer filter then keeps only
 ad accounts. A client with no siblings is a group of one and its SQL is
 unchanged. Andy's referee CTE for revlab/x5 must do the same, or E2/J3 disagree.
 
+**Shared ad account split by campaign name (#833, 2026-11-10).** `_campaign-scope.ts`
+splits `act_27449078924707675` between `caregenius-b2b` (campaign name NOT
+containing "Cosmetic Dental") and `caregenius-dental` (name CONTAINS it). Orbit's
+insights sync passes the same rule to Meta as a `filtering` param and prunes
+out-of-scope rows. Andy's ORBIT-A/F1 Meta reads for either client must send the
+same `filtering` (`campaign.name CONTAIN / NOT_CONTAIN "Cosmetic Dental"`), or
+CG reads high by the dental spend and A1 false-BLOCKs. As of 2026-11-11
+`caregenius-dental` is not in `ads_clients_config` and the account has 0 dental
+campaigns delivering, so the unfiltered read still matches.
+
 ### Cancelled appointments COUNT as booked calls, in both modes
 
 Deliberate, Zander 2026-09-23, not an oversight: *"I still want cancelled calls
