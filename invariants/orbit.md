@@ -295,6 +295,17 @@ same `filtering` (`campaign.name CONTAIN / NOT_CONTAIN "Cosmetic Dental"`), or
 CG reads high by the dental spend and A1 false-BLOCKs. As of 2026-11-11
 `caregenius-dental` is not in `ads_clients_config` and the account has 0 dental
 campaigns delivering, so the unfiltered read still matches.
+**2026-11-12: `caregenius-dental` is ENABLED** (row created 2026-11-11, own GHL location
+`8XK0NRHD`, secret `GHL_KEY_CG_DENTAL`, paid calendars `W43FIb64`, `rfhu0VEU`). Andy's Meta
+reads now send the filter for both clients. Dental counts in STRICT mode (no re-book, not
+per-window, group of one).
+
+**B6 guard on siblings (2026-11-12).** x5 contacts live in `ads_ghl_contacts` under the
+GHL location owner (`revlab`), so the B6 first-touch join must use the conversion parent
+(`CASE pl.client_id WHEN 'x5' THEN 'revlab' ELSE pl.client_id END`), and should also accept
+`raw->'attributionSource'->>'sessionSource' = 'Paid Social'`. Without it an x5 contact paid on
+first touch reads as a candidate (YwgL9MOc on 2026-11-12: stamp = its 11-11 re-book, 16s after
+the booking).
 
 ### Cancelled appointments COUNT as booked calls, in both modes
 
