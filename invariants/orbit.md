@@ -620,13 +620,18 @@ WHERE client_id = $client_id
 
 Companion INFO (the F29 person-level dup class - count only, never fails):
 
+**Read the person fields from `raw->'field_data'` (fixed 2026-11-14).** The old form read `raw->>'email'`, which is empty on all 777 leadform rows (the Meta leadform payload keeps email and phone inside the `field_data` array), so it returned 0 every night whatever the data held. A count that cannot be non-zero is not a check. First real all-time read: mustache 24 repeat phones, peach 2 repeat phones / 2 repeat emails; 0 repeats inside the 11-11..11-13 window. Report the all-time count AND the in-window count; a repeat inside one window is the one that could double a headline number.
+
 ```sql
+-- all-time repeat people (swap the ILIKE to '%email%' and drop the regexp for email)
 SELECT COUNT(*) FROM (
-  SELECT LOWER(COALESCE(raw->>'email','')) AS em
-  FROM ads_paid_leads
-  WHERE client_id = $client_id AND COALESCE(raw->>'email','') <> ''
+  SELECT regexp_replace(f->'values'->>0, '\D', '', 'g') AS ph
+  FROM ads_paid_leads, jsonb_array_elements(raw->'field_data') f
+  WHERE client_id = $client_id AND f->>'name' ILIKE '%phone%'
+    AND regexp_replace(f->'values'->>0, '\D', '', 'g') <> ''
   GROUP BY 1 HAVING COUNT(DISTINCT contact_id) > 1
 ) d;
+-- in-window: same query with last_paid_opt_in_at inside the literal-offset window bounds
 ```
 
 ### Calendly writer truth (CAL-1, the `has_calendly_source` clients, formalized 2026-06-12 per audit F20)
