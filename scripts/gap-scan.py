@@ -30,6 +30,33 @@ WINDOW_DAYS = 90
 META_API_VERSION = "v21.0"
 DRIFT_TOLERANCE_PCT = 5.0  # >5% delta = warn; missing entirely = fail
 
+# Clients that share ONE Meta ad account, split by campaign name. MIRROR of
+# Orbit's api/ads/_campaign-scope.ts CAMPAIGN_SCOPES (#833, 2026-11-10): Orbit's
+# insights sync sends the same rule to Meta as `filtering`, so Neon holds only
+# each client's own campaigns. An unfiltered account-level read compares the
+# WHOLE account against one client's slice. That was the 2026-11-15 false
+# alarm: caregenius-dental showed 87 "gap" days (every day before it launched)
+# and caregenius-b2b showed 3 >5% drifts, while the two Neon slices summed to
+# Meta's account total. Keep this dict in sync with Orbit's when a scope is
+# added; a client with no entry reads its whole account.
+CAMPAIGN_SCOPES = {
+    "caregenius-b2b": {"notContains": ["Cosmetic Dental"]},
+    "caregenius-dental": {"contains": "Cosmetic Dental"},
+}
+
+
+def campaign_scope_filtering(client_id: str) -> "str | None":
+    """Meta `filtering` JSON for a scoped client, else None (whole account)."""
+    s = CAMPAIGN_SCOPES.get(client_id)
+    if not s:
+        return None
+    filters = []
+    if s.get("contains"):
+        filters.append({"field": "campaign.name", "operator": "CONTAIN", "value": s["contains"]})
+    for v in s.get("notContains", []):
+        filters.append({"field": "campaign.name", "operator": "NOT_CONTAIN", "value": v})
+    return json.dumps(filters) if filters else None
+
 
 NY = ZoneInfo("America/New_York")
 
@@ -71,7 +98,8 @@ def fetch_neon_per_day(conn, client_id: str, start: dt.date, end: dt.date) -> di
     return {row[0]: Decimal(row[1]) for row in cur.fetchall()}
 
 
-def fetch_meta_per_day(account_id: str, token: str, start: dt.date, end: dt.date) -> dict:
+def fetch_meta_per_day(account_id: str, token: str, start: dt.date, end: dt.date,
+                       filtering: "str | None" = None) -> dict:
     """Return {date: spend_decimal} from Meta Graph API, using time_increment=1."""
     result = {}
     url_base = f"https://graph.facebook.com/{META_API_VERSION}/{account_id}/insights"
@@ -83,6 +111,8 @@ def fetch_meta_per_day(account_id: str, token: str, start: dt.date, end: dt.date
         "limit": 500,
         "access_token": token,
     }
+    if filtering:
+        params["filtering"] = filtering
     url = url_base + "?" + urlencode(params)
     while url:
         req = Request(url, headers={"User-Agent": "andy-gap-scan/1.0"})
@@ -121,7 +151,8 @@ def scan_client(conn, client: dict, start: dt.date, end: dt.date) -> dict:
 
     neon = fetch_neon_per_day(conn, client["id"], start, end)
     try:
-        meta = fetch_meta_per_day(client["meta_account_id"], token, start, end)
+        meta = fetch_meta_per_day(client["meta_account_id"], token, start, end,
+                                  campaign_scope_filtering(client["id"]))
     except RuntimeError as e:
         return {
             "client_id": client["id"],
@@ -170,6 +201,7 @@ def scan_client(conn, client: dict, start: dt.date, end: dt.date) -> dict:
         "label": client["label"],
         "meta_account_id": client["meta_account_id"],
         "currency": client["currency"],
+        "campaign_scope": CAMPAIGN_SCOPES.get(client["id"]),
         "status": status,
         "gaps": gaps,
         "drifts": drifts,

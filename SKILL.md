@@ -346,6 +346,8 @@ What it does:
 3. For dates with zero spend in Neon, hits Meta Graph API directly for that single day. If Meta reports non-zero spend but Neon has nothing, that's a sync gap.
 4. Writes a single combined vault report at `~/Obsidian/Vault/20-Clients/_Moreway-Agency/attribution-audits/gap-scan-YYYY-MM-DD.md` listing every detected gap with date, client, missing spend amount, and a backfill command.
 
+Engine: `scripts/gap-scan.py`. Run it with `/opt/homebrew/bin/python3.14` (the only interpreter on the Mac with `psycopg2`; bare `python3` is 3.15 and fails on import). Shared ad accounts: the script sends the same campaign-name `filtering` as Orbit's `api/ads/_campaign-scope.ts` (`CAMPAIGN_SCOPES`, mirrored in the script). An unfiltered read compares a whole account against one client's slice and produces false gaps (2026-11-15: caregenius-dental showed 87 "gap" days until the filter was added). When Orbit adds a scope, mirror it in the script.
+
 Skipped automatically when `DATABASE_URL` isn't reachable. The remote routine doesn't run gap-scan (only `--slack` mode). Scheduled locally as a separate launchd job: `com.zander.andy-gap-scan` firing Sunday 7am NY.
 
 ### Step 3 - Reconcile the ledger and emit (rewritten 2026-06-12)
